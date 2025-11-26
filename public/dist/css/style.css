@@ -1,0 +1,15 @@
+table > tr:not(.sub-table-row) th:first-child, 
+.table > tr:not(.sub-table-row) th:first-child, 
+table > tr:not(.sub-table-row) td:first-child, 
+.table > tr:not(.sub-table-row) th:first-child {
+    text-align: center;
+    width: 3%;
+}
+
+table tr td.actions, 
+.table tr td.actions, 
+table tr td.actions, 
+.table tr td.actions {
+    text-align: center;
+    width: 5%;
+}
