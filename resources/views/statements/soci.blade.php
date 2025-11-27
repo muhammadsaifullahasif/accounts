@@ -64,13 +64,13 @@
                         </tr>
                         <tr>
                             <td>Other comprehensive income</td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($otherComprehensiveIncome['current_year'], 2), '0'), '.') }})</td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($otherComprehensiveIncome['previous_year'], 2), '0'), '.') }})</td>
+                            <td class="text-center">{{ rtrim(rtrim(number_format($otherComprehensiveIncome['current_year'], 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ rtrim(rtrim(number_format($otherComprehensiveIncome['previous_year'], 2), '0'), '.') }}</td>
                         </tr>
                         <tr>
                             @php
-                                $gpl_current_year = ($plAfterTax['current_year'] - $otherComprehensiveIncome['current_year']);
-                                $gpl_previous_year = ($plAfterTax['previous_year'] - $otherComprehensiveIncome['previous_year']);
+                                $gpl_current_year = ($plAfterTax['current_year'] + ($otherComprehensiveIncome['current_year']));
+                                $gpl_previous_year = ($plAfterTax['previous_year'] + ($otherComprehensiveIncome['previous_year']));
                             @endphp
                             <td><strong>{{ ( $gpl_current_year >= 0 ) ? 'Total comprehensive Income for the year' : 'Total comprehensive Loss for the year' }}</strong></td>
                             <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;"><strong>{{ ($gpl_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($gpl_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($gpl_current_year), 2), '0'), '.') }}</strong></td>

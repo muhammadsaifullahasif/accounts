@@ -54,7 +54,7 @@ class CompanyController extends Controller
             $company->modified_by = 1;
             $company->save();
 
-            return redirect()->route('companies.index')->with('success', 'Company created successfully.');
+            return redirect()->route('fixed-assets.index', $company->id)->with('success', 'Company created successfully.');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

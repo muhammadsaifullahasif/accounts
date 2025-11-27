@@ -41,11 +41,12 @@
         }
 
         .track .step.active:before{
-            background: #007bff;
+            background: #064C06;
         }
 
         .track .step::before{
             background-color: rgba(54, 65, 83, 0.1);
+			/* background-color: rgba(54, 65, 83, 0.01); */
             height: 7px;
             position: absolute;
             content: "";
@@ -55,12 +56,14 @@
         }
 
         .track .step .icon {
-            background: #364153;
-            color: #fff;
+            /* background: #364153; */
+			background-color: rgba(0, 0, 0, 0.1);
+			color: #000;
         }
 
         .track .step.active .icon{
-            background: #007bff;
+            background: #064C06;
+			color: #fff;
         }
 
         .track .icon{
@@ -75,7 +78,7 @@
 
         .track .step.active .text{
             font-weight: 550;
-            color: #007bff;
+            color: #064C06;
         }
 
         .track .text{

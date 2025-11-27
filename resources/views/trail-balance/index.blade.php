@@ -4232,20 +4232,20 @@
                 var totalClosingDebit = parseFloat($('#tfoot-closing-debit').text().replace(/,/g, '')) || 0;
                 var totalClosingCredit = parseFloat($('#tfoot-closing-credit').text().replace(/,/g, '')) || 0;
 
-                // if (totalOpeningDebit !== totalOpeningCredit) {
-                //     alert('Total Opening Debit should match with Total Opening Credit')
-                //     return false;
-                // }
+                if (totalOpeningDebit !== totalOpeningCredit) {
+                    alert('Total Opening Debit should match with Total Opening Credit')
+                    return false;
+                }
 
-                // if (totalMovementDebit !== totalMovementCredit) {
-                //     alert('Total Movement Debit should match with Total Movement Credit');
-                //     return false;
-                // }
+                if (totalMovementDebit !== totalMovementCredit) {
+                    alert('Total Movement Debit should match with Total Movement Credit');
+                    return false;
+                }
 
-                // if (totalClosingDebit !== totalClosingCredit) {
-                //     alert('Total Closing Debit should match with Total Closing Credit');
-                //     return false;
-                // }
+                if (totalClosingDebit !== totalClosingCredit) {
+                    alert('Total Closing Debit should match with Total Closing Credit');
+                    return false;
+                }
 
                 var entries = [];
 

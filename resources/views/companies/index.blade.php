@@ -74,7 +74,7 @@
                             </div>
                         </td>
                     </tr>
-                    <tr class="sub-table-row" style="display: none;" data-company-id="1">
+                    <tr class="sub-table-row" style="display: none;" data-company-id="{{ $company->id }}">
                         <td colspan="10" class="sub-table-cell">
                             <div class="sub-table-wrapper table-responsive" style="border: 1px solid; background: #ECECEC;">
                                 <table class="table table-striped table-hover table-sm mb-0">

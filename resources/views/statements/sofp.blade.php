@@ -72,12 +72,22 @@
                             <td></td>
                             <td></td>
                         </tr>
-                        <tr>
-                            <td>Property, plant equipments</td>
-                            <td class="text-center"><strong>{{ $propertyEquipment['index'] }}</strong></td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($propertyEquipment['total_current_year'], 2), '0'), '.') }})</td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($propertyEquipment['total_previous_year'], 2), '0'), '.') }})</td>
-                        </tr>
+                        @php
+                            $tnca_current_year = 0;
+                            $tnca_previous_year = 0;
+                        @endphp
+                        @foreach ($non_current_assets as $non_current_asset)
+                            @php
+                                $tnca_current_year += $non_current_asset['total_current_year'];
+                                $tnca_previous_year += $non_current_asset['total_previous_year'];
+                            @endphp
+                            <tr>
+                                <td>{{ $non_current_asset['group_name'] }}</td>
+                                <td class="text-center"><strong>{{ $non_current_asset['index'] }}</strong></td>
+                                <td class="text-center">{{ rtrim(rtrim(number_format($non_current_asset['total_current_year'], 2), '0'), '.') }}</td>
+                                <td class="text-center">{{ rtrim(rtrim(number_format($non_current_asset['total_previous_year'], 2), '0'), '.') }}</td>
+                            </tr>
+                        @endforeach
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
@@ -90,7 +100,39 @@
                             <td></td>
                             <td></td>
                         </tr>
-                        <tr>
+                        @php
+                            $tca_current_year = 0;
+                            $tca_previous_year = 0;
+                        @endphp
+                        @foreach ($current_assets as $current_asset)
+                            @php
+                                $tca_current_year += $current_asset['total_current_year'];
+                                $tca_previous_year += $current_asset['total_previous_year'];
+                            @endphp
+                            @if ($loop->first)
+                                @php
+                                    $current_year_style = `border-left: 1px solid #000; border-top: 1px solid #000;`;
+                                    $previous_year_style = `border-right: 1px solid #000; border-top: 1px solid #000;`;
+                                @endphp
+                            @elseif ($loop->last)
+                                @php
+                                    $current_year_style = `border-left: 1px solid #000; border-bottom: 1px solid #000;`;
+                                    $previous_year_style = `border-right: 1px solid #000; border-bottom: 1px solid #000;`;
+                                @endphp
+                            @else
+                                @php
+                                    $current_year_style = `border-left: 1px solid #000;`;
+                                    $previous_year_style = `border-right: 1px solid #000;`;
+                                @endphp
+                            @endif
+                            <tr>
+                                <td>{{ $current_asset['group_name'] }}</td>
+                                <td class="text-center"><strong>{{ $current_asset['index'] }}</strong></td>
+                                <td class="text-center" style="{{ $current_year_style }}">{{ rtrim(rtrim(number_format($current_asset['total_current_year'], 2), '0'), '.') }}</td>
+                                <td class="text-center" style="{{ $previous_year_style }}">{{ rtrim(rtrim(number_format($current_asset['total_previous_year'], 2), '0'), '.') }}</td>
+                            </tr>
+                        @endforeach
+                        {{-- <tr>
                             <td>Capital work in process</td>
                             <td class="text-center"><strong>{{ $capital['index'] }}</strong></td>
                             <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ rtrim(rtrim(number_format($capital['total_current_year'], 2), '0'), '.') }}</td>
@@ -113,7 +155,7 @@
                             <td class="text-center"><strong>{{ $cashEquivalent['index'] }}</strong></td>
                             <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">{{ rtrim(rtrim(number_format($cashEquivalent['total_current_year'], 2), '0'), '.') }}</td>
                             <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">{{ rtrim(rtrim(number_format($cashEquivalent['total_previous_year'], 2), '0'), '.') }}</td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
@@ -154,6 +196,10 @@
                             <td></td>
                             <td></td>
                         </tr>
+                        @php
+                            $tequity_current_year = 0;
+                            $tequity_previous_year = 0;
+                        @endphp
                         <tr>
                             <td>Authorized share capital</td>
                             <td class="text-center"><strong>9.1</strong></td>
@@ -174,25 +220,25 @@
                         </tr>
                         <tr>
                             <td>Issued, subscribed and paid-up</td>
-                            <td class="text-center"><strong>9.2</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-top: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
+                            <td class="text-center"><strong></strong></td>
+                            <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($paidup_capital['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($paidup_capital['current_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-right: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($paidup_capital['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($paidup_capital['previous_year']), 2), '0'), '.') }}</td>
                         </tr>
                         <tr>
                             <td>Accumulated profit/(losses)</td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
+                            <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">{{ ($apl['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($apl['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($apl['current_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">{{ ($apl['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($apl['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($apl['previous_year']), 2), '0'), '.') }}</td>
                         </tr>
                         <tr>
                             @php
-                                $pbt_current_year = 0;
-                                $pbt_previous_year = 0;
+                                $tequity_current_year = $paidup_capital['current_year'] + $apl['current_year'];
+                                $tequity_previous_year = $paidup_capital['previous_year'] + $apl['current_year'];
                             @endphp
                             <td></td>
                             <td class="text-center"></td>
-                            <td class="text-center"><strong>{{ ($pbt_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center"><strong>{{ ($pbt_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center"><strong>{{ ($tequity_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($tequity_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tequity_current_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center"><strong>{{ ($tequity_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($tequity_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tequity_previous_year), 2), '0'), '.') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -207,7 +253,23 @@
                             <td></td>
                             <td></td>
                         </tr>
-                        <tr>
+                        @php
+                            $tcl_current_year = 0;
+                            $tcl_previous_year = 0;
+                        @endphp
+                        @foreach ($current_liabilities as $current_liability)
+                            @php
+                                $tcl_current_year += $current_liability['total_current_year'];
+                                $tcl_previous_year += $current_liability['total_previous_year'];
+                            @endphp
+                            <tr>
+                                <td>{{ $current_liability['group_name'] }}</td>
+                                <td class="text-center"><strong>{{ $current_liability['index'] }}</strong></td>
+                                <td class="text-center">{{ ($current_liability['total_current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($current_liability['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($current_liability['total_current_year']), 2), '0'), '.') }}</td>
+                                <td class="text-center">{{ ($current_liability['total_previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($current_liability['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($current_liability['total_previous_year']), 2), '0'), '.') }}</td>
+                            </tr>
+                        @endforeach
+                        {{-- <tr>
                             <td>Advance from customers</td>
                             <td class="text-center"><strong>10</strong></td>
                             <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</td>
@@ -230,16 +292,12 @@
                             <td class="text-center"><strong>13</strong></td>
                             <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
                             <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                        </tr>
+                        </tr> --}}
                         <tr>
-                            @php
-                                $pbt_current_year = 0;
-                                $pbt_previous_year = 0;
-                            @endphp
                             <td></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($pbt_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($pbt_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($tcl_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($tcl_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tcl_current_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($tcl_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($tcl_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tcl_previous_year), 2), '0'), '.') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -250,8 +308,8 @@
                         <tr>
                             <td><strong>CONTINGENCIES AND COMMITMENTS</strong></td>
                             <td class="text-center"><strong>14</strong></td>
-                            <td class="text-center"><strong>{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center"><strong>{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center"><strong>-</strong></td>
+                            <td class="text-center"><strong>-</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -267,8 +325,8 @@
                         </tr>
                         <tr>
                             @php
-                                $tel_current_year = (0 - 0);
-                                $tel_previous_year = (0 - 0);
+                                $tel_current_year = ($tequity_current_year - $tcl_current_year);
+                                $tel_previous_year = ($tequity_previous_year - $tcl_previous_year);
                             @endphp
                             <td><strong>TOTAL EQUITY AND LIABILITIES</strong></td>
                             <td class="text-center"></td>

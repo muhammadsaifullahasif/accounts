@@ -69,13 +69,13 @@
                         <tr>
                             <td>Cost of revenue</td>
                             <td class="text-center"><strong>{{ $costOfSales['index'] }}</strong></td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($costOfSales['total_current_year'], 2), '0'), '.') }})</td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($costOfSales['total_previous_year'], 2), '0'), '.') }})</td>
+                            <td class="text-center">{{ ($costOfSales['total_current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($costOfSales['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($costOfSales['total_current_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($costOfSales['total_previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($costOfSales['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($costOfSales['total_previous_year']), 2), '0'), '.') }}</td>
                         </tr>
                         <tr>
                             @php
-                                $gpl_current_year = ($revenue['total_current_year'] - $costOfSales['total_current_year']);
-                                $gpl_previous_year = ($revenue['total_previous_year'] - $costOfSales['total_previous_year']);
+                                $gpl_current_year = ($revenue['total_current_year'] + $costOfSales['total_current_year']);
+                                $gpl_previous_year = ($revenue['total_previous_year'] + $costOfSales['total_previous_year']);
                             @endphp
                             <td><strong>{{ ( $gpl_current_year >= 0 ) ? 'Gross Profit' : 'Gross Loss' }}</strong></td>
                             <td class="text-center"></td>
@@ -91,14 +91,14 @@
                         <tr>
                             <td>Administrative expenses</td>
                             <td class="text-center"><strong>{{ $adminExpense['index'] }}</strong></td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($adminExpense['total_current_year'], 2), '0'), '.') }})</td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($adminExpense['total_previous_year'], 2), '0'), '.') }})</td>
+                            <td class="text-center">{{ ($adminExpense['total_current_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($adminExpense['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($adminExpense['total_current_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($adminExpense['total_previous_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($adminExpense['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($adminExpense['total_previous_year']), 2), '0'), '.') }}</td>
                         </tr>
                         <tr>
                             <td>Financial Charges</td>
                             <td class="text-center"><strong>{{ $financialCharges['index'] }}</strong></td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($financialCharges['total_current_year'], 2), '0'), '.') }})</td>
-                            <td class="text-center">({{ rtrim(rtrim(number_format($financialCharges['total_previous_year'], 2), '0'), '.') }})</td>
+                            <td class="text-center">{{ ($financialCharges['total_current_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($financialCharges['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($financialCharges['total_current_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($financialCharges['total_previous_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($financialCharges['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($financialCharges['total_previous_year']), 2), '0'), '.') }}</td>
                         </tr>
                         <tr>
                             <td>Other Income</td>
@@ -114,8 +114,8 @@
                         </tr>
                         <tr>
                             @php
-                                $pbt_current_year = ($revenue['total_current_year'] - $costOfSales['total_current_year']) + (-$adminExpense['total_current_year']) + (-$financialCharges['total_current_year']) + $otherIncome['total_current_year'];
-                                $pbt_previous_year = ($revenue['total_previous_year'] - $costOfSales['total_previous_year']) + (-$adminExpense['total_previous_year']) + (-$financialCharges['total_current_year']) + $otherIncome['total_previous_year'];
+                                $pbt_current_year = ($revenue['total_current_year'] + $costOfSales['total_current_year']) + $adminExpense['total_current_year'] + $financialCharges['total_current_year'] + $otherIncome['total_current_year'];
+                                $pbt_previous_year = ($revenue['total_previous_year'] + $costOfSales['total_previous_year']) + $adminExpense['total_previous_year'] + $financialCharges['total_current_year'] + $otherIncome['total_previous_year'];
                             @endphp
                             <td><strong>{{ ( $pbt_current_year >= 0 ) ? 'Profit before Taxation' : 'Loss before Taxation' }}</strong></td>
                             <td class="text-center"></td>
@@ -133,10 +133,10 @@
                             <td class="text-center">{{ $taxation_previous_year }}</td>
                         </tr>
                         <tr>
-                            <td><strong>{{ ( $pbt_current_year >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
+                            <td><strong>{{ ( ($pbt_current_year + $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_current_year - $taxation_current_year) < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_current_year - $taxation_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_current_year - $taxation_current_year), 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_previous_year - $taxation_previous_year) < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_previous_year - $taxation_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_previous_year - $taxation_previous_year), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_current_year + $taxation_current_year) < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_current_year - $taxation_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_current_year - $taxation_current_year), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_previous_year + $taxation_previous_year) < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_previous_year - $taxation_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_previous_year - $taxation_previous_year), 2), '0'), '.') }}</td>
                         </tr>
                     </tbody>
                 </table>

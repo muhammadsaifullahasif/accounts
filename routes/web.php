@@ -8,9 +8,9 @@ use App\Http\Controllers\StatementController;
 use App\Http\Controllers\FixedAssetController;
 use App\Http\Controllers\TrailBalanceController;
 
-Route::get('/', function () {
-    return view('home');
-})->name('dashboard');
+// Route::get('/', function () {
+//     return view('home');
+// })->name('dashboard');
 
 Auth::routes();
 
@@ -20,11 +20,15 @@ Route::middleware(['auth'])->group(function () {
     // Auth Routes;
 });
 
-// Route::middleware(['auth', AuthAdmin::class])->group(function () {
+// Route::get('/password', function() {
+//     return Hash::make('12345678');
+// });
+
+Route::middleware(['auth', AuthAdmin::class])->group(function () {
     // Admin Routes;
-    // Route::get('/', function () {
-    //     return view('home');
-    // })->name('dashboard');
+    Route::get('/', function () {
+        return view('home');
+    })->name('dashboard');
     Route::resource('/companies', CompanyController::class);
 
     Route::resource('/companies/{id}/trail-balance', TrailBalanceController::class);
@@ -40,6 +44,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/companies/{id}/statements/sopl', [StatementController::class, 'sopl'])->name('statements.sopl');
     Route::get('/companies/{id}/statements/soci', [StatementController::class, 'soci'])->name('statements.soci');
     Route::get('/companies/{id}/statements/soce', [StatementController::class, 'soce'])->name('statements.soce');
+    Route::put('/companies/{id}/statements/soce', [StatementController::class, 'soce_update'])->name('statements.soce.update');
     Route::get('/companies/{id}/statements/sofp', [StatementController::class, 'sofp'])->name('statements.sofp');
     Route::get('/companies/{id}/statements/socf', [StatementController::class, 'socf'])->name('statements.socf');
-// });
+});
