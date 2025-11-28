@@ -378,6 +378,8 @@
             </div>
             {{-- Group Section End --}}
         @endforeach
+
+        <a href="#" class="btn btn-primary">Generate Statements</a>
     </div>
 @endsection
 

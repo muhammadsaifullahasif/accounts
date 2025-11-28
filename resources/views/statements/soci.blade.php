@@ -58,7 +58,7 @@
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Profit after taxation</td>
+                            <td>{{ ($plAfterTax['current_year'] < 0) ? 'Loss after taxation' : 'Profit after taxation' }}</td>
                             <td class="text-center">{{ ($plAfterTax['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($plAfterTax['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($plAfterTax['current_year']), 2), '0'), '.') }}</td>
                             <td class="text-center">{{ ($plAfterTax['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($plAfterTax['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($plAfterTax['previous_year']), 2), '0'), '.') }}</td>
                         </tr>

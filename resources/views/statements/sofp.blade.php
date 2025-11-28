@@ -72,11 +72,7 @@
                             <td></td>
                             <td></td>
                         </tr>
-                        @php
-                            $tnca_current_year = 0;
-                            $tnca_previous_year = 0;
-                        @endphp
-                        @foreach ($non_current_assets as $non_current_asset)
+                        {{-- @foreach ($non_current_assets as $non_current_asset)
                             @php
                                 $tnca_current_year += $non_current_asset['total_current_year'];
                                 $tnca_previous_year += $non_current_asset['total_previous_year'];
@@ -87,7 +83,17 @@
                                 <td class="text-center">{{ rtrim(rtrim(number_format($non_current_asset['total_current_year'], 2), '0'), '.') }}</td>
                                 <td class="text-center">{{ rtrim(rtrim(number_format($non_current_asset['total_previous_year'], 2), '0'), '.') }}</td>
                             </tr>
-                        @endforeach
+                        @endforeach --}}
+                        @php
+                            $tnca_current_year = $non_current_assets['total_current_year'];
+                            $tnca_previous_year = $non_current_assets['total_previous_year'];
+                        @endphp
+                        <tr>
+                            <td>{{ $non_current_assets['group_name'] }}</td>
+                            <td class="text-center"><strong>{{ $non_current_assets['index'] }}</strong></td>
+                            <td class="text-center">{{ rtrim(rtrim(number_format($non_current_assets['total_current_year'], 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ rtrim(rtrim(number_format($non_current_assets['total_previous_year'], 2), '0'), '.') }}</td>
+                        </tr>
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
@@ -233,7 +239,7 @@
                         <tr>
                             @php
                                 $tequity_current_year = $paidup_capital['current_year'] + $apl['current_year'];
-                                $tequity_previous_year = $paidup_capital['previous_year'] + $apl['current_year'];
+                                $tequity_previous_year = $paidup_capital['previous_year'] + $apl['previous_year'];
                             @endphp
                             <td></td>
                             <td class="text-center"></td>

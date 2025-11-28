@@ -22,6 +22,13 @@
 @endsection
 
 @section('content')
+    <div class="track mb-5">
+        <div class="step active"> <span class="icon">1</span> <span class="text"><a href="{{ route('companies.create') }}">Company Formation</a></span> </div>
+        <div class="step active"> <span class="icon">2</span> <span class="text"><a href="{{ route('fixed-assets.index', $company->id) }}">Fixed Assets Schedual</a></span> </div>
+        <div class="step active"> <span class="icon">3</span> <span class="text"><a href="{{ route('trail-balance.index', $company->id) }}">Trail Balance</a></span> </div>
+        <div class="step active"> <span class="icon">4</span> <span class="text"><a href="{{ route('notes.index', $company->id) }}">Notes</a></span> </div>
+        <div class="step active"> <span class="icon">5</span> <span class="text">Statments</span> </div>
+    </div>
     <div class="card card-body w-50 mx-auto">
         <form action="{{ route('companies.update', $company->id) }}" method="POST" class="form" enctype="multipart/form-data">
             @csrf

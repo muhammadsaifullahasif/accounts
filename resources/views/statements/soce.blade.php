@@ -155,6 +155,18 @@
 
         $(document).ready(function(){
 
+            $(document).on('focus', '.editable', function() {
+                if (parseValue($(this).text()) == 0) {
+                    $(this).text('');
+                }
+            });
+
+            $(document).on('blur', '.editable', function() {
+                if (parseValue($(this).text()) == '') {
+                    $(this).text(0);
+                }
+            });
+
             $('#saveSOCEbtn').on('click', function() {
                 var aplb_previous_year = parseFloat(parseValue($('.aplb_previous_year').text())) || 0;
                 var scci_previous_year = parseFloat(parseValue($('.scci_previous_year').text())) || 0;

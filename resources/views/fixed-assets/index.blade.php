@@ -50,16 +50,16 @@
                     <th class="text-center" rowspan="3" style="vertical-align: bottom;"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-account-modal"><i class="fas fa-plus"></i></button></th>
                 </tr>
                 <tr>
-                    <th class="text-center">As at<br>July 01, 2022</th>
+                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</th>
                     <th class="text-center" colspan="2">Addition</th>
                     <th class="text-center" colspan="2">Deletion</th>
-                    <th class="text-center">As at<br>June 30, 2023</th>
+                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
                     <th class="text-center" rowspan="2">%</th>
-                    <th class="text-center">As at<br>July 01, 2022</th>
+                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</th>
                     <th class="text-center">For the period</th>
                     <th class="text-center">Disposal</th>
-                    <th class="text-center">As at<br>June 30, 2023</th>
-                    <th class="text-center">As at<br>June 30, 2023</th>
+                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
+                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
                 </tr>
                 <tr>
                     <th class="text-center"></th>
@@ -120,7 +120,7 @@
                         <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_opening }}</td>
                         <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_addition }}</td>
                         <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_deletion }}</td>
-                        <td class="text-center align-middle">{{ $fixedAsset->closing }}</td>
+                        <td class="text-center align-middle">{{ $fixedAsset->depreciation_closing }}</td>
                         <td class="text-center align-middle">{{ $fixedAsset->wdv }}</td>
                         <td class="text-center align-middle"><button class="btn btn-danger btn-sm remove-row"><i class="fas fa-times"></i></button></td>
                     </tr>
@@ -173,6 +173,18 @@
 @push('scripts')
     <script>
         $(function() {
+
+            $(document).on('focus', '.editable', function(){
+                if (parseCell($(this)) == 0) {
+                    $(this).text('');
+                }
+            });
+
+            $(document).on('blur', '.editable', function(){
+                if (parseCell($(this)) == '') {
+                    $(this).text(0);
+                }
+            });
 
             $('#saveFixedAssetsBtn').on('click', function(){
                 var entries = [];
@@ -287,7 +299,6 @@
                 lastEditedDeletion[rowIndex] = 'date';
                 updateTotals();
             });
-            // $(document).on('change', 'input[name="additionNoOfDays[]"], input[name="deletionNoOfDays[]"]', updateTotals);
 
             function updateTotals() {
                 console.log(lastEditedAddition);
@@ -339,24 +350,6 @@
                         additionNoOfDays = additionNoOfDays / daysInYear;
                     }
 
-                    /*// Get addition date from input[type="date"]
-                    var additionDateValue = $row.find('input[name="additionNoOfDays[]"]').val();
-                    var additionNoOfDays = 1; // Default to 1 if no date selected
-
-                    if (additionDateValue) {
-                        var additionDate = new Date(additionDateValue);
-                        // Calculate days from addition date to end date + 1
-                        var endDatePlusOne = new Date(endDate);
-                        endDatePlusOne.setDate(endDatePlusOne.getDate() + 1);
-                        var timeDiff = endDatePlusOne.getTime() - additionDate.getTime();
-                        additionNoOfDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                        // Normalize to ration
-                        var additionNoOfDays_ = additionNoOfDays;
-                        additionNoOfDays = additionNoOfDays / daysInYear;
-                    }*/
-
-                    // var additionNoOfDays = parseCell($row.find('td').eq(3));
-
                     var deletion = parseCell($row.find('td').eq(4));
 
                     // Get deletion date from input[type="date"]
@@ -376,24 +369,6 @@
                         deletionNoOfDays = deletionNoOfDays / daysInYear;
                     }
 
-                    /*// Get deletion date from input[type="date"]
-                    var deletionDateValue = $row.find('input[name="deletionNoOfDays[]"]').val();
-                    var deletionNoOfDays = 1; // Default to 1 if no date selected
-
-                    if (deletionDateValue) {
-                        var deletionDate = new Date(deletionDateValue);
-                        // Calculate days from start date + 1 to deletion date
-                        var startDatePlusOne = new Date(startDate);
-                        // startDatePlusOne.setDate(startDatePlusOne.getDate() + 1);
-                        var timeDiff = deletionDate.getTime() - startDatePlusOne.getTime();
-                        deletionNoOfDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                        // Normalize to ration
-                        var deletionNoOfDays_ = deletionNoOfDays;
-                        deletionNoOfDays = deletionNoOfDays / daysInYear;
-                    }*/
-
-                    // var deletionNoOfDays = parseCell($row.find('td').eq(5));
-
                     var closing = (opening + addition - deletion);
                     if (closing < 0) {
                         closing = 0;
@@ -401,7 +376,17 @@
                     var rate = parseCell($row.find('td').eq(7)) / 100;
                     var depreciationOpening = parseCell($row.find('td').eq(8));
 
-                    var depreciationAddition = ( (opening * rate) + (addition * rate * additionNoOfDays) + (deletion * rate * deletionNoOfDays) );
+                    function calculateDepreciationOpening(opening, rate, startDate, endDate) {
+                        var start = new Date(startDate);
+                        var end = new Date(endDate);
+                        var numberOfDays = Math.ceil((end - start) / (1000 * 3600 * 24)) + 1; // +1 to include both start and end date
+                        return (opening * rate * (numberOfDays / 365));
+                    }
+
+                    // Calculate depreciation opening based on company formation dates
+                    // var depreciationOpening = calculateDepreciationOpening(opening, rate, startDateValue, endDateValue);
+
+                    var depreciationAddition = ( calculateDepreciationOpening(opening, rate, startDateValue, endDateValue) + (addition * rate * additionNoOfDays) + (deletion * rate * deletionNoOfDays) );
 
                     var depreciationDeletion = parseCell($row.find('td').eq(10));
                     // var depreciationClosing = parseCell($row.find('td').eq(11));
@@ -414,29 +399,8 @@
                         wdv = 0
                     }
 
-                    // Create entry object
-                    /*var entry = {
-                        accountCode: $row.data('account-code'),
-                        accountTitle: $row.find('td').eq(0).text().trim(),
-                        opening: opening,
-                        addition: addition,
-                        additionDate: additionDateValue || 'N/A',
-                        additionNoOfDays: additionNoOfDays_,
-                        deletion: deletion,
-                        deletionDate: deletionDateValue || 'N/A',
-                        deletionNoOfDays: deletionNoOfDays_,
-                        closing: closing,
-                        rate: rate,
-                        depreciationOpening: depreciationOpening,
-                        depreciationAddition: depreciationAddition,
-                        depreciationDeletion: depreciationDeletion,
-                        depreciationClosing: depreciationClosing,
-                        wdv: wdv
-                    };
-
-                    entries.push(entry);*/
-
                     $row.find('td').eq(6).text((closing.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $row.find('td').eq(8).text((depreciationOpening.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
                     $row.find('td').eq(9).text((depreciationAddition.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
                     $row.find('td').eq(11).text((depreciationClosing.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
                     $row.find('td').eq(12).text((wdv.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));

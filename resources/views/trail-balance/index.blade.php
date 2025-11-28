@@ -4222,6 +4222,23 @@
     <script>
         $(function() {
 
+            $(document).on('focus', '.editable', function(){
+                if (parseCell($(this)) == 0) {
+                    $(this).val('');
+                }
+            });
+
+            $(document).on('blur', '.editable', function(){
+                if (parseCell($(this)) == '') {
+                    $(this).val(0);
+                }
+            });
+
+            function parseCell($cell) {
+                const text = $cell.val().replace(/,/g, '').trim();
+                return parseFloat(text) || 0;
+            }
+
             $('#saveTrailBalanceBtn').on('click', function(e){
                 e.preventDefault();
 
@@ -4373,6 +4390,10 @@
             // Divide parent values equally intochild rows
             $(document).on('keyup change', 'tr[data-group-code] input.editable', function() {
                 var $input = $(this);
+
+                // Save cursor position BEFORE any updates
+                var cursorPosition = this.selectionStart;
+
                 var $parentRow = $input.closest('tr[data-group-code]');
                 var groupCode = $parentRow.data('group-code');
 
@@ -4401,6 +4422,11 @@
                         $childInput.trigger('change');
                     }
                 });
+
+                // Restore cursor position AFTER all updates
+                setTimeout(function() {
+                    $input[0].setSelectionRange(cursorPosition, cursorPosition);
+                }, 0);
             });
 
             /**

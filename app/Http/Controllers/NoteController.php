@@ -44,18 +44,21 @@ class NoteController extends Controller
 
         $transactions = TrailBalance::where('company_id', $id)
             ->select('group_code', 'group_name', 'account_code', 'account_head', 'opening_debit', 'opening_credit', 'movement_debit', 'movement_credit', 'closing_debit', 'closing_credit')
+            ->whereNotLike('group_code', 'NCA%')
             // ->orderBy('group_code')
             ->get()
             ->groupBy('group_code');
 
         // Check if any group has "Property" in the group_name
-        $hasProperty = TrailBalance::where('company_id', $id)
-            ->where('group_name', 'like', '%Property%')
-            ->exists();
+        // $hasProperty = TrailBalance::where('company_id', $id)
+        //     ->where('group_name', 'like', '%Property%')
+        //     ->exists();
 
-        $index = $hasProperty ? 5 : 4;
+        $index = 5;
 
         foreach ($transactions as $groupName => $accounts) {
+            $noteSaved = false; // Add this flag at the start of each group iteration
+
             // Special handling for COS-001 group
             if ($groupName == 'COS-001') {
                 // Track if we've processed the PR accounts
@@ -108,6 +111,10 @@ class NoteController extends Controller
                             $previous_year = $opening_credit;
                         }
 
+                        if ($current_year == 0 && $previous_year == 0) {
+                            continue;
+                        }
+
                         $note = new Note();
                         $note->user_id = 1;
                         $note->company_id = $id;
@@ -120,6 +127,7 @@ class NoteController extends Controller
                         $note->previous_year = $previous_year;
                         $note->modified_by = 1;
                         $note->save();
+                        $noteSaved = true; // Mark that a note was saved
                     } else {
                         // Process other COS-001 accounts normally
                         $current_year = 0;
@@ -138,6 +146,10 @@ class NoteController extends Controller
                             $previous_year = $account->opening_credit;
                         }
 
+                        if ($current_year == 0 && $previous_year == 0) {
+                            continue;
+                        }
+
                         $note = new Note();
                         $note->user_id = 1;
                         $note->company_id = $id;
@@ -150,6 +162,7 @@ class NoteController extends Controller
                         $note->previous_year = $previous_year;
                         $note->modified_by = 1;
                         $note->save();
+                        $noteSaved = true; // Mark that a note was saved
                     }
                 }
             } else {
@@ -171,6 +184,10 @@ class NoteController extends Controller
                         $previous_year = $account->opening_credit;
                     }
 
+                    if ($current_year == 0 && $previous_year == 0) {
+                        continue;
+                    }
+
                     $note = new Note();
                     $note->user_id = 1;
                     $note->company_id = $id;
@@ -183,9 +200,14 @@ class NoteController extends Controller
                     $note->previous_year = $previous_year;
                     $note->modified_by = 1;
                     $note->save();
+                    $noteSaved = true; // Mark that a note was saved
                 }
             }
-            $index++;
+
+            // Only increment index if at least one note was saved for this group
+            if ($noteSaved) {
+                $index++;
+            }
         }
 
         return Note::where('company_id', $id)
@@ -195,6 +217,72 @@ class NoteController extends Controller
             ->get()
             ->groupBy('index')
             ->sortKeys();
+    }
+
+    public function getNonCurrentAssets(string $id)
+    {
+        // Get all non-current assets from TrailBalance (group_code starting with 'NCA')
+        $nonCurrentAssets = TrailBalance::where('company_id', $id)
+            ->where('group_code', 'like', 'NCA%')
+            ->select('group_code', 'group_name', 'account_code', 'account_head', 'opening_debit', 'opening_credit', 'movement_debit', 'movement_credit', 'closing_debit', 'closing_credit')
+            ->get();
+
+        $index = 4;
+        $assets = [];
+        $totalCurrentYear = 0;
+        $totalPreviousYear = 0;
+
+        foreach ($nonCurrentAssets as $asset) {
+            // Calculate current_year from closing values
+            $current_year = 0;
+            if ($asset->closing_debit > 0) {
+                $current_year = $asset->closing_debit;
+            }
+            if ($asset->closing_credit > 0) {
+                $current_year = $asset->closing_credit;
+            }
+
+            // Calculate previous_year from opening values
+            $previous_year = 0;
+            if ($asset->opening_debit > 0) {
+                $previous_year = $asset->opening_debit;
+            }
+            if ($asset->opening_credit > 0) {
+                $previous_year = $asset->opening_credit;
+            }
+
+            // Skip entries where both current_year and previous_year are 0
+            if ($current_year == 0 && $previous_year == 0) {
+                continue;
+            }
+
+            // Add to totals
+            $totalCurrentYear += $current_year;
+            $totalPreviousYear += $previous_year;
+
+            $assets[] = [
+                'index' => $index,
+                'group_code' => $asset->group_code,
+                'group_name' => $asset->group_name,
+                'account_code' => $asset->account_code,
+                'account_head' => $asset->account_head,
+                'current_year' => $current_year,
+                'previous_year' => $previous_year
+            ];
+        }
+
+        // Add totals as the last item in the array
+        $assets[] = [
+            'index' => $index,
+            'group_code' => null,
+            'group_name' => 'Total',
+            'account_code' => null,
+            'account_head' => 'Total Non-Current Assets',
+            'current_year' => $totalCurrentYear,
+            'previous_year' => $totalPreviousYear
+        ];
+
+        return $assets;
     }
 
     public function notes_update(string $id)
@@ -230,7 +318,7 @@ class NoteController extends Controller
                 if ($account->opening_credit > 0) {
                     $previous_year = $account->opening_credit;
                 }
-                
+
                 $note = Note::where('company_id', $id)
                     ->where('index', $index)
                     ->where('group_code', $account['group_code'])
@@ -238,7 +326,7 @@ class NoteController extends Controller
                     ->where('account_code', $account['account_code'])
                     ->where('account_head', $account['account_head'])
                     ->update(['current_year' => $current_year, 'previous_year' => $previous_year]);
-                
+
                 $note = Note::where('company_id', $id)
                     ->update(['modified_by' => 1, 'updated_at' => now()]);
             }

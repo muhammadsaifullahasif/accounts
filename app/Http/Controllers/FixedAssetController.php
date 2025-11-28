@@ -97,7 +97,7 @@ class FixedAssetController extends Controller
                         'depreciation_account_head' => $entry['depreciationAccountHead']
                     ],
                     [
-                        'user_id' => '1',
+                        'user_id' => auth()->id(),
                         'opening' => $entry['opening'],
                         'addition' => $entry['addition'],
                         'addition_no_of_days' => $entry['additionNoOfDaysValue'],
@@ -110,9 +110,20 @@ class FixedAssetController extends Controller
                         'depreciation_deletion' => $entry['depreciationDeletion'],
                         'depreciation_closing' => $entry['depreciationClosing'],
                         'wdv' => $entry['wdv'],
-                        'modified_by' => '1'
+                        'modified_by' => auth()->id()
                     ]
                 );
+                $additionNetBalance = $entry['opening'] + $entry['addition'] - 0 - $entry['deletion'];
+                if ($additionNetBalance > 0) {
+                    $additionClosingDebit = $additionNetBalance;
+                    $additionClosingCredit = 0;
+                } else if ($additionNetBalance < 0) {
+                    $additionClosingDebit = 0;
+                    $additionClosingCredit = $additionNetBalance;
+                } else {
+                    $additionClosingDebit = 0;
+                    $additionClosingCredit = 0;
+                }
                 TrailBalance::updateOrCreate(
                     [
                         'company_id' => $company->id,
@@ -122,13 +133,26 @@ class FixedAssetController extends Controller
                         'group_name' => "Property, Plant and Equipment's"
                     ],
                     [
-                        'user_id' => '1',
+                        'user_id' => auth()->id(),
                         'opening_debit' => $entry['opening'],
                         'movement_debit' => $entry['addition'],
                         'movement_credit' => $entry['deletion'],
-                        'modified_by' => '1'
+                        'closing_debit' => $additionClosingDebit,
+                        'closing_credit' => $additionClosingCredit,
+                        'modified_by' => auth()->id()
                     ]
                 );
+                $depreciationNetBalance = 0 + $entry['depreciationDeletion'] - $entry['depreciationOpening'] - $entry['depreciationAddition'];
+                if ($depreciationNetBalance > 0) {
+                    $depreciationClosingDebit = $depreciationNetBalance;
+                    $depreciationClosingCredit = 0;
+                } else if ($depreciationNetBalance < 0) {
+                    $depreciationClosingDebit = 0;
+                    $depreciationClosingCredit = abs($depreciationNetBalance);
+                } else {
+                    $depreciationClosingDebit = 0;
+                    $depreciationClosingCredit = 0;
+                }
                 TrailBalance::updateOrCreate(
                     [
                         'company_id' => $company->id,
@@ -138,41 +162,23 @@ class FixedAssetController extends Controller
                         'group_name' => "Property, Plant and Equipment's"
                     ],
                     [
-                        'user_id' => '1',
-                        'opening_debit' => $entry['depreciationOpening'],
+                        'user_id' => auth()->id(),
+                        'opening_credit' => $entry['depreciationOpening'],
                         'movement_debit' => $entry['depreciationDeletion'],
                         'movement_credit' => $entry['depreciationAddition'],
-                        'closing_credit' => $entry['depreciationClosing'],
-                        'modified_by' => '1'
+                        'closing_debit' => $depreciationClosingDebit,
+                        'closing_credit' => $depreciationClosingCredit,
+                        // 'closing_credit' => $entry['depreciationClosing'],
+                        'modified_by' => auth()->id()
                     ]
                 );
-                // $fixedAsset = new FixedAssetsSchedual();
-                // $fixedAsset->user_id = 1;
-                // $fixedAsset->company_id = $company->id;
-                // $fixedAsset->account_code = $entry['accountCode'];
-                // $fixedAsset->account_head = $entry['accountHead'];
-                // $fixedAsset->opening = $entry['opening'];
-                // $fixedAsset->addition = $entry['addition'];
-                // $fixedAsset->addition_no_of_days = $entry['additionNoOfDaysValue'];
-                // $fixedAsset->deletion = $entry['deletion'];
-                // $fixedAsset->deletion_no_of_days = $entry['deletionNoOfDaysValue'];
-                // $fixedAsset->closing = $entry['closing'];
-                // $fixedAsset->rate = $entry['rate'];
-                // $fixedAsset->depreciation_account_code = $entry['depreciationAccountCode'];
-                // $fixedAsset->depreciation_account_head = $entry['depreciationAccountHead'];
-                // $fixedAsset->depreciation_opening = $entry['depreciationOpening'];
-                // $fixedAsset->depreciation_addition = $entry['depreciationAddition'];
-                // $fixedAsset->depreciation_deletion = $entry['depreciationDeletion'];
-                // $fixedAsset->depreciation_closing = $entry['depreciationClosing'];
-                // $fixedAsset->wdv = $entry['wdv'];
-                // $fixedAsset->modified_by = 1;
-                // $fixedAsset->save();
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Fixed assets schedule saved successfully.'
-            ]);
+            // return response()->json([
+            //     'success' => true,
+            //     'message' => 'Fixed assets schedule saved successfully.'
+            // ]);
+            return redirect()->route('trail-balance.index', $id)->with('success', 'Fixed assets schedule saved successfully.');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

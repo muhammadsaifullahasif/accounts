@@ -6,7 +6,11 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\StatementController;
 use App\Http\Controllers\FixedAssetController;
+use App\Http\Controllers\AuditReportController;
 use App\Http\Controllers\TrailBalanceController;
+use App\Http\Controllers\AccountingPolicyController;
+use App\Http\Controllers\CompanyAuditReportController;
+use App\Http\Controllers\CompanyAccountingPolicyController;
 
 // Route::get('/', function () {
 //     return view('home');
@@ -47,4 +51,10 @@ Route::middleware(['auth', AuthAdmin::class])->group(function () {
     Route::put('/companies/{id}/statements/soce', [StatementController::class, 'soce_update'])->name('statements.soce.update');
     Route::get('/companies/{id}/statements/sofp', [StatementController::class, 'sofp'])->name('statements.sofp');
     Route::get('/companies/{id}/statements/socf', [StatementController::class, 'socf'])->name('statements.socf');
+
+    Route::resource('/audit-reports', AuditReportController::class);
+    Route::resource('/companies/{id}/company-audit-reports', CompanyAuditReportController::class);
+    Route::resource('/accounting-policy', AccountingPolicyController::class);
+    Route::resource('/companies/{id}/company-accounting-policy', CompanyAccountingPolicyController::class);
+    Route::post('/companies/{id}/company-accounting-policy/title', [CompanyAccountingPolicyController::class, 'policies_title'])->name('company-accounting-policy.title');
 });

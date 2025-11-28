@@ -43,7 +43,7 @@
                         </p>
                     </a>
                 </li>
-                <li class="nav-item menu-open">
+                <li class="nav-item {{ request()->routeIs('companies.*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->routeIs('companies.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-building"></i>
                         <p>
@@ -62,6 +62,52 @@
                             <a href="{{ route('companies.create') }}" class="nav-link {{ request()->routeIs('companies.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Company</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {{ request()->routeIs('audit-reports.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('audit-reports.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-contract"></i>
+                        <p>
+                            Audit Report
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('audit-reports.index') }}" class="nav-link {{ request()->routeIs('audit-reports.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Audit Reports</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('audit-reports.create') }}" class="nav-link {{ request()->routeIs('audit-reports.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Audit Report</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item {{ request()->routeIs('accounting-policy.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('accounting-policy.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-invoice"></i>
+                        <p>
+                            Accounting Policies
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('accounting-policy.index') }}" class="nav-link {{ request()->routeIs('accounting-policy.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Accounting Policies</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('accounting-policy.create') }}" class="nav-link {{ request()->routeIs('accounting-policy.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Accounting Policy</p>
                             </a>
                         </li>
                     </ul>
