@@ -37,7 +37,7 @@
                 <tr>
                     <th style="width:5%">Sr No.</th>
                     <th>Type</th>
-                    <th style="width: 10%; text-align: center;">Size</th>
+                    <th style="width: 10%; text-align: center;">Account Type</th>
                     <th style="width:10%; text-align: center;">Created By</th>
                     <th style="width:5%;" class="actions">Actions</th>
                 </tr>
@@ -47,7 +47,7 @@
                     <tr>
                         <td>{{ $auditReport->id }}</td>
                         <td>{{ $auditReport->type }}</td>
-                        <td style="text-align: center;">{{ $auditReport->size }}</td>
+                        <td style="text-align: center;">{{ $auditReport->account_type }}</td>
                         <td style="text-align: center;">{{ $auditReport->user->name }}</td>
                         <td style="text-align: center; display: flex; justify-content: center;" class="actions-cell">
                             <div class="btn-group">

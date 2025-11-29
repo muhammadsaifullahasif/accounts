@@ -60,60 +60,60 @@
                         </tr>
                         <tr>
                             <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
-                            <td class="text-center text-bold scb_previous_year" data-content="@if($opening_capital['closing_debit']) {{ $opening_capital['closing_debit'] }} @else {{ $opening_capital['closing_credit'] }} @endif">
+                            <td class="text-center text-bold scb_previous_year" data-content="@if($opening_capital['closing_debit']) {{ round($opening_capital['closing_debit']) }} @else {{ round($opening_capital['closing_credit']) }} @endif">
                                 @if ($opening_capital['closing_debit'] != 0)
-                                    {{ rtrim(rtrim(number_format($opening_capital['closing_debit'], 2), '0'), '.') }}
+                                    {{ number_format(abs(round($opening_capital['closing_debit'])), 0, '.', ',') }}
                                 @else
-                                    {{ rtrim(rtrim(number_format($opening_capital['closing_credit'], 2), '0'), '.') }}
+                                    {{ number_format(abs(round($opening_capital['closing_credit'])), 0, '.', ',') }}
                                 @endif
                             </td>
-                            <td class="text-center text-bold aplb_previous_year editable" contenteditable="true" data-content="{{ $aplb_previous_year->meta_value ?? 0 }}">{{ $aplb_previous_year->meta_value ?? 0 }}</td>
-                            <td class="text-center text-bold tb_previous_year" data-content="0">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
+                            <td class="text-center text-bold aplb_previous_year editable" contenteditable="true" data-content="{{ round($aplb_previous_year->meta_value ?? 0) }}">{{ round($aplb_previous_year->meta_value ?? 0) }}</td>
+                            <td class="text-center text-bold tb_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>{{ ( $otherComprehensiveIncome['previous_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
                             <td class="text-center sctc_previous_year" data-content="0">0</td>
-                            <td class="text-center apltc_previous_year" data-content="{{ $otherComprehensiveIncome['previous_year'] }}">{{ ($otherComprehensiveIncome['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($otherComprehensiveIncome['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($otherComprehensiveIncome['previous_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center ttc_previous_year" data-content="0">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
+                            <td class="text-center apltc_previous_year" data-content="{{ $otherComprehensiveIncome['previous_year'] }}">{{ ($otherComprehensiveIncome['previous_year'] < 0) ? '('. number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center ttc_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>Capital Injection</td>
-                            <td class="text-center scci_previous_year editable" contenteditable="true" data-content="{{ $scci_previous_year->meta_value ?? 0 }}">{{ $scci_previous_year->meta_value ?? 0 }}</td>
+                            <td class="text-center scci_previous_year editable" contenteditable="true" data-content="{{ round($scci_previous_year->meta_value ?? 0) }}">{{ round($scci_previous_year->meta_value ?? 0) }}</td>
                             <td class="text-center aplci_previous_year" data-content="0">0</td>
                             <td class="text-center tci_previous_year" data-content="0">0</td>
                         </tr>
                         <tr>
                             <td>Drawings</td>
-                            <td class="text-center scd_previous_year editable" contenteditable="true" data-content="{{ $scd_previous_year->meta_value ?? 0 }}">{{ $scd_previous_year->meta_value ?? 0 }}</td>
+                            <td class="text-center scd_previous_year editable" contenteditable="true" data-content="{{ round($scd_previous_year->meta_value ?? 0) }}">{{ round($scd_previous_year->meta_value ?? 0) }}</td>
                             <td class="text-center apld_previous_year" data-content="0">0</td>
                             <td class="text-center td_previous_year" data-content="0">0</td>
                         </tr>
                         <tr>
                             <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
-                            <td class="text-center text-bold tsc_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
-                            <td class="text-center text-bold tapl_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</td>
-                            <td class="text-center text-bold tt_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
+                            <td class="text-center text-bold tsc_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
+                            <td class="text-center text-bold tapl_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
+                            <td class="text-center text-bold tt_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
                         </tr>
                         
                         <tr>
                             <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
-                            <td class="text-center text-bold scb_current_year" data-content="0">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
-                            <td class="text-center text-bold aplb_current_year" data-content="0">{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</td>
-                            <td class="text-center text-bold tb_current_year" data-content="0">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
+                            <td class="text-center text-bold scb_current_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
+                            <td class="text-center text-bold aplb_current_year" data-content="0">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
+                            <td class="text-center text-bold tb_current_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>{{ ( $otherComprehensiveIncome['current_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
                             <td class="text-center sctc_current_year" data-content="0">0</td>
-                            <td class="text-center apltc_current_year" data-content="{{ $otherComprehensiveIncome['current_year'] }}">{{ ($otherComprehensiveIncome['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($otherComprehensiveIncome['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($otherComprehensiveIncome['current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center ttc_current_year" data-content="0">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
+                            <td class="text-center apltc_current_year" data-content="{{ round($otherComprehensiveIncome['current_year']) }}">{{ ($otherComprehensiveIncome['current_year'] < 0) ? '('. number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') .')' : number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center ttc_current_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>Capital Injection</td>
-                            <td class="text-center scci_current_year" data-content="@if($capital_injection['closing_debit']) {{ $capital_injection['closing_debit'] }} @else {{ $capital_injection['closing_credit'] }} @endif">
+                            <td class="text-center scci_current_year" data-content="@if($capital_injection['closing_debit']) {{ round($capital_injection['closing_debit']) }} @else {{ round($capital_injection['closing_credit']) }} @endif">
                                 @if ($capital_injection['closing_debit'] != 0)
-                                    {{ rtrim(rtrim(number_format($capital_injection['closing_debit'], 2), '0'), '.') }}
+                                    {{ number_format(round(abs($capital_injection['closing_debit'])), 0, '.', ',') }}
                                 @else
-                                    {{ rtrim(rtrim(number_format($capital_injection['closing_credit'], 2), '0'), '.') }}
+                                    {{ number_format(round(abs($capital_injection['closing_credit'])), 0, '.', ',') }}
                                 @endif
                             </td>
                             <td class="text-center aplci_current_year" data-content="0">0</td>
@@ -121,11 +121,11 @@
                         </tr>
                         <tr>
                             <td>Drawings</td>
-                            <td class="text-center scd_current_year" data-content="@if($drawings['closing_debit']) {{ $drawings['closing_debit'] }} @else {{ $drawings['closing_credit'] }} @endif">
+                            <td class="text-center scd_current_year" data-content="@if($drawings['closing_debit']) {{ round($drawings['closing_debit']) }} @else {{ round($drawings['closing_credit']) }} @endif">
                                 @if ($drawings['closing_debit'] != 0)
-                                    ({{ rtrim(rtrim(number_format($drawings['closing_debit'], 2), '0'), '.') }})
+                                    ({{ number_format(round(abs($drawings['closing_debit'])), 0, '.', ',') }})
                                 @else
-                                    ({{ rtrim(rtrim(number_format($drawings['closing_credit'], 2), '0'), '.') }})
+                                    ({{ number_format(round(abs($drawings['closing_credit'])), 0, '.', ',') }})
                                 @endif
                             </td>
                             <td class="text-center apld_current_year" data-content="0">0</td>
@@ -133,9 +133,9 @@
                         </tr>
                         <tr>
                             <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
-                            <td class="text-center tsc_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
-                            <td class="text-center tapl_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</td>
-                            <td class="text-center tt_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ rtrim(rtrim(number_format(0, 2), '0'), '.') }}</td>
+                            <td class="text-center tsc_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
+                            <td class="text-center tapl_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
+                            <td class="text-center tt_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -184,7 +184,14 @@
                     },
                     success: function(response) {
                         alert('Entries saved successfully!');
-                        location.reload();
+                        // location.reload();
+                        @if (in_array('SOFP', explode(',', $company->required_statements)))
+                            window.location.href = '{{ route("statements.sofp", $company->id) }}';
+                        @elseif (in_array('SOCF', explode(',', $company->required_statements)))
+                            window.location.href = '{{ route("statements.socf", $company->id) }}';
+                        @else
+                            location.reload();
+                        @endif
                     },
                     error: function(xhr) {
                         alert('An error occurred while saving entries.');
@@ -200,55 +207,55 @@
                 var aplb_previous_year = parseFloat(parseValue($('.aplb_previous_year').text())) || 0;
                 var tb_previous_year = scb_previous_year + aplb_previous_year;
                 if (tb_previous_year < 0) {
-                    $('.tb_previous_year').html('(' + (Math.abs(tb_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tb_previous_year);
+                    $('.tb_previous_year').html('(' + (Math.abs(tb_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tb_previous_year);
                 } else {
-                    $('.tb_previous_year').html((tb_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tb_previous_year);
+                    $('.tb_previous_year').html((tb_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tb_previous_year);
                 }
 
                 var sctc_previous_year = parseFloat(parseValue($('.sctc_previous_year').text())) || 0;
                 var apltc_previous_year = parseFloat(parseValue($('.apltc_previous_year').text())) || 0;
                 var ttc_previous_year = sctc_previous_year + apltc_previous_year;
                 if (ttc_previous_year < 0) {
-                    $('.ttc_previous_year').html('(' + (Math.abs(ttc_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", ttc_previous_year);
+                    $('.ttc_previous_year').html('(' + (Math.abs(ttc_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", ttc_previous_year);
                 } else {
-                    $('.ttc_previous_year').html((ttc_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", ttc_previous_year);
+                    $('.ttc_previous_year').html((ttc_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", ttc_previous_year);
                 }
 
                 var scci_previous_year = parseFloat(parseValue($('.scci_previous_year').text())) || 0;
                 var aplci_previous_year = parseFloat(parseValue($('.aplci_previous_year').text())) || 0;
                 var tci_previous_year = scci_previous_year + aplci_previous_year;
                 if (tci_previous_year < 0) {
-                    $('.tci_previous_year').html('(' + (Math.abs(tci_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tci_previous_year);
+                    $('.tci_previous_year').html('(' + (Math.abs(tci_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tci_previous_year);
                 } else {
-                    $('.tci_previous_year').html((tci_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tci_previous_year);
+                    $('.tci_previous_year').html((tci_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tci_previous_year);
                 }
 
                 var scd_previous_year = parseFloat(parseValue($('.scd_previous_year').text())) || 0;
                 var apld_previous_year = parseFloat(parseValue($('.apld_previous_year').text())) || 0;
                 var td_previous_year = scd_previous_year + apld_previous_year;
                 if (td_previous_year < 0) {
-                    $('.td_previous_year').html('(' + (Math.abs(td_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content");
+                    $('.td_previous_year').html('(' + (Math.abs(td_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content");
                 } else {
-                    $('.td_previous_year').html((td_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content");
+                    $('.td_previous_year').html((td_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content");
                 }
 
                 var tsc_previous_year = scb_previous_year + sctc_previous_year + scci_previous_year + scd_previous_year;
                 var tapl_previous_year = aplb_previous_year + apltc_previous_year + aplci_previous_year + apld_previous_year;
                 var tt_previous_year = tsc_previous_year + tapl_previous_year;
                 if (tsc_previous_year < 0) {
-                    $('.tsc_previous_year').html('(' + (Math.abs(tsc_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tsc_previous_year);
+                    $('.tsc_previous_year').html('(' + (Math.abs(tsc_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tsc_previous_year);
                 } else {
-                    $('.tsc_previous_year').html((tsc_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tsc_previous_year);
+                    $('.tsc_previous_year').html((tsc_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tsc_previous_year);
                 }
                 if (tapl_previous_year < 0) {
-                    $('.tapl_previous_year').html('(' + (Math.abs(tapl_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tapl_previous_year);
+                    $('.tapl_previous_year').html('(' + (Math.abs(tapl_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tapl_previous_year);
                 } else {
-                    $('.tapl_previous_year').html((tapl_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tapl_previous_year);
+                    $('.tapl_previous_year').html((tapl_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tapl_previous_year);
                 }
                 if (tt_previous_year < 0) {
-                    $('.tt_previous_year').html('(' + (Math.abs(tt_previous_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tt_previous_year);
+                    $('.tt_previous_year').html('(' + (Math.abs(tt_previous_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tt_previous_year);
                 } else {
-                    $('.tt_previous_year').html((tt_previous_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tt_previous_year);
+                    $('.tt_previous_year').html((tt_previous_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tt_previous_year);
                 }
 
 
@@ -256,65 +263,65 @@
                 var aplb_current_year = tapl_previous_year;
                 var tb_current_year = tt_previous_year;
                 if (scb_current_year < 0) {
-                    $('.scb_current_year').html('(' + (Math.abs(scb_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", scb_current_year);
+                    $('.scb_current_year').html('(' + (Math.abs(scb_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", scb_current_year);
                 } else {
-                    $('.scb_current_year').html((scb_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", scb_current_year);
+                    $('.scb_current_year').html((scb_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", scb_current_year);
                 }
                 if (aplb_current_year < 0) {
-                    $('.aplb_current_year').html('(' + (Math.abs(aplb_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', aplb_current_year);
+                    $('.aplb_current_year').html('(' + (Math.abs(aplb_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', aplb_current_year);
                 } else {
-                    $('.aplb_current_year').html((aplb_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', aplb_current_year);
+                    $('.aplb_current_year').html((aplb_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', aplb_current_year);
                 }
                 if (tb_current_year < 0) {
-                    $('.tb_current_year').html('(' + (Math.abs(tb_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tb_current_year);
+                    $('.tb_current_year').html('(' + (Math.abs(tb_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tb_current_year);
                 } else {
-                    $('.tb_current_year').html((tb_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tb_current_year);
+                    $('.tb_current_year').html((tb_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tb_current_year);
                 }
 
                 var sctc_current_year = parseFloat(parseValue($('.sctc_current_year').text())) || 0;
                 var apltc_current_year = parseFloat(parseValue($('.apltc_current_year').text())) || 0;
                 var ttc_current_year = sctc_current_year + apltc_current_year;
                 if (ttc_current_year < 0) {
-                    $('.ttc_current_year').html('(' + (Math.abs(ttc_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", ttc_current_year);
+                    $('.ttc_current_year').html('(' + (Math.abs(ttc_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", ttc_current_year);
                 } else {
-                    $('.ttc_current_year').html((ttc_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", ttc_current_year);
+                    $('.ttc_current_year').html((ttc_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", ttc_current_year);
                 }
 
                 var scci_current_year = parseFloat(parseValue($('.scci_current_year').text())) || 0;
                 var aplci_current_year = parseFloat(parseValue($('.aplci_current_year').text())) || 0;
                 var tci_current_year = scci_current_year + aplci_current_year;
                 if (tci_current_year < 0) {
-                    $('.tci_current_year').html('(' + (Math.abs(tci_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tci_current_year);
+                    $('.tci_current_year').html('(' + (Math.abs(tci_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tci_current_year);
                 } else {
-                    $('.tci_current_year').html((tci_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tci_current_year);
+                    $('.tci_current_year').html((tci_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tci_current_year);
                 }
 
                 var scd_current_year = parseFloat(parseValue($('.scd_current_year').text())) || 0;
                 var apld_current_year = parseFloat(parseValue($('.apld_current_year').text())) || 0;
                 var td_current_year = scd_current_year + apld_current_year;
                 if (td_current_year < 0) {
-                    $('.td_current_year').html('(' + (Math.abs(td_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content");
+                    $('.td_current_year').html('(' + (Math.abs(td_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content");
                 } else {
-                    $('.td_current_year').html((td_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content");
+                    $('.td_current_year').html((td_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content");
                 }
 
                 var tsc_current_year = scb_current_year + sctc_current_year + scci_current_year + scd_current_year;
                 var tapl_current_year = aplb_current_year + apltc_current_year + aplci_current_year + apld_current_year;
                 var tt_current_year = tsc_current_year + tapl_current_year;
                 if (tsc_current_year < 0) {
-                    $('.tsc_current_year').html('(' + (Math.abs(tsc_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tsc_current_year);
+                    $('.tsc_current_year').html('(' + (Math.abs(tsc_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr("data-content", tsc_current_year);
                 } else {
-                    $('.tsc_current_year').html((tsc_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tsc_current_year);
+                    $('.tsc_current_year').html((tsc_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr("data-content", tsc_current_year);
                 }
                 if (tapl_current_year < 0) {
-                    $('.tapl_current_year').html('(' + (Math.abs(tapl_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tapl_current_year);
+                    $('.tapl_current_year').html('(' + (Math.abs(tapl_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tapl_current_year);
                 } else {
-                    $('.tapl_current_year').html((tapl_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tapl_current_year);
+                    $('.tapl_current_year').html((tapl_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tapl_current_year);
                 }
                 if (tt_current_year < 0) {
-                    $('.tt_current_year').html('(' + (Math.abs(tt_current_year.toFixed(2))).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tt_current_year);
+                    $('.tt_current_year').html('(' + (Math.abs(tt_current_year)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ')').attr('data-content', tt_current_year);
                 } else {
-                    $('.tt_current_year').html((tt_current_year.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tt_current_year);
+                    $('.tt_current_year').html((tt_current_year).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")).attr('data-content', tt_current_year);
                 }
             }
 

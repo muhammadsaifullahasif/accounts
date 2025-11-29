@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->string('type');
-            $table->string('size');
+            $table->string('account_type');
             $table->text('content')->nullable();
             $table->bigInteger('modified_by')->unsigned();
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('modified_by')->references('id')->on('users')->onDelete('cascade');
-            $table->unique(['type', 'size']);
+            $table->unique(['type', 'account_type']);
         });
     }
 

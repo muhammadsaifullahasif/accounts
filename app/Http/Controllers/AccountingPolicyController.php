@@ -21,7 +21,15 @@ class AccountingPolicyController extends Controller
                     ELSE 999
                 END
             ")
-            ->orderBy('size')
+            ->orderByRaw("
+                CASE account_type
+                    WHEN 'Proprietor' THEN 1
+                    WHEN 'AOP' THEN 2
+                    WHEN 'Company' THEN 3
+                    ELSE 999
+                END
+            ")
+            // ->orderBy('size')
             ->orderBy('id')
             ->get()
             ->groupBy('policy_heading');
@@ -39,7 +47,6 @@ class AccountingPolicyController extends Controller
     public function policy_index(Request $request)
     {
         $request->validate([
-            'industry_id' => 'required',
             'policy_heading' => 'required'
         ]);
 
@@ -56,8 +63,7 @@ class AccountingPolicyController extends Controller
                 $newStartIndex = $currentPolicy->index;
             } else {
                 // Industry or policy_heading changed - calculate new index
-                $lastPolicy = AccountingPolicy::where('industry_id', $request->industry_id)
-                    ->where('policy_heading', $request->policy_heading)
+                $lastPolicy = AccountingPolicy::where('policy_heading', $request->policy_heading)
                     ->orderBy('index', 'desc')
                     ->first();
 
@@ -105,15 +111,15 @@ class AccountingPolicyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'account_type' => 'required',
             'policy_heading' => 'required',
-            // 'index' => 'required',
             'title' => 'required'
         ]);
 
         try {
             $policy = new AccountingPolicy();
             $policy->user_id = auth()->user()->id;
-            // $policy->index = $request->index;
+            $policy->account_type = $request->account_type;
             $policy->title = $request->title;
             $policy->content = $request->content;
             $policy->policy_heading = $request->policy_heading;

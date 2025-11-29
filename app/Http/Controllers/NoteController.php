@@ -54,6 +54,14 @@ class NoteController extends Controller
         //     ->where('group_name', 'like', '%Property%')
         //     ->exists();
 
+        // Separate OI-001 group to process it last
+        $otherIncomeGroup = $transactions->pull('OI-001');
+
+        // Add OI-001 back at the end if it exists
+        if ($otherIncomeGroup) {
+            $transactions->put('OI-001', $otherIncomeGroup);
+        }
+
         $index = 5;
 
         foreach ($transactions as $groupName => $accounts) {
@@ -123,8 +131,8 @@ class NoteController extends Controller
                         $note->group_name = $account->group_name;
                         $note->account_code = 'PR-001';
                         $note->account_head = 'Purchases';
-                        $note->current_year = $current_year;
-                        $note->previous_year = $previous_year;
+                        $note->current_year = round($current_year);
+                        $note->previous_year = round($previous_year);
                         $note->modified_by = 1;
                         $note->save();
                         $noteSaved = true; // Mark that a note was saved
@@ -158,8 +166,8 @@ class NoteController extends Controller
                         $note->group_name = $account->group_name;
                         $note->account_code = $account->account_code;
                         $note->account_head = $account->account_head;
-                        $note->current_year = $current_year;
-                        $note->previous_year = $previous_year;
+                        $note->current_year = round($current_year);
+                        $note->previous_year = round($previous_year);
                         $note->modified_by = 1;
                         $note->save();
                         $noteSaved = true; // Mark that a note was saved
@@ -196,8 +204,8 @@ class NoteController extends Controller
                     $note->group_name = $account->group_name;
                     $note->account_code = $account->account_code;
                     $note->account_head = $account->account_head;
-                    $note->current_year = $current_year;
-                    $note->previous_year = $previous_year;
+                    $note->current_year = round($current_year);
+                    $note->previous_year = round($previous_year);
                     $note->modified_by = 1;
                     $note->save();
                     $noteSaved = true; // Mark that a note was saved

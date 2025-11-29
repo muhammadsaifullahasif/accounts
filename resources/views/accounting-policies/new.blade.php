@@ -36,7 +36,16 @@
         <form action="{{ route('accounting-policy.store') }}" method="POST" class="form" enctype="multipart/form-data">
             @csrf
             <div class="mb-3">
-                <label for="policy_heading">Policy Heading:</label>
+                <label for="account_type">Account Type: <span class="text-danger">*</span></label>
+                <select name="account_type" id="account_type" class="form-control @error('account_type') is-invalid @enderror">
+                    <option value="">Select Account Type</option>
+                    <option value="Proprietor">Proprietor</option>
+                    <option value="AOP">AOP</option>
+                    <option value="Company">Company</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="policy_heading">Policy Heading: <span class="text-danger">*</span></label>
                 <select name="policy_heading" id="policy_heading" class="form-control">
                     <option value="">Select Policy Heading</option>
                     <option value="COMPANY AND ITS OPERATIONS">1. COMPANY AND ITS OPERATIONS</option>

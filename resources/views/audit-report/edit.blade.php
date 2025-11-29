@@ -40,23 +40,22 @@
                 <label for="type">Type: <span class="text-danger">*</span></label>
                 <select name="type" id="type" class="form-control @error('type') is-invalid @enderror">
                     <option value="">Select Type</option>
-                    <option value="ISA 700" @if (old('size', $auditReport->type) == 'ISA 700') selected @endif>ISA 700</option>
-                    <option value="ISA 800" @if (old('size', $auditReport->type) == 'ISA 800') selected @endif>ISA 800</option>
+                    <option value="ISA 700" @if (old('type', $auditReport->type) == 'ISA 700') selected @endif>ISA 700</option>
+                    <option value="ISA 800" @if (old('type', $auditReport->type) == 'ISA 800') selected @endif>ISA 800</option>
                 </select>
                 @error('type')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>
             <div class="mb-3">
-                <label for="size">Size: <span class="text-danger">*</span></label>
-                <select name="size" id="size" class="form-control @error('size') is-invalid @enderror">
-                    <option value="">Select Size</option>
-                    <option value="Small" @if (old('size', $auditReport->size) == 'Small') selected @endif>Small</option>
-                    <option value="Medium" @if (old('size', $auditReport->size) == 'Medium') selected @endif>Medium</option>
-                    <option value="Large" @if (old('size', $auditReport->size) == 'Large') selected @endif>Large</option>
-                    <option value="NPO" @if (old('size', $auditReport->size) == 'NPO') selected @endif>NPO</option>
+                <label for="account_type">Account Type: <span class="text-danger">*</span></label>
+                <select name="account_type" id="account_type" class="form-control @error('account_type') is-invalid @enderror">
+                    <option value="">Select Account Type</option>
+                    <option value="Proprietor" @if (old('account_type', $auditReport->account_type) == 'Proprietor') selected @endif>Proprietor</option>
+                    <option value="AOP" @if (old('account_type', $auditReport->account_type) == 'AOP') selected @endif>AOP</option>
+                    <option value="Company" @if (old('account_type', $auditReport->account_type) == 'Company') selected @endif>Company</option>
                 </select>
-                @error('size')
+                @error('account_type')
                     <span class="invalid-feedback">{{ $message }}</span>
                 @enderror
             </div>

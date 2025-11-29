@@ -63,14 +63,18 @@
                         <tr>
                             <td>Revenue</td>
                             <td class="text-center"><strong>{{ $revenue['index'] }}</strong></td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($revenue['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($revenue['total_previous_year'], 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($revenue['total_current_year'] < 0) ? '('. number_format(abs(round($revenue['total_current_year'])), 0, '.', ',') . ')' : number_format(round($revenue['total_current_year']), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ ($revenue['total_previous_year'] < 0) ? '('. number_format(abs(round($revenue['total_previous_year'])), 0, '.', ',') . ')' : number_format(round($revenue['total_previous_year']), 0, '.', ',') }}</td>
+                            {{-- <td class="text-center">{{ rtrim(rtrim(number_format($revenue['total_current_year'], 2), '0'), '.') }}</td> --}}
+                            {{-- <td class="text-center">{{ rtrim(rtrim(number_format($revenue['total_previous_year'], 2), '0'), '.') }}</td> --}}
                         </tr>
                         <tr>
                             <td>Cost of revenue</td>
                             <td class="text-center"><strong>{{ $costOfSales['index'] }}</strong></td>
-                            <td class="text-center">{{ ($costOfSales['total_current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($costOfSales['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($costOfSales['total_current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ ($costOfSales['total_previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($costOfSales['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($costOfSales['total_previous_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($costOfSales['total_current_year'] < 0) ? '('. number_format(abs(round($costOfSales['total_current_year'])), 0, '.', ',') . ')' : number_format(round($costOfSales['total_current_year']), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ ($costOfSales['total_current_year'] < 0) ? '('. number_format(abs(round($costOfSales['total_previous_year'])), 0, '.', ',') . ')' : number_format(round($costOfSales['total_previous_year']), 0, '.', ',') }}</td>
+                            {{-- <td class="text-center">{{ ($costOfSales['total_current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($costOfSales['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($costOfSales['total_current_year']), 2), '0'), '.') }}</td> --}}
+                            {{-- <td class="text-center">{{ ($costOfSales['total_previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($costOfSales['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($costOfSales['total_previous_year']), 2), '0'), '.') }}</td> --}}
                         </tr>
                         <tr>
                             @php
@@ -79,8 +83,8 @@
                             @endphp
                             <td><strong>{{ ( $gpl_current_year >= 0 ) ? 'Gross Profit' : 'Gross Loss' }}</strong></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($gpl_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($gpl_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($gpl_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($gpl_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($gpl_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($gpl_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($gpl_current_year < 0) ? '('. number_format(abs(round($gpl_current_year)), 0, '.', ',') .')' : number_format(abs($gpl_current_year), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($gpl_previous_year < 0) ? '('. number_format(abs(round($gpl_previous_year)), 0, '.', ',') .')' : number_format(abs($gpl_previous_year), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -91,20 +95,20 @@
                         <tr>
                             <td>Administrative expenses</td>
                             <td class="text-center"><strong>{{ $adminExpense['index'] }}</strong></td>
-                            <td class="text-center">{{ ($adminExpense['total_current_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($adminExpense['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($adminExpense['total_current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ ($adminExpense['total_previous_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($adminExpense['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($adminExpense['total_previous_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($adminExpense['total_current_year'] <= 0) ? '('. number_format(abs(round($adminExpense['total_current_year'])), 0, '.', ',') .')' : number_format(abs($adminExpense['total_current_year']), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ ($adminExpense['total_previous_year'] <= 0) ? '('. number_format(abs(round($adminExpense['total_previous_year'])), 0, '.', ',') .')' : number_format(abs($adminExpense['total_previous_year']), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>Financial Charges</td>
                             <td class="text-center"><strong>{{ $financialCharges['index'] }}</strong></td>
-                            <td class="text-center">{{ ($financialCharges['total_current_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($financialCharges['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($financialCharges['total_current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ ($financialCharges['total_previous_year'] <= 0) ? '('. rtrim(rtrim(number_format(abs($financialCharges['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($financialCharges['total_previous_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($financialCharges['total_current_year'] <= 0) ? '('. number_format(abs(round($financialCharges['total_current_year'])), 0, '.', ',') .')' : number_format(abs($financialCharges['total_current_year']), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ ($financialCharges['total_previous_year'] <= 0) ? '('. number_format(abs(round($financialCharges['total_previous_year'])), 0, '.', ',') .')' : number_format(abs($financialCharges['total_previous_year']), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>Other Income</td>
                             <td class="text-center"><strong>{{ $otherIncome['index'] }}</strong></td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($otherIncome['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($otherIncome['total_previous_year'], 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ number_format(abs(round($otherIncome['total_current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ number_format(abs(round($otherIncome['total_previous_year'])), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td></td>
@@ -119,8 +123,8 @@
                             @endphp
                             <td><strong>{{ ( $pbt_current_year >= 0 ) ? 'Profit before Taxation' : 'Loss before Taxation' }}</strong></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000;">{{ ($pbt_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_current_year), 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-top: 2px solid #000;">{{ ($pbt_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_previous_year), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-top: 2px solid #000;">{{ ($pbt_current_year < 0) ? '('. number_format(abs(round($pbt_current_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_current_year)), 0, '.', ',') }}</td>
+                            <td class="text-center" style="border-top: 2px solid #000;">{{ ($pbt_previous_year < 0) ? '('. number_format(abs(round($pbt_previous_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_previous_year)), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             @php
@@ -135,13 +139,24 @@
                         <tr>
                             <td><strong>{{ ( ($pbt_current_year + $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_current_year + $taxation_current_year) < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_current_year - $taxation_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_current_year - $taxation_current_year), 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_previous_year + $taxation_previous_year) < 0) ? '('. rtrim(rtrim(number_format(abs($pbt_previous_year - $taxation_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($pbt_previous_year - $taxation_previous_year), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_current_year + $taxation_current_year) < 0) ? '('. number_format(abs(round($pbt_current_year - $taxation_current_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_current_year - $taxation_current_year)), 0, '.', ',') }}</td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_previous_year + $taxation_previous_year) < 0) ? '('. number_format(abs(round($pbt_previous_year - $taxation_previous_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_previous_year - $taxation_previous_year)), 0, '.', ',') }}</td>
                         </tr>
                     </tbody>
                 </table>
                 <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
             </div>
+        </div>
+        <div class="card-footer">
+            @if (in_array('SOCI', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.soci', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @elseif (in_array('SOCE', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.soce', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @elseif (in_array('SOFP', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.sofp', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @elseif (in_array('SOCF', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @endif
         </div>
     </div>
 @endsection

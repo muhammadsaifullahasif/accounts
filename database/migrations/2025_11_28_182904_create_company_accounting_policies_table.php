@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('company_id')->unsigned();
-            $table->string('size');
+            $table->string('account_type');
             // $table->string('index');
             $table->string('title');
             $table->text('content')->nullable();

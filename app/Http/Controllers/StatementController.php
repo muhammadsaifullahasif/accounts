@@ -118,10 +118,11 @@ class StatementController extends Controller
 
     private function index(string $id)
     {
-        $lastNote = Note::where('company_id', $id)
-            ->where('group_code', self::GROUP_REVENUE)
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            // ->where('group_code', self::GROUP_REVENUE)
             ->whereNull('parent_index')
-            ->orderBy('index', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
 
         // Get note totals using helper method

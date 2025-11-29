@@ -59,13 +59,13 @@
                         </tr>
                         <tr>
                             <td>{{ ($plAfterTax['current_year'] < 0) ? 'Loss after taxation' : 'Profit after taxation' }}</td>
-                            <td class="text-center">{{ ($plAfterTax['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($plAfterTax['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($plAfterTax['current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ ($plAfterTax['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($plAfterTax['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($plAfterTax['previous_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ ($plAfterTax['current_year'] < 0) ? '('. number_format(abs(round($plAfterTax['current_year'])), 0, '.', ',') .')' : number_format(abs(round($plAfterTax['current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ ($plAfterTax['previous_year'] < 0) ? '('. number_format(abs(round($plAfterTax['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($plAfterTax['previous_year'])), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>Other comprehensive income</td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($otherComprehensiveIncome['current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($otherComprehensiveIncome['previous_year'], 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             @php
@@ -73,13 +73,22 @@
                                 $gpl_previous_year = ($plAfterTax['previous_year'] + ($otherComprehensiveIncome['previous_year']));
                             @endphp
                             <td><strong>{{ ( $gpl_current_year >= 0 ) ? 'Total comprehensive Income for the year' : 'Total comprehensive Loss for the year' }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;"><strong>{{ ($gpl_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($gpl_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($gpl_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;"><strong>{{ ($gpl_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($gpl_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($gpl_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;"><strong>{{ ($gpl_current_year < 0) ? '('. number_format(abs(round($gpl_current_year)), 0, '.', ',') .')' : number_format(abs(round($gpl_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;"><strong>{{ ($gpl_previous_year < 0) ? '('. number_format(abs(round($gpl_previous_year)), 0, '.', ',') .')' : number_format(abs(round($gpl_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
                 <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
             </div>
+        </div>
+        <div class="card-footer">
+            @if (in_array('SOCE', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.soce', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @elseif (in_array('SOFP', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.sofp', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @elseif (in_array('SOCF', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @endif
         </div>
     </div>
 @endsection

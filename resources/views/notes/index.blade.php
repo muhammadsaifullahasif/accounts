@@ -379,7 +379,17 @@
             {{-- Group Section End --}}
         @endforeach
 
-        <a href="#" class="btn btn-primary">Generate Statements</a>
+        @if (in_array('SOPL', explode(',', $company->required_statements)))
+            <a href="{{ route('statements.sopl', $company->id) }}" class="btn btn-primary">Generate Statements</a>
+        @elseif (in_array('SOCI', explode(',', $company->required_statements)))
+            <a href="{{ route('statements.soci', $company->id) }}" class="btn btn-primary">Generate Statements</a>
+        @elseif (in_array('SOCE', explode(',', $company->required_statements)))
+            <a href="{{ route('statements.soce', $company->id) }}" class="btn btn-primary">Generate Statements</a>
+        @elseif (in_array('SOFP', explode(',', $company->required_statements)))
+            <a href="{{ route('statements.sofp', $company->id) }}" class="btn btn-primary">Generate Statements</a>
+        @elseif (in_array('SOCF', explode(',', $company->required_statements)))
+            <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-primary">Generate Statements</a>
+        @endif
     </div>
 @endsection
 

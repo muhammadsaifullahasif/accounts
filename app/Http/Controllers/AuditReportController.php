@@ -76,7 +76,7 @@ class AuditReportController extends Controller
     {
         $request->validate([
             'type' => 'required',
-            'size' => 'required',
+            'account_type' => 'required',
             'content' => 'required',
         ]);
 
@@ -84,7 +84,7 @@ class AuditReportController extends Controller
             $auditReport = new AuditReport();
             $auditReport->user_id = auth()->user()->id;
             $auditReport->type = $request->type;
-            $auditReport->size = $request->size;
+            $auditReport->account_type = $request->account_type;
             $auditReport->content = $this->cleanWordHtml($request->content);
             $auditReport->modified_by = auth()->user()->id;
             $auditReport->save();
@@ -123,14 +123,14 @@ class AuditReportController extends Controller
     {
         $request->validate([
             'type' => 'required',
-            'size' => 'required',
+            'account_type' => 'required',
             'content' => 'required',
         ]);
 
         try {
             $auditReport = AuditReport::find($id);
             $auditReport->type = $request->type;
-            $auditReport->size = $request->size;
+            $auditReport->account_type = $request->account_type;
             $auditReport->content = $this->cleanWordHtml($request->content);
             $auditReport->save();
 

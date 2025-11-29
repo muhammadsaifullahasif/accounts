@@ -91,14 +91,14 @@
                         <tr>
                             <td>{{ $non_current_assets['group_name'] }}</td>
                             <td class="text-center"><strong>{{ $non_current_assets['index'] }}</strong></td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($non_current_assets['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center">{{ rtrim(rtrim(number_format($non_current_assets['total_previous_year'], 2), '0'), '.') }}</td>
+                            <td class="text-center">{{ number_format(abs(round($non_current_assets['total_current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ number_format(abs(round($non_current_assets['total_previous_year'])), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ rtrim(rtrim(number_format($tnca_current_year, 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ rtrim(rtrim(number_format($tnca_previous_year, 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ number_format(abs(round($tnca_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ number_format(abs(round($tnca_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td><strong>CURRENT ASSETS</strong></td>
@@ -134,8 +134,8 @@
                             <tr>
                                 <td>{{ $current_asset['group_name'] }}</td>
                                 <td class="text-center"><strong>{{ $current_asset['index'] }}</strong></td>
-                                <td class="text-center" style="{{ $current_year_style }}">{{ rtrim(rtrim(number_format($current_asset['total_current_year'], 2), '0'), '.') }}</td>
-                                <td class="text-center" style="{{ $previous_year_style }}">{{ rtrim(rtrim(number_format($current_asset['total_previous_year'], 2), '0'), '.') }}</td>
+                                <td class="text-center" style="{{ $current_year_style }}">{{ number_format(abs(round($current_asset['total_current_year'])), 0, '.', ',') }}</td>
+                                <td class="text-center" style="{{ $previous_year_style }}">{{ number_format(abs(round($current_asset['total_previous_year'])), 0, '.', ',') }}</td>
                             </tr>
                         @endforeach
                         {{-- <tr>
@@ -165,8 +165,8 @@
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
-                            <td class="text-center"><strong>{{ ($tca_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($tca_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tca_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center"><strong>{{ ($tca_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($tca_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tca_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center"><strong>{{ ($tca_current_year < 0) ? '('. number_format(abs(round($tca_current_year)), 0, '.', ',') .')' : number_format(abs(round($tca_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center"><strong>{{ ($tca_previous_year < 0) ? '('. number_format(abs(round($tca_previous_year)), 0, '.', ',') .')' : number_format(abs(round($tca_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -181,8 +181,8 @@
                             @endphp
                             <td><strong>TOTAL ASSETS</strong></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($total_assets_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($total_assets_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($total_assets_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($total_assets_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($total_assets_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($total_assets_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($total_assets_current_year < 0) ? '('. number_format(abs(round($total_assets_current_year)), 0, '.', ',') .')' : number_format(abs(round($total_assets_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($total_assets_previous_year < 0) ? '('. number_format(abs(round($total_assets_previous_year)), 0, '.', ',') .')' : number_format(abs(round($total_assets_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -209,8 +209,8 @@
                         <tr>
                             <td>Authorized share capital</td>
                             <td class="text-center"><strong>9.1</strong></td>
-                            <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -227,14 +227,14 @@
                         <tr>
                             <td>Issued, subscribed and paid-up</td>
                             <td class="text-center"><strong></strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($paidup_capital['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($paidup_capital['current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($paidup_capital['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($paidup_capital['previous_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['current_year'] < 0) ? '('. number_format(abs(round($paidup_capital['current_year'])), 0, '.', ',') .')' : number_format(abs(round($paidup_capital['current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center" style="border-right: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['previous_year'] < 0) ? '('. number_format(abs(round($paidup_capital['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($paidup_capital['previous_year'])), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td>Accumulated profit/(losses)</td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">{{ ($apl['current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($apl['current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($apl['current_year']), 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">{{ ($apl['previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($apl['previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($apl['previous_year']), 2), '0'), '.') }}</td>
+                            <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">{{ ($apl['current_year'] < 0) ? '('. number_format(abs(round($apl['current_year'])), 0, '.', ',') .')' : number_format(abs(round($apl['current_year'])), 0, '.', ',') }}</td>
+                            <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">{{ ($apl['previous_year'] < 0) ? '('. number_format(abs(round($apl['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($apl['previous_year'])), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             @php
@@ -243,8 +243,8 @@
                             @endphp
                             <td></td>
                             <td class="text-center"></td>
-                            <td class="text-center"><strong>{{ ($tequity_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($tequity_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tequity_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center"><strong>{{ ($tequity_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($tequity_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tequity_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center"><strong>{{ ($tequity_current_year < 0) ? '('. number_format(abs(round($tequity_current_year)), 0, '.', ',') .')' : number_format(abs(round($tequity_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center"><strong>{{ ($tequity_previous_year < 0) ? '('. number_format(abs(round($tequity_previous_year)), 0, '.', ',') .')' : number_format(abs(round($tequity_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -271,8 +271,8 @@
                             <tr>
                                 <td>{{ $current_liability['group_name'] }}</td>
                                 <td class="text-center"><strong>{{ $current_liability['index'] }}</strong></td>
-                                <td class="text-center">{{ ($current_liability['total_current_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($current_liability['total_current_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($current_liability['total_current_year']), 2), '0'), '.') }}</td>
-                                <td class="text-center">{{ ($current_liability['total_previous_year'] < 0) ? '('. rtrim(rtrim(number_format(abs($current_liability['total_previous_year']), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($current_liability['total_previous_year']), 2), '0'), '.') }}</td>
+                                <td class="text-center">{{ ($current_liability['total_current_year'] < 0) ? '('. number_format(abs(round($current_liability['total_current_year'])), 0, '.', ',') .')' : number_format(abs(round($current_liability['total_current_year'])), 0, '.', ',') }}</td>
+                                <td class="text-center">{{ ($current_liability['total_previous_year'] < 0) ? '('. number_format(abs(round($current_liability['total_previous_year'])), 0, '.', ',') .')' : number_format(abs(round($current_liability['total_previous_year'])), 0, '.', ',') }}</td>
                             </tr>
                         @endforeach
                         {{-- <tr>
@@ -302,8 +302,8 @@
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($tcl_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($tcl_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tcl_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($tcl_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($tcl_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tcl_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($tcl_current_year < 0) ? '('. number_format(abs(round($tcl_current_year)), 0, '.', ',') .')' : number_format(abs(round($tcl_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000;"><strong>{{ ($tcl_previous_year < 0) ? '('. number_format(abs(round($tcl_previous_year)), 0, '.', ',') .')' : number_format(abs(round($tcl_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -336,13 +336,18 @@
                             @endphp
                             <td><strong>TOTAL EQUITY AND LIABILITIES</strong></td>
                             <td class="text-center"></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($tel_current_year < 0) ? '('. rtrim(rtrim(number_format(abs($tel_current_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tel_current_year), 2), '0'), '.') }}</strong></td>
-                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($tel_previous_year < 0) ? '('. rtrim(rtrim(number_format(abs($tel_previous_year), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs($tel_previous_year), 2), '0'), '.') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($tel_current_year < 0) ? '('. number_format(abs(round($tel_current_year)), 0, '.', ',') .')' : number_format(abs(round($tel_current_year)), 0, '.', ',') }}</strong></td>
+                            <td class="text-center" style="border-top: 2px solid #000; border-bottom: 5px double #000;"><strong>{{ ($tel_previous_year < 0) ? '('. number_format(abs(round($tel_previous_year)), 0, '.', ',') .')' : number_format(abs(round($tel_previous_year)), 0, '.', ',') }}</strong></td>
                         </tr>
                     </tbody>
                 </table>
                 <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
             </div>
+        </div>
+        <div class="card-footer">
+            @if (in_array('SOCF', explode(',', $company->required_statements)))
+                <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-primary">Next Statements</a>
+            @endif
         </div>
     </div>
 @endsection

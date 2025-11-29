@@ -41,7 +41,8 @@
         }
 
         .track .step.active:before{
-            background: #064C06;
+            /* background: #064C06; */
+			background-color: #26667F;
         }
 
         .track .step::before{
@@ -62,7 +63,8 @@
         }
 
         .track .step.active .icon{
-            background: #064C06;
+            /* background: #064C06; */
+			background-color: #064C06;
 			color: #fff;
         }
 
@@ -80,6 +82,10 @@
             font-weight: 550;
             color: #064C06;
         }
+
+		.track .step.active .text a {
+			color: #064C06;
+		}
 
         .track .text{
             display: block;

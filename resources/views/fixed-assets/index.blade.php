@@ -38,113 +38,120 @@
         <div class="step"> <span class="icon">4</span> <span class="text">Notes</span> </div>
         <div class="step"> <span class="icon">5</span> <span class="text">Statments</span> </div>
     </div>
-    <div class="table-responsive fixed-assets mb-3">
-        <table class="table table-bordered table-hover table-sm fixed-asset-table" id="fixed-asset-table">
-            <thead class="bg-white">
-                <tr>
-                    <th class="text-center" rowspan="2" style="width: 15%;">Particulars</th>
-                    <th class="text-center" colspan="6">Cost</th>
-                    <th class="text-center">Rate</th>
-                    <th class="text-center" colspan="4">Depreciation</th>
-                    <th class="text-center">WDV</th>
-                    <th class="text-center" rowspan="3" style="vertical-align: bottom;"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-account-modal"><i class="fas fa-plus"></i></button></th>
-                </tr>
-                <tr>
-                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</th>
-                    <th class="text-center" colspan="2">Addition</th>
-                    <th class="text-center" colspan="2">Deletion</th>
-                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
-                    <th class="text-center" rowspan="2">%</th>
-                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</th>
-                    <th class="text-center">For the period</th>
-                    <th class="text-center">Disposal</th>
-                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
-                    <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
-                </tr>
-                <tr>
-                    <th class="text-center"></th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">No of Days</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">No of Days</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">Rupees</th>
-                    <th class="text-center">Rupees</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php
-                    $totalOpening = 0;
-                    $totalAddition = 0;
-                    $totalDeletion = 0;
-                    $totalClosing = 0;
-                    $totalDepreciationOpening = 0;
-                    $totalDepreciationAddition = 0;
-                    $totalDepreciationDeletion = 0;
-                    $totalDepreciationClosing = 0;
-                    $totalWDV = 0;
-                @endphp
-                @foreach ($fixedAssets as $fixedAsset)
-                    @php
-                        $totalOpening += $fixedAsset->opening;
-                        $totalAddition += $fixedAsset->addition;
-                        $totalDeletion += $fixedAsset->deletion;
-                        $totalClosing += $fixedAsset->closing;
-                        $totalDepreciationOpening += $fixedAsset->depreciation_opening;
-                        $totalDepreciationAddition += $fixedAsset->depreciation_addition;
-                        $totalDepreciationDeletion += $fixedAsset->depreciation_deletion;
-                        $totalDepreciationClosing += $fixedAsset->depreciation_closing;
-                        $totalWDV += $fixedAsset->wdv;
-                    @endphp
-                    <tr data-account-code="{{ $fixedAsset->account_code }}">
-                        <td class="text-center align-middle">
-                            {{ $fixedAsset->account_head }}
-                            <input type="hidden" value="{{ $fixedAsset->account_code }}" class="accountCode">
-                            <input type="hidden" value="{{ $fixedAsset->account_head }}" class="accountHead">
-                            <input type="hidden" value="{{ $fixedAsset->depreciation_account_code }}" class="depreciationAccountCode">
-                            <input type="hidden" value="{{ $fixedAsset->depreciation_account_head }}" class="depreciationAccountHead">
-                            <input type="hidden" value="{{ $company->start_date }}" class="start_date">
-                            <input type="hidden" value="{{ $company->end_date }}" class="end_date">
-                        </td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->opening }}</td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->addition }}</td>
-                        <td class="text-center align-middle"><input type="date" name="additionNoOfDays[]" value="{{ $fixedAsset->addition_no_of_days }}" class="editable form-control form-control-sm bg-transparent border-0 text-center" min="{{ \Carbon\Carbon::parse($company->start_date)->format('Y-m-d') }}" max="{{ \Carbon\Carbon::parse($company->end_date)->format('Y-m-d') }}"></td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->deletion }}</td>
-                        <td class="text-center align-middle"><input type="date" name="deletionNoOfDays[]" value="{{ $fixedAsset->deletion_no_of_days }}" class="editable form-control form-control-sm bg-transparent border-0 text-center" min="{{ \Carbon\Carbon::parse($company->start_date)->format('Y-m-d') }}" max="{{ \Carbon\Carbon::parse($company->end_date)->format('Y-m-d') }}"></td>
-                        <td class="text-center align-middle">{{ $fixedAsset->closing }}</td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->rate }}</td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_opening }}</td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_addition }}</td>
-                        <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_deletion }}</td>
-                        <td class="text-center align-middle">{{ $fixedAsset->depreciation_closing }}</td>
-                        <td class="text-center align-middle">{{ $fixedAsset->wdv }}</td>
-                        <td class="text-center align-middle"><button class="btn btn-danger btn-sm remove-row"><i class="fas fa-times"></i></button></td>
-                    </tr>
-                @endforeach
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class="text-right"><strong>Total:</strong></td>
-                    <td class="text-center" id="totalOpening"><strong>{{ $totalOpening }}</strong></td>
-                    <td class="text-center" id="totalAddition"><strong>{{ $totalAddition }}</strong></td>
-                    <td class="text-center"></td>
-                    <td class="text-center" id="totalClosing"><strong>{{ $totalDeletion }}</strong></td>
-                    <td class="text-center"></td>
-                    <td class="text-center" id="totalClosing"><strong>{{ $totalClosing }}</strong></td>
-                    <td class="text-center"></td>
-                    <td class="text-center" id="totalDepreciationOpening"><strong>{{ $totalDepreciationOpening }}</strong></td>
-                    <td class="text-center" id="totalDepreciationAddition"><strong>{{ $totalDepreciationAddition }}</strong></td>
-                    <td class="text-center" id="totalDepreciationDeletion"><strong>{{ $totalDepreciationDeletion }}</strong></td>
-                    <td class="text-center" id="totalDepreciationClosing"><strong>{{ $totalDepreciationClosing }}</strong></td>
-                    <td class="text-center" id="totalWDV"><strong>{{ $totalWDV }}</strong></td>
-                    <td class="text-center"></td>
-                </tr>
-            </tfoot>
-        </table>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-heading">4. Fixed Assets Schedual</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive fixed-assets mb-3">
+                <table class="table table-bordered table-hover table-sm fixed-asset-table" id="fixed-asset-table">
+                    <thead class="bg-white">
+                        <tr>
+                            <th class="text-center" rowspan="2" style="width: 15%;">Particulars</th>
+                            <th class="text-center" colspan="6">Cost</th>
+                            <th class="text-center">Rate</th>
+                            <th class="text-center" colspan="4">Depreciation</th>
+                            <th class="text-center">WDV</th>
+                            <th class="text-center" rowspan="3" style="vertical-align: bottom;"><button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#add-account-modal"><i class="fas fa-plus"></i></button></th>
+                        </tr>
+                        <tr>
+                            <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</th>
+                            <th class="text-center" colspan="2">Addition</th>
+                            <th class="text-center" colspan="2">Deletion</th>
+                            <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
+                            <th class="text-center" rowspan="2">%</th>
+                            <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</th>
+                            <th class="text-center">For the period</th>
+                            <th class="text-center">Disposal</th>
+                            <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
+                            <th class="text-center">As at<br>{{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</th>
+                        </tr>
+                        <tr>
+                            <th class="text-center"></th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">No of Days</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">No of Days</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">Rupees</th>
+                            <th class="text-center">Rupees</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $totalOpening = 0;
+                            $totalAddition = 0;
+                            $totalDeletion = 0;
+                            $totalClosing = 0;
+                            $totalDepreciationOpening = 0;
+                            $totalDepreciationAddition = 0;
+                            $totalDepreciationDeletion = 0;
+                            $totalDepreciationClosing = 0;
+                            $totalWDV = 0;
+                        @endphp
+                        @foreach ($fixedAssets as $fixedAsset)
+                            @php
+                                $totalOpening += $fixedAsset->opening;
+                                $totalAddition += $fixedAsset->addition;
+                                $totalDeletion += $fixedAsset->deletion;
+                                $totalClosing += $fixedAsset->closing;
+                                $totalDepreciationOpening += $fixedAsset->depreciation_opening;
+                                $totalDepreciationAddition += $fixedAsset->depreciation_addition;
+                                $totalDepreciationDeletion += $fixedAsset->depreciation_deletion;
+                                $totalDepreciationClosing += $fixedAsset->depreciation_closing;
+                                $totalWDV += $fixedAsset->wdv;
+                            @endphp
+                            <tr data-account-code="{{ $fixedAsset->account_code }}">
+                                <td class="text-center align-middle">
+                                    {{ $fixedAsset->account_head }}
+                                    <input type="hidden" value="{{ $fixedAsset->account_code }}" class="accountCode">
+                                    <input type="hidden" value="{{ $fixedAsset->account_head }}" class="accountHead">
+                                    <input type="hidden" value="{{ $fixedAsset->depreciation_account_code }}" class="depreciationAccountCode">
+                                    <input type="hidden" value="{{ $fixedAsset->depreciation_account_head }}" class="depreciationAccountHead">
+                                    <input type="hidden" value="{{ $company->start_date }}" class="start_date">
+                                    <input type="hidden" value="{{ $company->end_date }}" class="end_date">
+                                </td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->opening }}</td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->addition }}</td>
+                                <td class="text-center align-middle"><input type="date" name="additionNoOfDays[]" value="{{ $fixedAsset->addition_no_of_days }}" class="editable form-control form-control-sm bg-transparent border-0 text-center" min="{{ \Carbon\Carbon::parse($company->start_date)->format('Y-m-d') }}" max="{{ \Carbon\Carbon::parse($company->end_date)->format('Y-m-d') }}"></td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->deletion }}</td>
+                                <td class="text-center align-middle"><input type="date" name="deletionNoOfDays[]" value="{{ $fixedAsset->deletion_no_of_days }}" class="editable form-control form-control-sm bg-transparent border-0 text-center" min="{{ \Carbon\Carbon::parse($company->start_date)->format('Y-m-d') }}" max="{{ \Carbon\Carbon::parse($company->end_date)->format('Y-m-d') }}"></td>
+                                <td class="text-center align-middle">{{ $fixedAsset->closing }}</td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->rate }}</td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_opening }}</td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_addition }}</td>
+                                <td class="text-center align-middle editable" contenteditable="true">{{ $fixedAsset->depreciation_deletion }}</td>
+                                <td class="text-center align-middle">{{ $fixedAsset->depreciation_closing }}</td>
+                                <td class="text-center align-middle">{{ $fixedAsset->wdv }}</td>
+                                <td class="text-center align-middle"><button class="btn btn-danger btn-sm remove-row"><i class="fas fa-times"></i></button></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td class="text-right"><strong>Total:</strong></td>
+                            <td class="text-center" id="totalOpening"><strong>{{ $totalOpening }}</strong></td>
+                            <td class="text-center" id="totalAddition"><strong>{{ $totalAddition }}</strong></td>
+                            <td class="text-center"></td>
+                            <td class="text-center" id="totalClosing"><strong>{{ $totalDeletion }}</strong></td>
+                            <td class="text-center"></td>
+                            <td class="text-center" id="totalClosing"><strong>{{ $totalClosing }}</strong></td>
+                            <td class="text-center"></td>
+                            <td class="text-center" id="totalDepreciationOpening"><strong>{{ $totalDepreciationOpening }}</strong></td>
+                            <td class="text-center" id="totalDepreciationAddition"><strong>{{ $totalDepreciationAddition }}</strong></td>
+                            <td class="text-center" id="totalDepreciationDeletion"><strong>{{ $totalDepreciationDeletion }}</strong></td>
+                            <td class="text-center" id="totalDepreciationClosing"><strong>{{ $totalDepreciationClosing }}</strong></td>
+                            <td class="text-center" id="totalWDV"><strong>{{ $totalWDV }}</strong></td>
+                            <td class="text-center"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
     </div>
     <button class="btn btn-primary" id="saveFixedAssetsBtn">Save</button>
     <div class="modal fade" id="add-account-modal">
@@ -240,13 +247,13 @@
                 $.ajax({
                     url: '{{ route("fixed-assets.store", $company->id) }}',
                     method: 'POST',
-                    data: { 
+                    data: {
                         _token: '{{ csrf_token() }}',
-                        entries: entries 
+                        entries: entries
                     },
                     success: function(response) {
                         alert('Entries saved successfully!');
-                        location.reload();
+                        window.location.href = '{{ route("trail-balance.index", $company->id) }}';
                     },
                     error: function(xhr) {
                         alert('An error occurred while saving entries.');

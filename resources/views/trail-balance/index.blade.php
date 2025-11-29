@@ -38,7 +38,7 @@
         <div class="step"> <span class="icon">4</span> <span class="text">Notes</span> </div>
         <div class="step"> <span class="icon">5</span> <span class="text">Statments</span> </div>
     </div>
-    <div class="table-responsive trail-balance" style="height: 80vh; overflow-y: auto;">
+    <div class="table-responsive trail-balance" style="max-height: 80vh; height: 100%; overflow-y: auto;">
         <table class="table table-bordered table-hover table-sm">
             <thead>
                 <tr>
@@ -3047,7 +3047,7 @@
                                             <input type="hidden" name="accountCode" value="PR-001">
                                             <input type="hidden" name="accountHead" value="Purchases">
                                             <input type="hidden" name="groupCode" value="COS-001">
-                                            <input type="hidden" name="groupName" value="Purchases">
+                                            <input type="hidden" name="groupName" value="Cost of Sales">
                                         </td>
                                         <td style="width: 22.85%;">Purchases</td>
                                         <td style="width: 5%;" class="text-center">PR-001</td>
@@ -3072,7 +3072,7 @@
                                             <input type="hidden" name="accountCode" value="PR-002">
                                             <input type="hidden" name="accountHead" value="Opening Stock">
                                             <input type="hidden" name="groupCode" value="COS-001">
-                                            <input type="hidden" name="groupName" value="Purchases">
+                                            <input type="hidden" name="groupName" value="Cost of Sales">
                                         </td>
                                         <td style="width: 22.85%;">Opening Stock</td>
                                         <td style="width: 5%;" class="text-center">PR-002</td>
@@ -3097,7 +3097,7 @@
                                             <input type="hidden" name="accountCode" value="PR-003">
                                             <input type="hidden" name="accountHead" value="Closing Stock">
                                             <input type="hidden" name="groupCode" value="COS-001">
-                                            <input type="hidden" name="groupName" value="Purchases">
+                                            <input type="hidden" name="groupName" value="Cost of Sales">
                                         </td>
                                         <td>Closing Stock</td>
                                         <td class="text-center">PR-003</td>
@@ -4325,7 +4325,7 @@
                         var totalCells = $cells.length;
 
                         // Get group name from the row
-                        var groupName = $row.find('td:eq(1)').text().trim();
+                        var groupName = $row.find('input[name="groupName"]').val();
 
                         // Get input values
                         var openingDebit = parseFloat($('#' + groupCode + '-opening-debit').val().replace(/,/g, '')) || 0;
@@ -4364,7 +4364,8 @@
                     },
                     success: function(response) {
                         alert('Entries saved successfully!');
-                        location.reload();
+                        // location.reload();
+                        window.location.href = '{{ route("notes.index", $company->id) }}';
                     },
                     error: function(xhr) {
                         alert('An error occurred while saving entries.');
@@ -4606,11 +4607,27 @@
                 $('#' + groupId + '-movement-debit').val(sumMovementDebit.toFixed(2));
                 $('#' + groupId + '-movement-credit').val(sumMovementCredit.toFixed(2));
 
+                // Calculate closing values properly
+                var closingBalance = (sumOpeningDebit + sumMovementDebit) - (sumOpeningCredit + sumMovementCredit);
+                var calculatedClosingDebit = 0;
+                var calculatedClosingCredit = 0;
+
+                if (closingBalance > 0) {
+                    calculatedClosingDebit = closingBalance;
+                    calculatedClosingCredit = 0;
+                } else if (closingBalance < 0) {
+                    calculatedClosingDebit = 0;
+                    calculatedClosingCredit = Math.abs(closingBalance);
+                } else {
+                    calculatedClosingDebit = 0;
+                    calculatedClosingCredit = 0;
+                }
+
                 // Update parent row closing columns (last 2 td cells)
                 var $parentCells = $parentRow.find('> td');
                 var parentTotalCells = $parentCells.length;
-                $parentCells.eq(parentTotalCells - 2).text(sumClosingDebit.toFixed(2));
-                $parentCells.eq(parentTotalCells - 1).text(sumClosingCredit.toFixed(2));
+                $parentCells.eq(parentTotalCells - 2).text(calculatedClosingDebit.toFixed(2));
+                $parentCells.eq(parentTotalCells - 1).text(calculatedClosingCredit.toFixed(2));
 
                 updateFooterTotals();
             });
@@ -4635,7 +4652,7 @@
                     totalMovementDebit += parseFloat($('#' + groupCode + '-movement-debit').val().replace(/,/g, '')) || 0;
                     totalMovementCredit += parseFloat($('#' + groupCode + '-movement-credit').val().replace(/,/g, '')) || 0;
 
-                    // Get closing values from last 2 td cells
+                    // Get closing values from last 2 td cells of parent row
                     var $cells = $row.find('> td');
                     var totalCells = $cells.length;
                     if (totalCells >= 2) {

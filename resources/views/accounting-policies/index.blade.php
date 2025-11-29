@@ -38,6 +38,7 @@
                 <thead>
                     <tr>
                         <th style="width: 3vw;">#</th>
+                        <th style="width: 5vw;">Account Type</th>
                         <th style="width: 20vw;">Title</th>
                         <th>Content</th>
                         <th style="width: 8vw;">Created By</th>
@@ -48,6 +49,7 @@
                     @forelse ($accounting_policies as $policy)
                         <tr>
                             <td>{{ ++$loop->index }}</td>
+                            <td>{{ $policy->account_type }}</td>
                             <td>{{ $policy->title }}</td>
                             <td>{!! $policy->content !!}</td>
                             <td>{{ $policy->user->name }}</td>

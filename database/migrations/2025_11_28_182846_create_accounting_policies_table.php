@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('accounting_policies', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('size');
+            $table->string('account_type');
             // $table->string('index');
             $table->string('title');
             $table->text('content')->nullable();

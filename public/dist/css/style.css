@@ -1,3 +1,65 @@
+:root {
+    --primary-color: #26667f;
+    --secondary-color: #f1962e;
+    --active-color: #124170;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+a.primary, 
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.breadcrumb .breadcrumb-item a {
+    color: var(--primary-color) !important;
+}
+
+.bg-secondary {
+    background-color: var(--seondary-color) !important;
+}
+
+.sidebar-dark-primary {
+    /* background-color: var(--primary-color); */
+}
+
+.sidebar-dark-primary .brand-link:not([color*=navbar]) {
+    /* background-color: var(--primary-color) !important; */
+}
+
+[class*=sidebar-dark] .brand-link, [class*=sidebar-dark] .user-panel {
+    border-bottom-color: var(--secondary-color) !important;
+}
+
+.sidebar-light-primary .nav-sidebar>.nav-item>.nav-link.active {
+    background-color: var(--primary-color);
+}
+
+.sidebar-light-primary .nav-sidebar>.nav-item>.nav-link:hover {
+    background-color: #5f99b4;
+    color: #fff;
+}
+
+[class*=sidebar-light-] .nav-treeview>.nav-item>.nav-link.active {
+    background-color: #5f99b4;
+    color: #fff;
+}
+
+.navbar-secondary {
+    background-color: var(--primary-color) !important;
+}
+
+.navbar-dark.navbar-secondary {
+    border-color: var(--primary-color) !important;
+}
+
+.main-footer {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
 table > tr:not(.sub-table-row) th:first-child, 
 .table > tr:not(.sub-table-row) th:first-child, 
 table > tr:not(.sub-table-row) td:first-child, 

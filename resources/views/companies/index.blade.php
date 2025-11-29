@@ -64,7 +64,7 @@
                         <td>{{ $company->user->name }}</td>
                         <td class="actions">
                             <div class="btn-group">
-                                {{-- <a href="#" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a> --}}
+                                <a href="{{ route('companies.show', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
                                 <a href="{{ route('companies.edit', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                                 <form action="{{ route('companies.destroy', $company->id) }}" method="POST" id="delete-company-{{ $company->id }}">
                                     @csrf
@@ -93,8 +93,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('trail-balance.index', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('trail-balance.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -104,8 +104,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('fixed-assets.index', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('fixed-assets.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -115,8 +115,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('notes.index', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('notes.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -127,8 +127,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('statements.sopl', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('statements.sopl', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -140,8 +140,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('statements.soci', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('statements.soci', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -153,8 +153,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('statements.soce', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('statements.soce', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -166,8 +166,8 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('statements.sofp', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('statements.sofp', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -179,12 +179,34 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-success btn-sm"><i class="fas fa-eye"></i></a>
-                                                    <a href="#" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
                                         </tr>
                                         @endif
+                                        <tr>
+                                            <td>Accounting Policy</td>
+                                            <td>Admin</td>
+                                            <td>2025-11-17 23:07:52</td>
+                                            <td class="actions">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('company-accounting-policy.index', $company->id) }}" class="btn btn-primary disabled btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Audit Report</td>
+                                            <td>Admin</td>
+                                            <td>2025-11-17 23:07:52</td>
+                                            <td class="actions">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('company-audit-reports.index', $company->id) }}" disabled class="btn btn-primary disabled btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
