@@ -2,7 +2,7 @@
 <aside class="main-sidebar sidebar-light-primary elevation-4">
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link">
-        <img src="{{ asset('images/logo.svg') }}" alt="AdminLTE Logo" class="brand-image" style="opacity: .8">
+        <img src="{{ asset('images/logo.png') }}" alt="AdminLTE Logo" class="brand-image" style="opacity: .8; height: 100%;">
         {{-- <span class="brand-text font-weight-light">AdminLTE 3</span> --}}
     </a>
 
@@ -100,7 +100,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
                         @csrf
                     </form>
@@ -110,7 +110,7 @@
                             Signout
                         </p>
                     </a>
-                </li>
+                </li> --}}
                 {{-- <li class="nav-header">EXAMPLES</li> --}}
             </ul>
         </nav>

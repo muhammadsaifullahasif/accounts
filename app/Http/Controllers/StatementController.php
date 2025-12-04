@@ -21,6 +21,7 @@ class StatementController extends Controller
     private const GROUP_TRADE_RECEIVABLE = 'CL-001';
     private const GROUP_ADVANCE_DEPOSIT = 'CA-001';
     private const GROUP_CASH_EQUIVALENT = 'CA-002';
+    private const GROUP_TAXATION = 'T-001';
 
     // Account Code Constants
     private const ACCOUNT_OPENING_CAPITAL = 'CAP-001';
@@ -131,6 +132,7 @@ class StatementController extends Controller
         $adminExpense = $this->getNoteTotal($id, self::GROUP_ADMIN_EXPENSE);
         $financialCharges = $this->getNoteTotal($id, self::GROUP_FINANCIAL_CHARGES);
         $otherIncome = $this->getNoteTotal($id, self::GROUP_OTHER_INCOME);
+        $taxation = $this->getNoteTotal($id, self::GROUP_TAXATION);
 
         // Get non-current assets
         $non_current_assets = $this->getNonCurrentAssets($id);
@@ -156,10 +158,10 @@ class StatementController extends Controller
         $capital_injection = $this->getTrailBalance($id, self::ACCOUNT_CAPITAL_INJECTION);
         $drawings = $this->getTrailBalance($id, self::ACCOUNT_DRAWINGS);
 
-        $taxation = [
-            'current_year' => $this->taxation_current_year,
-            'previous_year' => $this->taxation_previous_year
-        ];
+        // $taxation = [
+        //     'current_year' => $this->taxation_current_year,
+        //     'previous_year' => $this->taxation_previous_year
+        // ];
 
         return [
             'lastIndex' => $lastNote->index,
@@ -231,6 +233,7 @@ class StatementController extends Controller
         $revenue = $figures['revenue'];
         $otherIncome = $figures['otherIncome'];
         $taxation = $figures['taxation'];
+        // return $taxation;
 
         return view('statements.sopl', compact(
             'company',

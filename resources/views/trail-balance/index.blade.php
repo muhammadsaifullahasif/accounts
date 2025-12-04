@@ -1021,12 +1021,13 @@
                                     <tr>
                                         <td style="width: 2.45%;"></td>
                                         <td style="width: 24.85%;">
+                                            Gross Revenue (Excluding Sales Tax, Federal Excise)
                                             <input type="hidden" name="accountCode" value="GR-001">
                                             <input type="hidden" name="accountHead" value="Gross Revenue (Excluding Sales Tax, Federal Excise)">
                                             <input type="hidden" name="groupCode" value="S-001">
                                             <input type="hidden" name="groupName" value="Revenue">
                                         </td>
-                                        <td style="width: 22.85%;">Gross Revenue (Excluding Sales Tax, Federal Excise)</td>
+                                        <td style="width: 22.85%;">Revenue</td>
                                         <td style="width: 5%;" class="text-center">GR-001</td>
                                         <td style="width: 7.5%;" class="text-center">
                                             <input type="text" name="GR-001-opening-debit" id="GR-001-opening-debit" value="{{ $trailBalances['S-001']['GR-001']->opening_debit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
@@ -2241,6 +2242,69 @@
                     <td class="text-center">{{ $trailBalances['FC-001']['FC-001']->closing_debit ?? 0 }}</td>
                     <td class="text-center">{{ $trailBalances['FC-001']['FC-001']->closing_credit ?? 0 }}</td>
                 </tr>
+                <tr class="sub-table-row" style="display: none;" data-group-id="T-001">
+                    <td colspan="10" class="sub-table-cell p-0">
+                        <div class="sub-table-wrapper table-responsive" style="">
+                            <table class="table table-striped table-bordered table-hover table-sm mb-0">
+                                <tbody>
+                                    <tr>
+                                        <td style="width: 2.45%;"></td>
+                                        <td style="width: 24.85%;">
+                                            <input type="hidden" name="accountCode" value="TAX-001">
+                                            <input type="hidden" name="accountHead" value="Taxation">
+                                            <input type="hidden" name="groupCode" value="T-001">
+                                            <input type="hidden" name="groupName" value="Taxation">
+                                        </td>
+                                        <td style="width: 22.85%;">Taxation</td>
+                                        <td style="width: 5%;" class="text-center">TAX-001</td>
+                                        <td style="width: 7.5%;" class="text-center">
+                                            <input type="text" name="TAX-001-opening-debit" id="TAX-001-opening-debit" value="{{ $trailBalances['T-001']['TAX-001']->opening_debit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
+                                        </td>
+                                        <td style="width: 7.5%;" class="text-center">
+                                            <input type="text" name="TAX-001-opening-credit" id="TAX-001-opening-credit" value="{{ $trailBalances['T-001']['TAX-001']->opening_credit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
+                                        </td>
+                                        <td style="width: 7.5%;" class="text-center">
+                                            <input type="text" name="TAX-001-movement-debit" id="TAX-001-movement-debit" value="{{ $trailBalances['T-001']['TAX-001']->movement_debit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
+                                        </td>
+                                        <td style="width: 7.5%;" class="text-center">
+                                            <input type="text" name="TAX-001-movement-credit" id="TAX-001-movement-credit" value="{{ $trailBalances['T-001']['TAX-001']->movement_credit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
+                                        </td>
+                                        <td style="width: 7.5%;" class="text-center">{{ $trailBalances['T-001']['TAX-001']->closing_debit ?? 0 }}</td>
+                                        <td style="width: 7.5%;" class="text-center">{{ $trailBalances['T-001']['TAX-001']->closing_credit ?? 0 }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr data-group-code="T-001" class="parent">
+                    <td>
+                        <a href="#" class="btn btn-sm toggle-arrow" data-group-id="T-001">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </td>
+                    <td>
+                        <strong>Taxation</strong>
+                        <!--<strong>Gross Revenue (Excluding Sales Tax, Federal Excise)</strong>-->
+                        <input type="hidden" name="groupCode" value="T-001">
+                    </td>
+                    <td><strong>Taxation</strong></td>
+                    <td class="text-center">T-001</td>
+                    <td class="text-center">
+                        <input type="text" name="T-001-opening-debit" id="T-001-opening-debit" value="{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_debit') }}" class="form-control form-control-sm bg-transparent border-0 text-center" readonly>
+                    </td>
+                    <td class="text-center">
+                        <input type="text" name="T-001-opening-credit" id="T-001-opening-credit" value="{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center" readonly>
+                    </td>
+                    <td class="text-center">
+                        <input type="text" name="T-001-movement-debit" id="T-001-movement-debit" value="{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_debit') }}" class="form-control form-control-sm bg-transparent border-0 text-center" readonly>
+                    </td>
+                    <td class="text-center">
+                        <input type="text" name="T-001-movement-credit" id="T-001-movement-credit" value="{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center" readonly>
+                    </td>
+                    <td class="text-center">{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_debit') }}</td>
+                    <td class="text-center">{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                </tr>
             </tbody>
             <tfoot>
                 <tr>
@@ -2458,7 +2522,7 @@
                 childCodes.forEach(function(childCode) {
                     var $childInput = $('#' + childCode + '-' + fieldType);
                     if ($childInput.length) {
-                        $childInput.val(childValue.toFixed(2));
+                        $childInput.val(childValue.toFixed(0));
                         // Trigger change to recalculate closing balance
                         $childInput.trigger('change');
                     }
@@ -2642,10 +2706,10 @@
                 }
 
                 // Update parent row inputs
-                $('#' + groupId + '-opening-debit').val(sumOpeningDebit.toFixed(2));
-                $('#' + groupId + '-opening-credit').val(sumOpeningCredit.toFixed(2));
-                $('#' + groupId + '-movement-debit').val(sumMovementDebit.toFixed(2));
-                $('#' + groupId + '-movement-credit').val(sumMovementCredit.toFixed(2));
+                $('#' + groupId + '-opening-debit').val(sumOpeningDebit.toFixed(0));
+                $('#' + groupId + '-opening-credit').val(sumOpeningCredit.toFixed(0));
+                $('#' + groupId + '-movement-debit').val(sumMovementDebit.toFixed(0));
+                $('#' + groupId + '-movement-credit').val(sumMovementCredit.toFixed(0));
 
                 // Calculate closing values properly
                 var closingBalance = (sumOpeningDebit + sumMovementDebit) - (sumOpeningCredit + sumMovementCredit);

@@ -35,7 +35,7 @@
     <div class="login-box">
         <div class="login-logo">
             <!--<a href="#"><b>Admin</b>LTE</a>-->
-            <img src="{{ asset('images/logo.svg') }}" style="max-width: 180px;">
+            <img src="{{ asset('images/logo.png') }}" style="max-width: 180px;">
         </div>
         <!-- /.login-logo -->
         @yield('content')

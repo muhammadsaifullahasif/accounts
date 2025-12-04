@@ -128,13 +128,13 @@
                         </tr>
                         <tr>
                             @php
-                                $taxation_current_year = 0;
-                                $taxation_previous_year = 0;
+                                $taxation_current_year = $taxation['total_current_year'];
+                                $taxation_previous_year = $taxation['total_previous_year'];
                             @endphp
                             <td>Taxation</td>
                             <td class="text-center"></td>
-                            <td class="text-center">{{ $taxation_current_year }}</td>
-                            <td class="text-center">{{ $taxation_previous_year }}</td>
+                            <td class="text-center">{{ ($taxation_current_year < 0) ? '('. number_format(abs(round($taxation_current_year)), 0, '.', ',') .')' : number_format(abs(round($taxation_current_year)), 0, '.', ',') }}</td>
+                            <td class="text-center">{{ ($taxation_previous_year < 0) ? '('. number_format(abs(round($taxation_previous_year)), 0, '.', ',') .')' : number_format(abs(round($taxation_previous_year)), 0, '.', ',') }}</td>
                         </tr>
                         <tr>
                             <td><strong>{{ ( ($pbt_current_year + $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>

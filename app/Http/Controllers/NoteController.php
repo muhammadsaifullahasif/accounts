@@ -54,13 +54,25 @@ class NoteController extends Controller
         //     ->where('group_name', 'like', '%Property%')
         //     ->exists();
 
-        // Separate OI-001 group to process it last
+        // Separate OI-001 and T-001 groups to process them at the end
         $otherIncomeGroup = $transactions->pull('OI-001');
+        $taxationGroup = $transactions->pull('T-001');
 
-        // Add OI-001 back at the end if it exists
+        // Add OI-001 second to last if it exists
         if ($otherIncomeGroup) {
             $transactions->put('OI-001', $otherIncomeGroup);
         }
+
+        // Add T-001 last if it exists
+        if ($taxationGroup) {
+            $transactions->put('T-001', $taxationGroup);
+        }
+
+        $assets = ['NCA-001', 'CA-001', 'CA-002', 'CA-003'];
+        $equity = ['EQ-001'];
+        $liability = ['NCL-001', 'CL-001', 'CL-002'];
+        $income = ['S-001', 'OI-001'];
+        $expense = ['COS-001', 'EX-001', 'FC-001', 'T-001'];
 
         $index = 5;
 
@@ -107,13 +119,13 @@ class NoteController extends Controller
                         $previous_year = 0;
 
                         if ($closing_debit > 0) {
-                            $current_year = $closing_debit;
+                            $current_year = -$closing_debit;
                         }
                         if ($closing_credit > 0) {
                             $current_year = $closing_credit;
                         }
                         if ($opening_debit > 0) {
-                            $previous_year = $opening_debit;
+                            $previous_year = -$opening_debit;
                         }
                         if ($opening_credit > 0) {
                             $previous_year = $opening_credit;
@@ -142,13 +154,13 @@ class NoteController extends Controller
                         $previous_year = 0;
 
                         if ($account->closing_debit > 0) {
-                            $current_year = $account->closing_debit;
+                            $current_year = -$account->closing_debit;
                         }
                         if ($account->closing_credit > 0) {
                             $current_year = $account->closing_credit;
                         }
                         if ($account->opening_debit > 0) {
-                            $previous_year = $account->opening_debit;
+                            $previous_year = -$account->opening_debit;
                         }
                         if ($account->opening_credit > 0) {
                             $previous_year = $account->opening_credit;
@@ -180,13 +192,21 @@ class NoteController extends Controller
                     $previous_year = 0;
 
                     if ($account->closing_debit > 0) {
-                        $current_year = $account->closing_debit;
+                        if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
+                            $current_year = -$account->closing_debit;
+                        } else {
+                            $current_year = $account->closing_debit;
+                        }
                     }
                     if ($account->closing_credit > 0) {
                         $current_year = $account->closing_credit;
                     }
                     if ($account->opening_debit > 0) {
-                        $previous_year = $account->opening_debit;
+                        if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
+                            $previous_year = -$account->opening_debit;
+                        } else {
+                            $previous_year = $account->opening_debit;
+                        }
                     }
                     if ($account->opening_credit > 0) {
                         $previous_year = $account->opening_credit;

@@ -143,8 +143,9 @@
                                         @if (is_null($accounts[0]->parent_index))
                                             <td class="text-center"><strong>{{ ($child_note) ? $child_note->index : '' }}</strong></td>
                                         @endif
-                                        <td class="note-amount text-center">{{ $current_year }}</td>
-                                        <td class="note-amount text-center">{{ $previous_year }}</td>
+                                        <td class="note-amount text-center">{{ ($current_year < 0) ? '('. number_format(abs(round($current_year)), 0, '.', ',') .')' : number_format(abs(round($current_year)), 0, '.', ',') }}</td>
+                                        <td class="note-amount text-center">{{ ($previous_year < 0) ? '('. number_format(abs(round($previous_year)), 0, '.', ',') .')' : number_format(abs(round($previous_year)), 0, '.', ',') }}</td>
+                                        {{-- <td class="note-amount text-center">{{ $previous_year }}</td> --}}
                                         <td>
                                             @if (count($accounts) > 1 && !$groupHasChildNote)
                                                 <button class="btn btn-link btn-sm merge-account-btn" data-toggle="modal" data-target="#note-merge-{{ str_replace('.', '-', $account->account_code) }}-modal" title="merge"><i class="fas fa-object-group"></i></button>
@@ -186,8 +187,9 @@
                             @if (!is_null($accounts[0]->current_year) && !is_null($accounts[0]->previous_year))
                                 <tr class="group-footer">
                                     <td class="text-right" colspan="@if(is_null($accounts[0]->parent_index)) 2 @endif"><strong>Total:</strong></td>
-                                    <td class="note-amount text-center"><strong>{{ $totalCurrentYear }}</strong></td>
-                                    <td class="note-amount text-center"><strong>{{ $totalPreviousYear }}</strong></td>
+                                    <td class="note-amount text-center"><strong>{{ ($totalCurrentYear < 0) ? '('. number_format(abs(round($totalCurrentYear)), 0, '.', ',') .')' : number_format(abs(round($totalCurrentYear)), 0, '.', ',') }}</strong></td>
+                                    <td class="note-amount text-center"><strong>{{ ($totalPreviousYear < 0) ? '('. number_format(abs(round($totalPreviousYear)), 0, '.', ',') .')' : number_format(abs(round($totalPreviousYear)), 0, '.', ',') }}</strong></td>
+                                    {{-- <td class="note-amount text-center"><strong>{{ $totalPreviousYear }}</strong></td> --}}
                                     <td></td>
                                 </tr>
                             @endif
