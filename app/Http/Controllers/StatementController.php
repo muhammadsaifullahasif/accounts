@@ -187,14 +187,16 @@ class StatementController extends Controller
             ->selectRaw('`group_name`, SUM(opening_debit) as total_opening_debit, SUM(opening_credit) as total_opening_credit, SUM(closing_debit) as total_closing_debit, SUM(closing_credit) as total_closing_credit')
             ->groupBy('group_name')
             ->first();
+            
+        $current_year = $transactions->total_closing_debit - $transactions->total_closing_credit;
 
-        if ($transactions->total_closing_debit > 0) {
+        /*if ($transactions->total_closing_debit > 0) {
             $current_year = $transactions->total_closing_debit;
         }
 
         if ($transactions->total_closing_credit > 0) {
             $current_year = $transactions->total_closing_credit;
-        }
+        }*/
 
         if ($transactions->total_opening_debit > 0) {
             $previous_year = $transactions->total_opening_debit;

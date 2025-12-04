@@ -88,23 +88,23 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>Trail Balance</td>
-                                            <td>Admin</td>
-                                            <td>2025-11-17 23:07:52</td>
-                                            <td class="actions">
-                                                <div class="btn-group">
-                                                    <a href="{{ route('trail-balance.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
                                             <td>Fixed Asset</td>
                                             <td>Admin</td>
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
                                                     <a href="{{ route('fixed-assets.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Trail Balance</td>
+                                            <td>Admin</td>
+                                            <td>2025-11-17 23:07:52</td>
+                                            <td class="actions">
+                                                <div class="btn-group">
+                                                    <a href="{{ route('trail-balance.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                                                     <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>

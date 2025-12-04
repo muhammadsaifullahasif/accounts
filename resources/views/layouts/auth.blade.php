@@ -13,11 +13,29 @@
     <link rel="stylesheet" href="{{ asset('plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
+    <style>
+        .login-card-body,
+        .register-card-body {
+            background: #5f99b4;
+            color: #fff;
+        }
+        
+        .login-card-body a,
+        .register-card-body a {
+            color: #fff;
+        }
+        
+        .login-card-body .input-group .input-group-text,
+        .register-card-body .input-group .input-group-text {
+            color: #fff;
+        }
+    </style>
 </head>
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="#"><b>Admin</b>LTE</a>
+            <!--<a href="#"><b>Admin</b>LTE</a>-->
+            <img src="{{ asset('images/logo.svg') }}" style="max-width: 180px;">
         </div>
         <!-- /.login-logo -->
         @yield('content')

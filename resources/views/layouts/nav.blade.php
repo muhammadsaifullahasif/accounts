@@ -5,12 +5,6 @@
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
-        {{-- <li class="nav-item d-none d-sm-inline-block">
-            <a href="index3.html" class="nav-link">Home</a>
-        </li>
-        <li class="nav-item d-none d-sm-inline-block">
-            <a href="#" class="nav-link">Contact</a>
-        </li> --}}
     </ul>
 
     <!-- Right navbar links -->
@@ -21,11 +15,14 @@
                 <i class="fas fa-expand-arrows-alt"></i>
             </a>
         </li>
-        {{-- <li class="nav-item">
-            <a class="nav-link" data-widget="control-sidebar" data-controlsidebar-slide="true" href="#" role="button">
-                <i class="fas fa-th-large"></i>
+        <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}" id="nav-logout-form">
+                @csrf
+            </form>
+            <a class="nav-link" onclick="event.preventDefault();document.getElementById('nav-logout-form').submit();" title="Logout" href="{{ route('logout') }}" role="button">
+                <i class="fas fa-sign-out-alt"></i>
             </a>
-        </li> --}}
+        </li>
     </ul>
 </nav>
 <!-- /.navbar -->

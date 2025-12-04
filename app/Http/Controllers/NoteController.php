@@ -623,19 +623,15 @@ class NoteController extends Controller
     public function notes_regenerate(string $id)
     {
         try {
-            // $company = Company::where('id', $id)->first();
+            // Delete all parent notes for this company
+            Note::where('company_id', $id)->whereNull('parent_index')->delete();
 
-            $notes = Note::where('company_id', $id)->whereNull('parent_index')->delete();
-            // $this->notes_create($id);
+            // Regenerate notes
+            $this->notes_create($id);
 
-            // return view('companies.notes.index', compact('company', 'notes'));
-            return redirect()->back();
-            // return redirect()->route('notes.index', $id)->with('success', 'Notes regenerated successfully.');
+            return redirect()->route('notes.index', $id)->with('success', 'Notes regenerated successfully.');
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error merging note: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('error', 'Error regenerating notes: ' . $e->getMessage());
         }
     }
 

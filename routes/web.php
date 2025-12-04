@@ -39,12 +39,15 @@ Route::middleware(['auth', AuthAdmin::class])->group(function () {
 
     Route::resource('/companies/{id}/fixed-assets', FixedAssetController::class);
 
-    Route::resource('/companies/{id}/notes', NoteController::class);
+    // Custom note routes - MUST come before resource routes to avoid conflicts
+    Route::get('/companies/{id}/notes/regenerate', [NoteController::class, 'notes_regenerate'])->name('notes.regenerate');
     Route::post('/companies/notes/save', [NoteController::class, 'notes_save'])->name('notes.save');
     Route::delete('/companies/notes/delete', [NoteController::class, 'notes_delete'])->name('notes.delete');
     Route::post('/companies/{id}/notes/accounts-merge', [NoteController::class, 'notes_accounts_merge'])->name('notes.accounts-merge');
     Route::post('/companies/notes/update_child_notes', [NoteController::class, 'child_notes_update'])->name('notes.update_child_notes');
-    Route::get('/companies/{id}/notes/regenerate', [NoteController::class, 'notes_regenerate'])->name('notes.regenerate');
+
+    Route::resource('/companies/{id}/notes', NoteController::class);
+    
     Route::get('/companies/{id}/statements/sopl', [StatementController::class, 'sopl'])->name('statements.sopl');
     Route::get('/companies/{id}/statements/soci', [StatementController::class, 'soci'])->name('statements.soci');
     Route::get('/companies/{id}/statements/soce', [StatementController::class, 'soce'])->name('statements.soce');

@@ -406,11 +406,11 @@
                         wdv = 0
                     }
 
-                    $row.find('td').eq(6).text((closing.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                    $row.find('td').eq(8).text((depreciationOpening.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                    $row.find('td').eq(9).text((depreciationAddition.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                    $row.find('td').eq(11).text((depreciationClosing.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                    $row.find('td').eq(12).text((wdv.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $row.find('td').eq(6).text((closing.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $row.find('td').eq(8).text((depreciationOpening.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $row.find('td').eq(9).text((depreciationAddition.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $row.find('td').eq(11).text((depreciationClosing.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                    $row.find('td').eq(12).text((wdv.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
                     totalOpening += opening;
                     totalAddition += addition;
@@ -439,15 +439,15 @@
                     totalWDV: totalWDV
                 });*/
 
-                $('#totalOpening strong').text((totalOpening.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalAddition strong').text((totalAddition.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalDeletion strong').text((totalDeletion.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalClosing strong').text((totalClosing.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalDepreciationOpening strong').text((totalDepreciationOpening.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalDepreciationAddition strong').text((totalDepreciationAddition.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalDepreciationDeletion strong').text((totalDepreciationDeletion.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalDepreciationClosing strong').text((totalDepreciationClosing.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
-                $('#totalWDV strong').text((totalWDV.toFixed(2)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalOpening strong').text((totalOpening.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalAddition strong').text((totalAddition.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalDeletion strong').text((totalDeletion.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalClosing strong').text((totalClosing.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalDepreciationOpening strong').text((totalDepreciationOpening.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalDepreciationAddition strong').text((totalDepreciationAddition.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalDepreciationDeletion strong').text((totalDepreciationDeletion.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalDepreciationClosing strong').text((totalDepreciationClosing.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
+                $('#totalWDV strong').text((totalWDV.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
                 
                 // return entries;
             }

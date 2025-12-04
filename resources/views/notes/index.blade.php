@@ -7,7 +7,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0 d-inline mr-2">Notes</h1>
-                    {{-- <a href="{{ route('notes.regenerate', $company->id) }}" class="btn btn-primary btn-sm mb-3 regenerate-notes">Regenerate Notes</a> --}}
+                    <a href="{{ route('notes.regenerate', $company->id) }}" class="btn btn-primary btn-sm mb-3 regenerate-notes">Regenerate Notes</a>
                     {{-- <a href="{{ route('companies.create') }}" class="btn btn-outline-primary btn-sm mb-3">Add Company</a> --}}
                 </div><!-- /.col -->
                 <div class="col-sm-6">
