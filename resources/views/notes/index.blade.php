@@ -105,7 +105,7 @@
                                         <th style="width: 5vw;" class="text-center">Note</th>
                                     @endif
                                     <th style="width: 5vw;" class="note-amount text-center">{{ \Carbon\Carbon::parse($company->end_date)->format('Y') }}<br>(Rupees)</th>
-                                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                         <th style="width: 5vw;" class="note-amount text-center">{{ \Carbon\Carbon::parse($company->end_date)->subYear()->format('Y') }}<br>(Rupees)</th>
                                     @endif
                                     <th style="width: 3vw;"></th>
@@ -146,7 +146,7 @@
                                             <td class="text-center"><strong>{{ ($child_note) ? $child_note->index : '' }}</strong></td>
                                         @endif
                                         <td class="note-amount text-center">{{ ($current_year < 0) ? '('. number_format(abs(round($current_year)), 0, '.', ',') .')' : number_format(abs(round($current_year)), 0, '.', ',') }}</td>
-                                        @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                        @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                             <td class="note-amount text-center">{{ ($previous_year < 0) ? '('. number_format(abs(round($previous_year)), 0, '.', ',') .')' : number_format(abs(round($previous_year)), 0, '.', ',') }}</td>
                                         @endif
                                         {{-- <td class="note-amount text-center">{{ $previous_year }}</td> --}}
@@ -192,7 +192,7 @@
                                 <tr class="group-footer">
                                     <td class="text-right" colspan="@if(is_null($accounts[0]->parent_index)) 2 @endif"><strong>Total:</strong></td>
                                     <td class="note-amount text-center"><strong>{{ ($totalCurrentYear < 0) ? '('. number_format(abs(round($totalCurrentYear)), 0, '.', ',') .')' : number_format(abs(round($totalCurrentYear)), 0, '.', ',') }}</strong></td>
-                                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                         <td class="note-amount text-center"><strong>{{ ($totalPreviousYear < 0) ? '('. number_format(abs(round($totalPreviousYear)), 0, '.', ',') .')' : number_format(abs(round($totalPreviousYear)), 0, '.', ',') }}</strong></td>
                                     @endif
                                     {{-- <td class="note-amount text-center"><strong>{{ $totalPreviousYear }}</strong></td> --}}
@@ -266,7 +266,7 @@
                                                             <tr>
                                                                 <th>Description</th>
                                                                 <th class="text-center">{{ \Carbon\Carbon::parse($company->end_date)->format('Y') }}<br>(Rupees)</th>
-                                                                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                                                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                                                     <th class="text-center">{{ \Carbon\Carbon::parse($company->end_date)->subYear()->format('Y') }}<br>(Rupees)</th>
                                                                 @endif
                                                                 <th><button class="btn btn-primary btn-sm detail-note-add-btn" data-target="detail-note-table-{{ $index }}" type="button" role="button"><i class="fas fa-plus"></i></button></th>
@@ -276,7 +276,7 @@
                                                             <tr>
                                                                 <td contenteditable="true"></td>
                                                                 <td contenteditable="true" class="editable text-center"></td>
-                                                                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                                                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                                                     <td contenteditable="true" class="editable text-center"></td>
                                                                 @endif
                                                                 <td></td>
@@ -286,7 +286,7 @@
                                                             <tr>
                                                                 <td class="text-right"><strong>Total:</strong></td>
                                                                 <td class="text-center">0</td>
-                                                                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                                                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                                                     <td class="text-center">0</td>
                                                                 @endif
                                                                 <td></td>
@@ -335,7 +335,7 @@
                                                         <tr>
                                                             <th>Description</th>
                                                             <th class="text-center">{{ \Carbon\Carbon::parse($company->end_date)->format('Y') }}<br>(Rupees)</th>
-                                                            @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                                            @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                                                 <th class="text-center">{{ \Carbon\Carbon::parse($company->end_date)->subYear()->format('Y') }}<br>(Rupees)</th>
                                                             @endif
                                                             <th><button class="btn btn-primary btn-sm detail-note-add-btn" data-target="detail-note-table-{{ str_replace('.', '-', $index) }}" type="button" role="button"><i class="fas fa-plus"></i></button></th>
@@ -349,7 +349,7 @@
                                                             <tr>
                                                                 <td contenteditable="true">{{ $account->account_head }}</td>
                                                                 <td contenteditable="true" class="editable text-center">{{ $account->current_year }}</td>
-                                                                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                                                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                                                     <td contenteditable="true" class="editable text-center">{{ $account->previous_year }}</td>
                                                                 @endif
                                                                 <td>
@@ -371,7 +371,7 @@
                                                             @endphp
                                                             <td class="text-right"><strong>Total:</strong></td>
                                                             <td data-current-year="{{ $total->current_year }}" class="text-center">{{ $accounts->sum('current_year') }}</td>
-                                                            @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                                                            @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                                                 <td data-previous-year="{{ $total->previous_year }}" class="text-center">{{ $accounts->sum('previous_year') }}</td>
                                                             @endif
                                                             <td></td>
@@ -436,7 +436,7 @@
             function updateTable() {
                 var entries = [];
                 var totalCurrentYear = 0;
-                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     var totalPreviousYear = 0;
                 @endif
                 // if(table_id == '') {
@@ -448,21 +448,21 @@
                     var current_year = parseCell($row.find('td').eq(1));
                     totalCurrentYear += current_year;
 
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         var previous_year = parseCell($row.find('td').eq(2));
                         totalPreviousYear += previous_year;
                     @endif
                 });
 
                 $('#' + table_id + ' tfoot tr td:nth-child(2)').html(totalCurrentYear);
-                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     $('#' + table_id + ' tfoot tr td:nth-child(3)').html(totalPreviousYear);
                 @endif
             }
 
             function recalculateTotals(table_id) {
                 var totalCurrentYear = 0;
-                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     var totalPreviousYear = 0;
                 @endif
 
@@ -471,14 +471,14 @@
                     var current_year = parseCell($row.find('td').eq(1));
                     totalCurrentYear += current_year;
 
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         var previous_year = parseCell($row.find('td').eq(2));
                         totalPreviousYear += previous_year;
                     @endif
                 });
 
                 $('#' + table_id + ' tfoot tr td:nth-child(2)').html(totalCurrentYear);
-                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     $('#' + table_id + ' tfoot tr td:nth-child(3)').html(totalPreviousYear);
                 @endif
             }
@@ -490,7 +490,7 @@
                         <td contenteditable="true"></td>
                         <td contenteditable="true" class="editable text-center"></td>
                 `;
-                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     html += `<td contenteditable="true" class="editable text-center"></td>`;
                 @endif
                 html += `
@@ -523,7 +523,7 @@
 
                 // Get data attributes from selected account
                 var expectedCurrentYear = parseFloat(selectedAccount.data('current-year')) || 0;
-                @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     var expectedPreviousYear = parseFloat(selectedAccount.data('previous-year')) || 0;
                 @endif
 
@@ -570,7 +570,7 @@
 
                     // Get calculated totals from the table footer
                     var calculatedCurrentYear = parseFloat(detailTable.find('tfoot tr td:nth-child(2)').text().replace(/,/g, '').trim()) || 0;
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         var calculatedPreviousYear = parseFloat(detailTable.find('tfoot tr td:nth-child(3)').text().replace(/,/g, '').trim()) || 0;
                         // Validate totals match
                         if (calculatedCurrentYear !== expectedCurrentYear || calculatedPreviousYear !== expectedPreviousYear) {
@@ -587,7 +587,7 @@
                     // Collect detail note data (array of description, current_year, previous_year)
                     var accountHeadArray = [];
                     var currentYearArray = [];
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         var previousYearArray = [];
                     @endif
 
@@ -595,13 +595,13 @@
                         var $row = $(this);
                         var description = $row.find('td').eq(0).text().trim();
                         var currentYear = parseCell($row.find('td').eq(1));
-                        @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                        @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                             var previousYear = parseCell($row.find('td').eq(2));
                         @endif
 
                         accountHeadArray.push(description);
                         currentYearArray.push(currentYear);
-                        @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                        @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                             previousYearArray.push(previousYear);
                         @endif
 
@@ -610,7 +610,7 @@
                     // Update ajaxData for detail note
                     ajaxData.account_head = accountHeadArray;
                     ajaxData.current_year = currentYearArray;
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         ajaxData.previous_year = previousYearArray;
                     @endif
 
@@ -685,7 +685,7 @@
                     // var expectedCurrentYear = parseFloat($('#' + table_id + ' tfoot tr td:nth-child(2)').attr('current-year')) || 0;
                     var expectedCurrentYear = parseFloat(detailTable.find('tfoot tr td:nth-child(2)').attr('data-current-year').replace(/,/g, '').trim()) || 0;
                     
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         // var expectedPreviousYear = parseFloat($('#' + table_id + ' tfoot tr td:nth-child(3)').attr('previous-year')) || 0;
                         var expectedPreviousYear = parseFloat(detailTable.find('tfoot tr td:nth-child(3)').attr('data-previous-year').replace(/,/g, '').trim()) || 0;
                     @endif
@@ -712,7 +712,7 @@
                     // Get calculated totals from the table footer
                     var calculatedCurrentYear = parseFloat(detailTable.find('tfoot tr td:nth-child(2)').text().replace(/,/g, '').trim()) || 0;
 
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         var calculatedPreviousYear = parseFloat(detailTable.find('tfoot tr td:nth-child(3)').text().replace(/,/g, '').trim()) || 0;
                         // Validate totals match
                         if (calculatedCurrentYear !== expectedCurrentYear || calculatedPreviousYear !== expectedPreviousYear) {
@@ -730,7 +730,7 @@
                     var accountHeadArray = [];
                     var currentYearArray = [];
                     
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         var previousYearArray = [];
                     @endif
 
@@ -738,7 +738,7 @@
                         var $row = $(this);
                         var description = $row.find('td').eq(0).text().trim();
                         var currentYear = parseCell($row.find('td').eq(1));
-                        @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                        @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                             var previousYear = parseCell($row.find('td').eq(2));
                         @endif
                         var id = $row.find('td').eq(3);
@@ -749,7 +749,7 @@
                         }
                         accountHeadArray.push(description);
                         currentYearArray.push(currentYear);
-                        @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                        @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                             previousYearArray.push(previousYear);
                         @endif
                     });
@@ -758,7 +758,7 @@
                     ajaxData.account_id = account_id;
                     ajaxData.account_head = accountHeadArray;
                     ajaxData.current_year = currentYearArray;
-                    @if ($company->company_meta['comparative_accounts'] == 'Yes')
+                    @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                         ajaxData.previous_year = previousYearArray;
                     @endif
                 } else if (note_type === 'descriptive') {
