@@ -109,6 +109,20 @@
                     </select>
                 </div>
             </div>
+            
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="comparative_accounts">Comparative Accounts:</label>
+                    <select name="comparative_accounts" id="comparative_accounts" class="form-control @error('comparative_accounts') is-invalid @enderror">
+                        <option value="">Select Comparative Accounts</option>
+                        <option value="Yes" @if(old('comparative_accounts') === 'Yes') selected @endif>Yes</option>
+                        <option value="No" @if(old('comparative_accounts') === 'No') selected @endif>No</option>
+                    </select>
+                    @error('comparative_accounts')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+            </div>
             <button class="btn btn-primary" type="submit">Save</button>
         </form>
     </div>

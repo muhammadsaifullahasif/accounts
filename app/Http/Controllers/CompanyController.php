@@ -38,7 +38,8 @@ class CompanyController extends Controller
             'end_date' => 'required',
             'address' => 'required',
             'report_type' => 'required',
-            'account_type' => 'required'
+            'account_type' => 'required',
+            'comparative_accounts' => 'required',
         ]);
 
         try {
@@ -53,6 +54,12 @@ class CompanyController extends Controller
             $company->account_type = $request->account_type;
             $company->modified_by = 1;
             $company->save();
+
+            $company->company_meta()->create([
+                'company_id' => $company->id,
+                'meta_key' => 'comparative_accounts',
+                'meta_value' => $request->comparative_accounts,
+            ]);
 
             return redirect()->route('fixed-assets.index', $company->id)->with('success', 'Company created successfully.');
         } catch (\Exception $e) {
@@ -94,7 +101,8 @@ class CompanyController extends Controller
             'end_date' => 'required',
             'address' => 'required',
             'report_type' => 'required',
-            'account_type' => 'required'
+            'account_type' => 'required',
+            'comparative_accounts' => 'required',
         ]);
         
         try {
@@ -108,6 +116,11 @@ class CompanyController extends Controller
             $company->account_type = $request->account_type;
             $company->modified_by = 1;
             $company->save();
+
+            $company->company_meta()->updateOrCreate(
+                ['company_id' => $company->id, 'meta_key' => 'comparative_accounts'],
+                ['meta_value' => $request->comparative_accounts]
+            );
 
             return redirect()->route('companies.index')->with('success', 'Company updated successfully.');
         } catch (\Exception $e) {

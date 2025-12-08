@@ -104,10 +104,24 @@
                     <label for="account_type">Type of Accounts:</label>
                     <select name="account_type" id="account_type" class="form-control @error('account_type') is-invalid @enderror">
                         <option value="">Type of Account</option>
-                        <option value="proprietor" @if(old('account_type', $company->account_type) === 'proprietor') selected @endif>Proprietor</option>
-                        <option value="aop" @if(old('account_type', $company->account_type) === 'aop') selected @endif>AOP</option>
-                        <option value="company" @if(old('account_type', $company->account_type) === 'company') selected @endif>Company</option>
+                        <option value="proprietor" @if(old('account_type', $company->account_type) === 'Proprietor') selected @endif>Proprietor</option>
+                        <option value="aop" @if(old('account_type', $company->account_type) === 'AOP') selected @endif>AOP</option>
+                        <option value="company" @if(old('account_type', $company->account_type) === 'Company') selected @endif>Company</option>
                     </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col mb-3">
+                    <label for="comparative_accounts">Comparative Accounts:</label>
+                    <select name="comparative_accounts" id="comparative_accounts" class="form-control @error('comparative_accounts') is-invalid @enderror">
+                        <option value="">Select Comparative Accounts</option>
+                        <option value="Yes" @if(old('comparative_accounts', $company->company_meta['comparative_accounts'] ?? 'No') === 'Yes') selected @endif>Yes</option>
+                        <option value="No" @if(old('comparative_accounts', $company->company_meta['comparative_accounts'] ?? 'No') === 'No') selected @endif>No</option>
+                    </select>
+                    @error('comparative_accounts')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
                 </div>
             </div>
             <button class="btn btn-primary" type="submit">Update</button>

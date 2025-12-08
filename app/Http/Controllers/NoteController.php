@@ -26,12 +26,14 @@ class NoteController extends Controller
                 ->get()
                 ->groupBy('index')
                 ->sortKeys();
+            
+            // return $notes;
             return view('notes.index', compact('company', 'notes'));
         }
 
         $notes = $this->notes_create($id);
         
-
+        return $notes;
         return view('notes.index', compact('company', 'notes'));
         
         // return view('notes.index', compact('company'));
@@ -369,19 +371,25 @@ class NoteController extends Controller
             ->groupBy('group_name');
     }
 
-    public function notes_save(Request $request)
+    public function notes_save(Request $request, string $id)
     {
-        $request->validate([
+        $company = Company::findOrFail($id);
+        // dd($request->all());
+        $validation_rule = [
             'index' => 'required|integer',
             'account_code' => 'required|string',
             'account_head' => 'required',
             'current_year' => 'required',
-            'previous_year' => 'required',
-        ]);
-
+        ];
+        if ($company->company_meta['comparative_accounts'] == 'Yes') {
+            $validation_rule['previous_year'] = 'required';
+        }
+        $request->validate($validation_rule);
+        
         try {
             // Get the original note to find company_id and group information
             $originalNote = Note::where('account_code', $request->account_code)
+                ->where('company_id', $id)
                 ->first();
             
             if (!$originalNote) {
@@ -391,12 +399,12 @@ class NoteController extends Controller
                 ], 404);
             }
 
-            $companyId = $originalNote->company_id;
+            // $companyId = $originalNote->company_id;
             $groupCode = $originalNote->group_code;
             $groupName = $originalNote->group_name;
 
             // Find the last index with parent_index equal to $request->index
-            $lastNote = Note::where('company_id', $companyId)
+            $lastNote = Note::where('company_id', $id)
                 ->where('parent_index', $request->index)
                 ->orderBy('index', 'desc')
                 ->first();
@@ -416,21 +424,22 @@ class NoteController extends Controller
                 // Detail Note: Create multiple note entries
                 $accountHeads = $request->account_head;
                 $currentYears = is_array($request->current_year) ? $request->current_year : [];
-                $previousYears = is_array($request->previous_year) ? $request->previous_year : [];
-
-                // Validate arrays have same length
-                if (count($accountHeads) !== count($currentYears) || count($accountHeads) !== count($previousYears)) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Mismatched array lengths for account_head, current_year, and previous_year.'
-                    ], 422);
+                if ($company->company_meta['comparative_accounts'] == 'Yes') {
+                    $previousYears = is_array($request->previous_year) ? $request->previous_year : [];
+                    // Validate arrays have same length
+                    if (count($accountHeads) !== count($currentYears) || count($accountHeads) !== count($previousYears)) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Mismatched array lengths for account_head, current_year, and previous_year.'
+                        ], 422);
+                    }
                 }
 
                 // Create notes for each detail entry
                 foreach ($accountHeads as $key => $accountHead) {
                     $note = new Note();
                     $note->user_id = 1;
-                    $note->company_id = $companyId;
+                    $note->company_id = $id;
                     $note->index = $newStartIndex;
                     $note->group_code = $groupCode;
                     $note->group_name = $groupName;
@@ -455,7 +464,7 @@ class NoteController extends Controller
                 // Descriptive Note: Create single note entry
                 $note = new Note();
                 $note->user_id = 1;
-                $note->company_id = $companyId;
+                $note->company_id = $id;
                 $note->index = $newStartIndex;
                 $note->group_code = $groupCode;
                 $note->group_name = $groupName;

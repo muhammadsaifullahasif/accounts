@@ -58,42 +58,44 @@
                             <td></td>
                             <td></td>
                         </tr>
-                        <tr>
-                            <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
-                            <td class="text-center text-bold scb_previous_year" data-content="@if($opening_capital['closing_debit']) {{ round($opening_capital['closing_debit']) }} @else {{ round($opening_capital['closing_credit']) }} @endif">
-                                @if ($opening_capital['closing_debit'] != 0)
-                                    {{ number_format(abs(round($opening_capital['closing_debit'])), 0, '.', ',') }}
-                                @else
-                                    {{ number_format(abs(round($opening_capital['closing_credit'])), 0, '.', ',') }}
-                                @endif
-                            </td>
-                            <td class="text-center text-bold aplb_previous_year editable" contenteditable="true" data-content="{{ round($aplb_previous_year->meta_value ?? 0) }}">{{ round($aplb_previous_year->meta_value ?? 0) }}</td>
-                            <td class="text-center text-bold tb_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ ( $otherComprehensiveIncome['previous_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
-                            <td class="text-center sctc_previous_year" data-content="0">0</td>
-                            <td class="text-center apltc_previous_year" data-content="{{ $otherComprehensiveIncome['previous_year'] }}">{{ ($otherComprehensiveIncome['previous_year'] < 0) ? '('. number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}</td>
-                            <td class="text-center ttc_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Capital Injection</td>
-                            <td class="text-center scci_previous_year editable" contenteditable="true" data-content="{{ round($scci_previous_year->meta_value ?? 0) }}">{{ round($scci_previous_year->meta_value ?? 0) }}</td>
-                            <td class="text-center aplci_previous_year" data-content="0">0</td>
-                            <td class="text-center tci_previous_year" data-content="0">0</td>
-                        </tr>
-                        <tr>
-                            <td>Drawings</td>
-                            <td class="text-center scd_previous_year editable" contenteditable="true" data-content="{{ round($scd_previous_year->meta_value ?? 0) }}">{{ round($scd_previous_year->meta_value ?? 0) }}</td>
-                            <td class="text-center apld_previous_year" data-content="0">0</td>
-                            <td class="text-center td_previous_year" data-content="0">0</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
-                            <td class="text-center text-bold tsc_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
-                            <td class="text-center text-bold tapl_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
-                            <td class="text-center text-bold tt_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
-                        </tr>
+                        @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
+                            <tr>
+                                <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
+                                <td class="text-center text-bold scb_previous_year" data-content="@if($opening_capital['closing_debit']) {{ round($opening_capital['closing_debit']) }} @else {{ round($opening_capital['closing_credit']) }} @endif">
+                                    @if ($opening_capital['closing_debit'] != 0)
+                                        {{ number_format(abs(round($opening_capital['closing_debit'])), 0, '.', ',') }}
+                                    @else
+                                        {{ number_format(abs(round($opening_capital['closing_credit'])), 0, '.', ',') }}
+                                    @endif
+                                </td>
+                                <td class="text-center text-bold aplb_previous_year editable" contenteditable="true" data-content="{{ round($aplb_previous_year->meta_value ?? 0) }}">{{ round($aplb_previous_year->meta_value ?? 0) }}</td>
+                                <td class="text-center text-bold tb_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
+                            </tr>
+                            <tr>
+                                <td>{{ ( $otherComprehensiveIncome['previous_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
+                                <td class="text-center sctc_previous_year" data-content="0">0</td>
+                                <td class="text-center apltc_previous_year" data-content="{{ $otherComprehensiveIncome['previous_year'] }}">{{ ($otherComprehensiveIncome['previous_year'] < 0) ? '('. number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}</td>
+                                <td class="text-center ttc_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
+                            </tr>
+                            <tr>
+                                <td>Capital Injection</td>
+                                <td class="text-center scci_previous_year editable" contenteditable="true" data-content="{{ round($scci_previous_year->meta_value ?? 0) }}">{{ round($scci_previous_year->meta_value ?? 0) }}</td>
+                                <td class="text-center aplci_previous_year" data-content="0">0</td>
+                                <td class="text-center tci_previous_year" data-content="0">0</td>
+                            </tr>
+                            <tr>
+                                <td>Drawings</td>
+                                <td class="text-center scd_previous_year editable" contenteditable="true" data-content="{{ round($scd_previous_year->meta_value ?? 0) }}">{{ round($scd_previous_year->meta_value ?? 0) }}</td>
+                                <td class="text-center apld_previous_year" data-content="0">0</td>
+                                <td class="text-center td_previous_year" data-content="0">0</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
+                                <td class="text-center text-bold tsc_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
+                                <td class="text-center text-bold tapl_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
+                                <td class="text-center text-bold tt_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
+                            </tr>
+                        @endif
                         
                         <tr>
                             <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
@@ -141,7 +143,15 @@
                 </table>
                 <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
             </div>
-            <button id="saveSOCEbtn" class="btn btn-primary">Save</button>
+            @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
+                <button id="saveSOCEbtn" class="btn btn-primary">Save</button>
+            @else
+                @if (in_array('SOFP', explode(',', $company->required_statements)))
+                    <a href="{{ route('statements.sofp', $company->id) }}" class="btn btn-primary">Next Statement</a>
+                @elseif (in_array('SOCF', explode(',', $company->required_statements)))
+                    <a href="{{ route('statements.socf', $company->id) }}" class="btn btn-primary">Next Statement</a>
+                @endif
+            @endif
         </div>
     </div>
 @endsection

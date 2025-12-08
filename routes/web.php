@@ -41,7 +41,7 @@ Route::middleware(['auth', AuthAdmin::class])->group(function () {
 
     // Custom note routes - MUST come before resource routes to avoid conflicts
     Route::get('/companies/{id}/notes/regenerate', [NoteController::class, 'notes_regenerate'])->name('notes.regenerate');
-    Route::post('/companies/notes/save', [NoteController::class, 'notes_save'])->name('notes.save');
+    Route::post('/companies/{id}/notes/save', [NoteController::class, 'notes_save'])->name('notes.save');
     Route::delete('/companies/notes/delete', [NoteController::class, 'notes_delete'])->name('notes.delete');
     Route::post('/companies/{id}/notes/accounts-merge', [NoteController::class, 'notes_accounts_merge'])->name('notes.accounts-merge');
     Route::post('/companies/notes/update_child_notes', [NoteController::class, 'child_notes_update'])->name('notes.update_child_notes');
