@@ -11,7 +11,11 @@
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+                @if ((Auth::user()->user_meta['profile_image'] ?? '') != '')
+                    <img src="{{ asset('uploads/users') }}/{{ Auth::user()->user_meta['profile_image'] }}" class="img-circle elevation-2" alt="User Image">
+                @else
+                    <img src="{{ asset('dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image">
+                @endif
             </div>
             <div class="info">
                 <a href="#" class="d-block">{{ Auth::user()->name }}</a>
@@ -54,6 +58,7 @@
                         </li>
                     </ul>
                 </li>
+                @if (Auth::user()->type == 'admin')
                 <li class="nav-item {{ request()->routeIs('audit-reports.*') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->routeIs('audit-reports.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-file-contract"></i>
@@ -100,6 +105,30 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item {{ request()->routeIs('users.*') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>
+                            Users
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>All Users</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('users.create') }}" class="nav-link {{ request()->routeIs('users.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add User</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                @endif
                 {{-- <li class="nav-item">
                     <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
                         @csrf

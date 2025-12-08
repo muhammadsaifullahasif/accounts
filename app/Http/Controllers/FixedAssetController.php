@@ -6,6 +6,7 @@ use App\Models\Company;
 use App\Models\TrailBalance;
 use Illuminate\Http\Request;
 use App\Models\FixedAssetsSchedual;
+use Illuminate\Support\Facades\Auth;
 
 class FixedAssetController extends Controller
 {
@@ -14,7 +15,11 @@ class FixedAssetController extends Controller
      */
     public function index(string $id)
     {
-        $company = Company::findOrFail($id);
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('user_id', Auth::user()->id)->findOrFail($id);
+        } else {
+            $company = Company::findOrFail($id);
+        }
 
         $fixedAssets = FixedAssetsSchedual::where('company_id', $company->id)->get();
         return view('fixed-assets.index', compact('company', 'fixedAssets'));
@@ -52,7 +57,11 @@ class FixedAssetController extends Controller
         ]);
 
         try {
-            $company = Company::findOrFail($id);
+            if (Auth::user()->type != 'admin') {
+                $company = Company::where('user_id', Auth::user()->id)->findOrFail($id);
+            } else {
+                $company = Company::findOrFail($id);
+            }
 
             // Get all account codes from the request
             $requestAccountCodes = array_column($request->entries, 'accountCode');

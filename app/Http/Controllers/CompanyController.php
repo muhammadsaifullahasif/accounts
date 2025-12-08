@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyController extends Controller
 {
@@ -12,7 +13,11 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::orderBy('id', 'DESC')->paginate(12);
+        if (Auth::user()->type == 'admin') {
+            $companies = Company::orderBy('id', 'DESC')->paginate(12);
+        } else {
+            $companies = Company::where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->paginate(12);
+        }
         return view('companies.index', compact('companies'));
     }
 
@@ -85,7 +90,17 @@ class CompanyController extends Controller
      */
     public function edit(string $id)
     {
-        $company = Company::findOrFail($id);
+        if (Auth::user()->type != 'admin') {
+            // return redirect()->route('companies.index')->with('error', 'You are not authorized to edit this company.');
+            $company = Company::find($id);
+
+            if ($company->user_id != Auth::user()->id) {
+                return redirect()->route('companies.index')->with('error', 'You are not authorized to edit this company.');
+            }
+        } else {
+            $company = Company::findOrFail($id);
+        }
+        // $company = Company::findOrFail($id);
 
         return view('companies.edit', compact('company'));
     }

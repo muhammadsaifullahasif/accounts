@@ -30,6 +30,14 @@
             </div>
         </div>
     @endif
+    @if (Session::has('error'))
+        <div class="mb-3">
+            <div class="alert alert-danger alert-dismissible fade show">
+                <strong>{{ Session::get('error') }}</strong>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+        </div>
+    @endif
 
     <div class="mb-3">
         @if ($auditReport)

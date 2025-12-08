@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\CompanyAccountingPolicy;
 
 class CompanyAccountingPolicyController extends Controller
@@ -13,8 +14,12 @@ class CompanyAccountingPolicyController extends Controller
      */
     public function index(string $id)
     {
-        $company = Company::where('id', $id)->first();
-
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
+        } else {
+            $company = Company::where('id', $id)->first();
+        }
+        
         $policies = CompanyAccountingPolicy::select('*')
             ->where('company_id', $id)
             ->orderByRaw("
@@ -38,7 +43,13 @@ class CompanyAccountingPolicyController extends Controller
      */
     public function create()
     {
-        $company = Company::where('id', $id)->first();
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('user_id', Auth::user()->id)
+                ->where('id', $id)
+                ->first();
+        } else {
+            $company = Company::where('id', $id)->first();
+        }
 
         return view('company-accounting-policies.new', compact('company'));
     }
@@ -89,8 +100,12 @@ class CompanyAccountingPolicyController extends Controller
      */
     public function edit(string $id)
     {
-        $company = Company::where('id', $id)->first();
-        $policy = CompanyAccountingPolicy::where('id', $policy_id)->first();
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
+        } else {
+            $company = Company::where('id', $id)->first();
+        }
+        $policy = CompanyAccountingPolicy::where('company_id', $id)->first();
 
         return view('company-accounting-policies.edit', compact('company', 'policy'));
     }
@@ -105,8 +120,12 @@ class CompanyAccountingPolicyController extends Controller
         ]);
 
         try {
-            $company = Company::where('id', $id)->first();
-            $policy = CompanyAccountingPolicy::where('id', $policy_id)->first();
+            if (Auth::user()->type != 'admin') {
+                $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
+            } else {
+                $company = Company::where('id', $id)->first();
+            }
+            $policy = CompanyAccountingPolicy::where('company_id', $id)->first();
 
             if (!$policy) {
                 return redirect()->back()->with('error', 'Policy not found.');
@@ -137,8 +156,13 @@ class CompanyAccountingPolicyController extends Controller
     public function destroy(string $id)
     {
         try {
-            $company = Company::where('id', $id)->first();
-            $policy = CompanyAccountingPolicy::where('id', $policy_id)
+            if (Auth::user()->type != 'admin') {
+                $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
+            } else {
+                $company = Company::where('id', $id)->first();
+            }
+
+            $policy = CompanyAccountingPolicy::where('id', $id)
                 ->where('company_id', $company->id)
                 ->first();
 
@@ -149,6 +173,7 @@ class CompanyAccountingPolicyController extends Controller
             $policy->delete();
             return redirect()->route('company-accounting-policy.index', $company->id)
                 ->with('success', 'Company Policy deleted successfully.');
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

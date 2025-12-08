@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\AuditReport;
 use Illuminate\Http\Request;
 use App\Models\CompanyAuditReport;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyAuditReportController extends Controller
 {
@@ -58,9 +59,15 @@ class CompanyAuditReportController extends Controller
      */
     public function index(string $id)
     {
-        $company = Company::where('id', $id)->first();
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
 
-        $auditReport = CompanyAuditReport::where('company_id', $id)->first();
+            $auditReport = CompanyAuditReport::where('company_id', $id)->where('user_id', Auth::user()->id)->first();
+        } else {
+            $company = Company::where('id', $id)->first();
+
+            $auditReport = CompanyAuditReport::where('company_id', $id)->first();
+        }
 
         if(!$auditReport) {
             $auditReport = $this->create($id);

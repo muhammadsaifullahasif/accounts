@@ -45,4 +45,18 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $appends = ['user_meta']; // Ensures this is included in JSON
+
+    public function user_meta() {
+        return $this->hasMany(UserMeta::class, 'user_id', 'id');
+    }
+
+    public function getUserMetaAttribute() {
+        return $this->user_meta()
+            ->get()
+            ->mapWithKeys(function ($item) {
+                return [$item->meta_key => $item->meta_value];
+            });
+    }
 }

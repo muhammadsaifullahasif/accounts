@@ -6,6 +6,7 @@ use App\Models\Note;
 use App\Models\Company;
 use App\Models\TrailBalance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
@@ -14,7 +15,11 @@ class NoteController extends Controller
      */
     public function index(string $id)
     {
-        $company = Company::find($id);
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('user_id', Auth::user()->id)->findOrFail($id);
+        } else {
+            $company = Company::findOrFail($id);
+        }
 
         $notes_exists = Note::where('company_id', $id)->whereNull('parent_index')->get();
 
