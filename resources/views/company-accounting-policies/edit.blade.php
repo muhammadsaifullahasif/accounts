@@ -7,13 +7,13 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0 d-inline mr-2">Edit Accounting Policy</h1>
-                    <a href="{{ route('company-accounting-policy.create') }}" class="btn btn-outline-primary btn-sm mb-3">Add Accounting Policy</a>
+                    <a href="{{ route('company-accounting-policy.create', $company->id) }}" class="btn btn-outline-primary btn-sm mb-3">Add Accounting Policy</a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{ route('dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('companies.index') }}">Company</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('company-accounting-policy.index') }}">Accounting Policy</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('company-accounting-policy.index', $company->id) }}">Accounting Policy</a></li>
                         <li class="breadcrumb-item active">Edit Accounting Policy</li>
                     </ol>
                 </div><!-- /.col -->

@@ -45,15 +45,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/companies/{id}/statements/sofp', [StatementController::class, 'sofp'])->name('statements.sofp');
     Route::get('/companies/{id}/statements/socf', [StatementController::class, 'socf'])->name('statements.socf');
     
+    Route::get('/companies/{id}/company-audit-reports/export/pdf', [CompanyAuditReportController::class, 'export_pdf'])->name('company-audit-reports.export.pdf');
     Route::resource('/companies/{id}/company-audit-reports', CompanyAuditReportController::class);
     
+    Route::get('/companies/{id}/company-accounting-policy/import', [CompanyAccountingPolicyController::class, 'import'])->name('company-accounting-policy.import');
+    Route::post('/companies/{id}/company-accounting-policy/add-bulk', [CompanyAccountingPolicyController::class, 'policies_add_bulk'])->name('company-accounting-policy.add-bulk');
+    Route::get('/companies/{id}/company-accounting-policy/export/pdf', [CompanyAccountingPolicyController::class, 'export_pdf'])->name('company-accounting-policy.export.pdf');
     Route::resource('/companies/{id}/company-accounting-policy', CompanyAccountingPolicyController::class);
     Route::post('/companies/{id}/company-accounting-policy/title', [CompanyAccountingPolicyController::class, 'policies_title'])->name('company-accounting-policy.title');
 });
-
-// Route::get('/password', function() {
-//     return Hash::make('12345678');
-// });
 
 Route::middleware(['auth', AuthAdmin::class])->group(function () {
     // Admin Routes;

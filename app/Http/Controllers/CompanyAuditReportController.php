@@ -8,6 +8,7 @@ use App\Models\AuditReport;
 use Illuminate\Http\Request;
 use App\Models\CompanyAuditReport;
 use Illuminate\Support\Facades\Auth;
+use Pdf;
 
 class CompanyAuditReportController extends Controller
 {
@@ -61,38 +62,43 @@ class CompanyAuditReportController extends Controller
     {
         if (Auth::user()->type != 'admin') {
             $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
-
-            $auditReport = CompanyAuditReport::where('company_id', $id)->where('user_id', Auth::user()->id)->first();
         } else {
             $company = Company::where('id', $id)->first();
 
-            $auditReport = CompanyAuditReport::where('company_id', $id)->first();
         }
+        $auditReport = CompanyAuditReport::where('company_id', $id)->first();
 
         if(!$auditReport) {
             $auditReport = $this->create($id);
             // return $auditReport;
         }
 
-        return view('company-audit-report.index', compact('company', 'auditReport'));
+        $style = '<style></style>';
+        
+        return view('company-audit-report.index', compact('company', 'auditReport', 'style'));
     }
-
+    
     /**
      * Show the form for creating a new resource.
-     */
+    */
     public function create(string $id)
     {
-        $company = Company::where('id', $id)->first();
-
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
+        } else {
+            $company = Company::where('id', $id)->first();
+        }
+        
         if (!$company) {
             return null;
         }
-
+        
         $auditReport = AuditReport::where('type', $company->report_type)
             ->where('account_type', $company->account_type)
             ->first();
-
+        
         if ($auditReport) {
+            // return 'This';
             // return 'This';
             $content = $auditReport->content;
             $content = str_replace(
@@ -174,5 +180,35 @@ class CompanyAuditReportController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function export_pdf(string $id)
+    {
+        if (Auth::user()->type != 'admin') {
+            $company = Company::where('id', $id)->where('user_id', Auth::user()->id)->first();
+        } else {
+            $company = Company::where('id', $id)->first();
+        }
+
+        $auditReport = CompanyAuditReport::where('company_id', $id)->first();
+
+        if (!$auditReport) {
+            return redirect()->back()->with('error', 'Audit report not found for this company.');
+        }
+
+        $style = '
+        <style>
+            h1 {
+                font-size: 14px;
+            }
+            p, ul, ol, ul li, ol li, a {
+                font-size: 11px;
+            }
+        </style>
+        ';
+
+        $pdf = Pdf::loadView('components.company-audit-report.index', compact('auditReport', 'company', 'style'));
+
+        return $pdf->download($company->name . ' Audit Report.pdf');
     }
 }

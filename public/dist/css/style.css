@@ -1,3 +1,10 @@
+@font-face {
+    font-family: 'Calibri';
+    src: url('../../fonts/calibri-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --primary-color: #26667f;
     --secondary-color: #f1962e;

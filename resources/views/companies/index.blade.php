@@ -199,7 +199,7 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('company-accounting-policy.index', $company->id) }}" class="btn btn-primary disabled btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('company-accounting-policy.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                                                     <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>
@@ -210,7 +210,7 @@
                                             <td>2025-11-17 23:07:52</td>
                                             <td class="actions">
                                                 <div class="btn-group">
-                                                    <a href="{{ route('company-audit-reports.index', $company->id) }}" disabled class="btn btn-primary disabled btn-sm"><i class="fas fa-edit"></i></a>
+                                                    <a href="{{ route('company-audit-reports.index', $company->id) }}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                                                     <a href="#" class="btn btn-success btn-sm" title="Export"><i class="fas fa-download"></i></a>
                                                 </div>
                                             </td>

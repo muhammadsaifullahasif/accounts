@@ -93,8 +93,8 @@
                     <label for="report_type">Type of Report:</label>
                     <select name="report_type" id="report_type" class="form-control @error('report_type') is-invalid @enderror">
                         <option value="">Select Type of Report</option>
-                        <option value="IAS 700" @if(old('report_type', $company->report_type) === 'IAS 700') selected @endif>IAS 700</option>
-                        <option value="IAS 800" @if(old('report_type', $company->report_type) === 'IAS 800') selected @endif>IAS 800</option>
+                        <option value="ISA 700" @if(old('report_type', $company->report_type) === 'ISA 700') selected @endif>ISA 700</option>
+                        <option value="ISA 800" @if(old('report_type', $company->report_type) === 'ISA 800') selected @endif>ISA 800</option>
                     </select>
                     @error('report_type')
                         <span class="invalid-feedback">{{ $message }}</span>

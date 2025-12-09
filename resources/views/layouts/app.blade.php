@@ -4,6 +4,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>{{ config('app.name', 'Laravel') }}</title>
+	<!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 	<!-- Google Font: Source Sans Pro -->
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
 	<!-- Font Awesome -->
@@ -21,6 +23,7 @@
 	<!-- Custom style -->
 	<link rel="stylesheet" href="{{ asset('dist/css/style.css') }}">
 	<style>
+
 		.track{
             position: relative;
             background-color: rgba(54, 65, 83, 0.01);

@@ -7,7 +7,9 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0 d-inline mr-2">Accounting Policy</h1>
-                    <a href="{{ route('company-accounting-policy.create') }}" class="btn btn-outline-primary btn-sm mb-3">Add Accounting Policy</a>
+                    <a href="{{ route('company-accounting-policy.import', $company->id) }}" class="btn btn-outline-primary btn-sm mb-3 import_policies_btn">Import policies</a>
+                    <a href="{{ route('company-accounting-policy.export.pdf', $company->id) }}" class="btn btn-primary btn-sm mb-3">Export Policies</a>
+                    {{-- <a href="{{ route('company-accounting-policy.create', $company->id) }}" class="btn btn-outline-primary btn-sm mb-3">Add Accounting Policy</a> --}}
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -40,15 +42,7 @@
         </div>
     @endif
 
-    <div class="note-main-container">
-        <div class="note-main-header">
-            <div class="note-header-company-name">{{ $company->name }}</div>
-            <div class="note-document-title">Notes to the financial statements</div>
-            <div class="note-period">For the year ended {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</div>
-        </div>
-    </div>
-
-    @foreach ($policies as $groupName => $accounting_policies)
+    @forelse ($policies as $groupName => $accounting_policies)
         <h5 class="d-inline mb-3"><strong>{{ $groupName }}</strong></h5>
         <a href="#" data-toggle="modal" data-target="#add-policy-modal-{{ str_replace(' ', '-', $groupName) }}" class="btn btn-primary btn-sm float-right mb-3">Add Policy</a>
         <div class="table-responsive">
@@ -112,8 +106,7 @@
                             <input type="hidden" value="{{ $groupName }}" name="policy_heading" class="policy_heading">
                             @php
                                 $existingTitles = $accounting_policies->pluck('title')->toArray();
-                                $new_policies = \App\Models\AccountingPolicy::where('industry_id', $company->industry_id)
-                                    ->where('size', $company->size)
+                                $new_policies = \App\Models\AccountingPolicy::where('account_type', $company->account_type)
                                     ->where('policy_heading', $groupName)
                                     ->whereNotIn('title', $existingTitles)
                                     ->orderBy('id', 'ASC')
@@ -125,7 +118,7 @@
                                     <label for="{{ $new_policy->id }}" class="form-check-label">{{ $new_policy->title }}</label>
                                 </div>
                             @empty
-                                <p>No new accounting policy found.</p>
+                                <p>No new accounting policy found in <strong>{{ $groupName }}</strong>.</p>
                             @endforelse
                         </form>
                     </div>
@@ -138,7 +131,7 @@
         </div>
     @empty
         <p>No Policy Found.</p>
-    @endforeach
+    @endforelse
 @endsection
 
 @push('scripts')
@@ -148,6 +141,13 @@
                 e.preventDefault();
                 if(confirm('Are you sure to delete the policy?')) {
                     $('#delete-form-' + $(this).data('target')).submit();
+                }
+            });
+
+            $(document).on('click', '.import_policies_btn', function(e){
+                // e.preventDefault();
+                if (confirm('Are you sure to import all the polices?')) {
+                    return true;
                 }
             });
 
@@ -196,7 +196,7 @@
 
                 // Send data via AJAX
                 $.ajax({
-                    url: '/companies/' + companyId + '/policies/add-bulk',
+                    url: '{{ route("company-accounting-policy.add-bulk", $company->id) }}',
                     method: 'POST',
                     data: formData,
                     success: function(response) {

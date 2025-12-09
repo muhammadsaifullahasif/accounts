@@ -7,7 +7,8 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0 d-inline mr-2">{{ $company->name }} Audit Report</h1>
-                    <a href="{{ route('company-audit-reports.edit', $auditReport->id) }}" class="btn btn-outline-primary btn-sm mb-3">Edit Report</a>
+                    <a href="{{ route('company-audit-reports.edit', [$company->id, $auditReport->id]) }}" class="btn btn-outline-primary btn-sm mb-3">Edit Report</a>
+                    <a href="{{ route('company-audit-reports.export.pdf', $company->id) }}" class="btn btn-primary btn-sm mb-3">Export</a>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
@@ -39,10 +40,5 @@
         </div>
     @endif
 
-    <div class="mb-3">
-        @if ($auditReport)
-            {!! $auditReport->content !!}
-            {{-- {{ $auditReport->content }} --}}
-        @endif
-    </div>
+    @include('components.company-audit-report.index')
 @endsection
