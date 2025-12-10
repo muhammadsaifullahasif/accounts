@@ -194,10 +194,10 @@
                 @endphp
                 <tr>
                     <td>Authorized share capital</td>
-                    <td style="text-align: center;"><strong>9.1</strong></td>
-                    <td style="text-align: center; border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</strong></td>
+                    <td style="text-align: center;"></td>
+                    <td style="text-align: center; border-bottom: 2px double #000;"><strong>{{ (($company->company_meta['authorize_capital'] ?? 0) < 0) ? '('. number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') .')' : number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') }}</strong></td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</strong></td>
+                        <td style="text-align: center; border-bottom: 2px double #000;"><strong>{{ (($company->company_meta['authorize_capital'] ?? 0) < 0) ? '('. number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') .')' : number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') }}</strong></td>
                     @endif
                 </tr>
                 <tr>

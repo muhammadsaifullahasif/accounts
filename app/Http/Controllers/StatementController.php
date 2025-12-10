@@ -277,21 +277,6 @@ class StatementController extends Controller
         </style>
         ';
 
-        // return view(
-        //     'components.export.statements.pdf.sopl',
-        //     compact(
-        //         'company',
-        //         'lastIndex',
-        //         'revenue',
-        //         'costOfSales',
-        //         'adminExpense',
-        //         'financialCharges',
-        //         'otherIncome',
-        //         'taxation',
-        //         'style'
-        //     )
-        // );
-
         $pdf = Pdf::loadView(
             'components.export.statements.pdf.sopl',
             compact(

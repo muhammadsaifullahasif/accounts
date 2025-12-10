@@ -2351,6 +2351,74 @@
                 return parseFloat(text) || 0;
             }
 
+            // Helper function to save cursor position for input elements
+            function saveCursorPosition(element) {
+                // For input elements, use selectionStart
+                if (element.selectionStart !== undefined) {
+                    var textBeforeCursor = element.value.substring(0, element.selectionStart);
+                    // Count only digits, ignore commas
+                    var digitsBeforeCursor = textBeforeCursor.replace(/\D/g, '').length;
+                    return digitsBeforeCursor;
+                }
+                return 0;
+            }
+
+            // Helper function to restore cursor position for input elements
+            function restoreCursorPosition(element, digitPosition) {
+                // For input elements, use setSelectionRange
+                if (element.setSelectionRange) {
+                    var text = element.value;
+                    var currentDigitCount = 0;
+                    var targetPosition = 0;
+
+                    // Find the position in formatted text that corresponds to digitPosition
+                    for (var i = 0; i < text.length; i++) {
+                        if (/\d/.test(text[i])) {
+                            currentDigitCount++;
+                            if (currentDigitCount === digitPosition) {
+                                targetPosition = i + 1; // Position after this digit
+                                break;
+                            }
+                        }
+                    }
+
+                    // If we didn't find enough digits, place cursor at the end
+                    if (currentDigitCount < digitPosition) {
+                        targetPosition = text.length;
+                    }
+
+                    element.setSelectionRange(targetPosition, targetPosition);
+                }
+            }
+
+            // Restrict input fields to accept only numeric input
+            $(document).on('keypress', 'input.editable', function(e) {
+                // Allow control keys: backspace, delete, tab, escape, enter
+                if (e.which === 8 || e.which === 0 || e.which === 9 || e.which === 27 || e.which === 13) {
+                    return;
+                }
+
+                // Allow only digits (0-9)
+                if (e.which < 48 || e.which > 57) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Also filter on paste events
+            $(document).on('paste', 'input.editable', function(e) {
+                e.preventDefault();
+
+                // Get pasted data
+                var pastedData = e.originalEvent.clipboardData.getData('text');
+
+                // Remove all non-numeric characters
+                var numericOnly = pastedData.replace(/\D/g, '');
+
+                // Insert the numeric-only text
+                document.execCommand('insertText', false, numericOnly);
+            });
+
             $('#saveTrailBalanceBtn').on('click', function(e){
                 e.preventDefault();
 
@@ -2548,9 +2616,10 @@
              * @param {number} openingCredit - Opening credit balance
              * @param {number} movementDebit - Movement debit amount
              * @param {number} movementCredit - Movement credit amount
+             * @param {string} groupCode - Group code to determine calculation method
              * @returns {object} Object with closingDebit and closingCredit properties
              */
-            function calculateClosingBalance(openingDebit, openingCredit, movementDebit, movementCredit) {
+            function calculateClosingBalance(openingDebit, openingCredit, movementDebit, movementCredit, groupCode) {
                 var closingDebit = 0;
                 var closingCredit = 0;
 
@@ -2560,18 +2629,37 @@
                 movementDebit = parseFloat(movementDebit) || 0;
                 movementCredit = parseFloat(movementCredit) || 0;
 
-                // Calculate net balance
-                var netBalance = openingDebit + movementDebit - openingCredit - movementCredit;
+                // Income and expense groups use movement-only calculation
+                var incomeExpenseGroups = ['S-001', 'COS-001', 'OI-001', 'EX-001', 'FC-001', 'T-001'];
 
-                if (netBalance > 0) {
-                    closingDebit = netBalance;
-                    closingCredit = 0;
-                } else if (netBalance < 0) {
-                    closingDebit = 0;
-                    closingCredit = Math.abs(netBalance);
+                if (incomeExpenseGroups.includes(groupCode)) {
+                    // For income/expense groups: only use movement values
+                    var netBalance = movementDebit - movementCredit;
+
+                    if (netBalance > 0) {
+                        closingDebit = netBalance;
+                        closingCredit = 0;
+                    } else if (netBalance < 0) {
+                        closingCredit = Math.abs(netBalance);
+                        closingDebit = 0;
+                    } else {
+                        closingDebit = 0;
+                        closingCredit = 0;
+                    }
                 } else {
-                    closingDebit = 0;
-                    closingCredit = 0;
+                    // For other groups: use opening + movement calculation
+                    var netBalance = openingDebit + movementDebit - openingCredit - movementCredit;
+
+                    if (netBalance > 0) {
+                        closingDebit = netBalance;
+                        closingCredit = 0;
+                    } else if (netBalance < 0) {
+                        closingDebit = 0;
+                        closingCredit = Math.abs(netBalance);
+                    } else {
+                        closingDebit = 0;
+                        closingCredit = 0;
+                    }
                 }
 
                 return {
@@ -2590,20 +2678,25 @@
                 var classList = $row.attr('class');
                 var groupCode = $row.find('input[name="groupCode"]').val();
 
+                // Save cursor position BEFORE any updates
+                var cursorPosition = saveCursorPosition(this);
+
+                var openingDebit, openingCredit, movementDebit, movementCredit;
+
                 if (classList == 'parent') {
-                    var openingDebit = $row.find('input.editable[name="' + groupCode + '-opening-debit"]').val();
-                    var openingCredit = $row.find('input.editable[name="' + groupCode + '-opening-credit"]').val();
-                    var movementDebit = $row.find('input.editable[name="' + groupCode + '-movement-debit"]').val();
-                    var movementCredit = $row.find('input.editable[name="' + groupCode + '-movement-credit"]').val();
+                    openingDebit = $row.find('input.editable[name="' + groupCode + '-opening-debit"]').val();
+                    openingCredit = $row.find('input.editable[name="' + groupCode + '-opening-credit"]').val();
+                    movementDebit = $row.find('input.editable[name="' + groupCode + '-movement-debit"]').val();
+                    movementCredit = $row.find('input.editable[name="' + groupCode + '-movement-credit"]').val();
                 } else {
                     var accountCode = $row.find('input[name="accountCode"]').val();
-                    var openingDebit = $row.find('input.editable[name="' + accountCode + '-opening-debit"]').val();
-                    var openingCredit = $row.find('input.editable[name="' + accountCode + '-opening-credit"]').val();
-                    var movementDebit = $row.find('input.editable[name="' + accountCode + '-movement-debit"]').val();
-                    var movementCredit = $row.find('input.editable[name="' + accountCode + '-movement-credit"]').val();
+                    openingDebit = $row.find('input.editable[name="' + accountCode + '-opening-debit"]').val();
+                    openingCredit = $row.find('input.editable[name="' + accountCode + '-opening-credit"]').val();
+                    movementDebit = $row.find('input.editable[name="' + accountCode + '-movement-debit"]').val();
+                    movementCredit = $row.find('input.editable[name="' + accountCode + '-movement-credit"]').val();
                 }
 
-                var result = calculateClosingBalance(openingDebit, openingCredit, movementDebit, movementCredit);
+                var result = calculateClosingBalance(openingDebit, openingCredit, movementDebit, movementCredit, groupCode);
                 // console.log(result);
 
                 // Update the closing columns (they are static text cells, not inputs)
@@ -2611,6 +2704,12 @@
                 $row.find('td').eq(9).html((result.closingCredit.toFixed(0)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","));
 
                 updateFooterTotals();
+
+                // Restore cursor position AFTER all updates
+                var element = this;
+                setTimeout(function() {
+                    restoreCursorPosition(element, cursorPosition);
+                }, 0);
             });
 
             // Calculate and update parent group totals when child inputs change

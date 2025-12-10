@@ -274,24 +274,132 @@
                 return parseFloat(text) || 0;
             }
 
+            // Helper function to save cursor position for contenteditable elements
+            function saveCursorPosition(element) {
+                var selection = window.getSelection();
+                if (!selection.rangeCount) return 0;
+
+                var range = selection.getRangeAt(0);
+                var preSelectionRange = range.cloneRange();
+                preSelectionRange.selectNodeContents(element);
+                preSelectionRange.setEnd(range.startContainer, range.startOffset);
+
+                var textBeforeCursor = preSelectionRange.toString();
+                // Count only digits and minus signs, ignore commas
+                var digitsBeforeCursor = textBeforeCursor.replace(/[^0-9-]/g, '').length;
+
+                return digitsBeforeCursor;
+            }
+
+            // Helper function to restore cursor position for contenteditable elements
+            function restoreCursorPosition(element, digitPosition) {
+                var range = document.createRange();
+                var sel = window.getSelection();
+                var textNode = element.firstChild;
+
+                if (!textNode || textNode.nodeType !== Node.TEXT_NODE) {
+                    element.focus();
+                    return;
+                }
+
+                var text = textNode.textContent;
+                var currentDigitCount = 0;
+                var targetPosition = 0;
+
+                // Find the position in formatted text that corresponds to digitPosition
+                for (var i = 0; i < text.length; i++) {
+                    if (/[0-9-]/.test(text[i])) {
+                        currentDigitCount++;
+                        if (currentDigitCount === digitPosition) {
+                            targetPosition = i + 1; // Position after this digit
+                            break;
+                        }
+                    }
+                }
+
+                // If we didn't find enough digits, place cursor at the end
+                if (currentDigitCount < digitPosition) {
+                    targetPosition = text.length;
+                }
+
+                targetPosition = Math.min(targetPosition, textNode.length);
+                range.setStart(textNode, targetPosition);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+
+            // Restrict contenteditable cells to accept only numeric input
+            $(document).on('beforeinput', 'td[contenteditable="true"]', function(e) {
+                // Allow certain control keys
+                if (e.originalEvent.inputType === 'deleteContentBackward' ||
+                    e.originalEvent.inputType === 'deleteContentForward' ||
+                    e.originalEvent.inputType === 'deleteByCut') {
+                    return; // Allow delete/backspace
+                }
+
+                // Get the data being inserted
+                var data = e.originalEvent.data;
+
+                // If data exists and contains non-numeric characters, prevent input
+                if (data && !/^\d*$/.test(data)) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            // Also filter on paste events for contenteditable cells
+            $(document).on('paste', 'td[contenteditable="true"]', function(e) {
+                e.preventDefault();
+
+                // Get pasted data
+                var pastedData = e.originalEvent.clipboardData.getData('text');
+
+                // Remove all non-numeric characters
+                var numericOnly = pastedData.replace(/\D/g, '');
+
+                // Insert the numeric-only text
+                document.execCommand('insertText', false, numericOnly);
+            });
+
             var lastEditedAddition = {}; // Track which row's addition was last edited
             var lastEditedDeletion = {}; // Track which row's deletion was last edited
             $(document).on('input', '.editable', function () {
-                var colIndex = $(this).index();
+                var $input = $(this); // Store reference to the input element
+                var colIndex = $input.index();
 
                 // Skip column 3 and column 5
                 if (colIndex === 3 || colIndex === 5) {
                     return;
                 }
 
+                // Save cursor position BEFORE any updates
+                var cursorPosition = saveCursorPosition(this);
+
                 // Otherwise cell updateTotals()
                 updateTotals();
+
+                // Restore cursor position AFTER all updates
+                var element = this;
+                setTimeout(function() {
+                    restoreCursorPosition(element, cursorPosition);
+                }, 0);
             });
+            
             $(document).on('input', 'td[contenteditable="true"]:nth-child(3)', function() {
-                var $row = $(this).closest('tr');
+                var $input = $(this); // Store reference to the input element
+                var cursorPosition = saveCursorPosition(this); // Save cursor position
+
+                var $row = $input.closest('tr');
                 var rowIndex = $('.fixed-asset-table tbody tr').index($row);
                 lastEditedAddition[rowIndex] = 'value';
                 updateTotals();
+
+                // Restore cursor position
+                var element = this;
+                setTimeout(function() {
+                    restoreCursorPosition(element, cursorPosition);
+                }, 0);
             });
 
             $(document).on('change', 'input[name="additionNoOfDays[]"]', function() {
@@ -302,10 +410,19 @@
             });
 
             $(document).on('input', 'td[contenteditable="true"]:nth-child(5)', function() {
-                var $row = $(this).closest('tr');
+                var $input = $(this); // Store reference to the input element
+                var cursorPosition = saveCursorPosition(this); // Save cursor position
+
+                var $row = $input.closest('tr');
                 var rowIndex = $('.fixed-asset-table tbody tr').index($row);
                 lastEditedDeletion[rowIndex] = 'value';
                 updateTotals();
+
+                // Restore cursor position
+                var element = this;
+                setTimeout(function() {
+                    restoreCursorPosition(element, cursorPosition);
+                }, 0);
             });
 
             $(document).on('change', 'input[name="deletionNoOfDays[]"]', function() {

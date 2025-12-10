@@ -63,6 +63,13 @@
                 @enderror
             </div>
             <div class="mb-3">
+                <label for="principal_line_of_business">Principal Line of Business:</label>
+                <textarea name="principal_line_of_business" id="principal_line_of_business" class="form-control @error('principal_line_of_business') is-invalid @enderror" placeholder="Enter principal line of business">{{ old('principal_line_of_business') }}</textarea>
+                @error('principal_line_of_business')
+                    <span class="invalid-feedback">{{ $message }}</span>
+                @enderror
+            </div>
+            <div class="mb-3">
                 <label for="required_statements" class="d-block">Select Require Statements:</label>
                 <div class="form-inline">
                     <div class="custom-control custom-checkbox form-check-inline">
@@ -109,6 +116,20 @@
                     </select>
                 </div>
             </div>
+
+            <div id="authorize_capital_container">
+                @if (old('account_type') === 'Company')
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="authorize_capital">Authorize Capital:</label>
+                            <input type="text" id="authorize_capital" name="authorize_capital" value="{{ old('authorize_capital') }}" class="form-control @error('authorize_capital') is-invalid @enderror" placeholder="Enter Authorize Capital">
+                            @error('authorize_capital')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                @endif
+            </div>
             
             <div class="row">
                 <div class="col mb-3">
@@ -127,3 +148,27 @@
         </form>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function(){
+            $('#account_type').on('change', function(){
+                if ($('#account_type').val() === 'Company') {
+                    $('#authorize_capital_container').html(`
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label for="authorize_capital">Authorize Capital:</label>
+                            <input type="text" id="authorize_capital" name="authorize_capital" value="{{ old('authorize_capital') }}" class="form-control @error('authorize_capital') is-invalid @enderror" placeholder="Enter Authorize Capital">
+                            @error('authorize_capital')
+                                <span class="invalid-feedback">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    `);
+                } else {
+                    $('#authorize_capital_container').html('');
+                }
+            });
+        });
+    </script>
+@endpush

@@ -37,15 +37,20 @@ class CompanyController extends Controller
         // dd($request->required_statement);
         // dd($request);
         // die();
-        $request->validate([
+        $validationRule = [
             'name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
             'address' => 'required',
+            'principal_line_of_business' => 'required',
             'report_type' => 'required',
             'account_type' => 'required',
             'comparative_accounts' => 'required',
-        ]);
+        ];
+        if ($request->account_type === 'Company') {
+            $validationRule['authorize_capital'] = 'required';
+        }
+        $request->validate($validationRule);
 
         try {
             $company = new Company();
@@ -60,11 +65,20 @@ class CompanyController extends Controller
             $company->modified_by = 1;
             $company->save();
 
-            $company->company_meta()->create([
-                'company_id' => $company->id,
-                'meta_key' => 'comparative_accounts',
-                'meta_value' => $request->comparative_accounts,
+            $company->company_meta()->createMany([
+                ['company_id' => $company->id, 'meta_key' => 'comparative_accounts', 'meta_value' => $request->comparative_accounts],
+                ['company_id' => $company->id, 'meta_key' => 'principal_line_of_business', 'meta_value' => $request->principal_line_of_business],
             ]);
+
+            if ($request->account_type === 'Company') {
+                $company->company_meta()->createMany([
+                    ['company_id' => $company->id, 'meta_key' => 'authorize_capital', 'meta_value' => $request->authorize_capital],
+                ]);
+            } else {
+                $company->company_meta()->createMany([
+                    ['company_id' => $company->id, 'meta_key' => 'authorize_capital', 'meta_value' => ''],
+                ]);
+            }
 
             return redirect()->route('fixed-assets.index', $company->id)->with('success', 'Company created successfully.');
         } catch (\Exception $e) {
@@ -110,15 +124,20 @@ class CompanyController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $validationRule = [
             'name' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
             'address' => 'required',
+            'principal_line_of_business' => 'required',
             'report_type' => 'required',
             'account_type' => 'required',
             'comparative_accounts' => 'required',
-        ]);
+        ];
+        if ($request->account_type === 'Company') {
+            $validationRule['authorize_capital'] = 'required';
+        }
+        $request->validate($validationRule);
         
         try {
             $company = Company::findOrFail($id);
@@ -132,10 +151,24 @@ class CompanyController extends Controller
             $company->modified_by = 1;
             $company->save();
 
-            $company->company_meta()->updateOrCreate(
-                ['company_id' => $company->id, 'meta_key' => 'comparative_accounts'],
-                ['meta_value' => $request->comparative_accounts]
+            $company->company_meta()->upsert(
+                [
+                    ['company_id' => $company->id, 'meta_key' => 'comparative_accounts', 'meta_value' => $request->comparative_accounts],
+                    ['company_id' => $company->id, 'meta_key' => 'principal_line_of_business', 'meta_value' => $request->principal_line_of_business],
+                ], 
+                ['company_id', 'meta_key'], 
+                ['meta_value']
             );
+
+            if ($request->account_type === 'Company') {
+                $company->company_meta()->upsert(
+                    [
+                        ['company_id' => $company->id, 'meta_key' => 'authorize_capital', 'meta_value' => $request->authorize_capital],
+                    ],
+                    ['company_id', 'meta_key'],
+                    ['meta_value']
+                );
+            }
 
             return redirect()->route('companies.index')->with('success', 'Company updated successfully.');
         } catch (\Exception $e) {

@@ -83,18 +83,6 @@
                                 <td></td>
                             @endif
                         </tr>
-                        {{-- @foreach ($non_current_assets as $non_current_asset)
-                            @php
-                                $tnca_current_year += $non_current_asset['total_current_year'];
-                                $tnca_previous_year += $non_current_asset['total_previous_year'];
-                            @endphp
-                            <tr>
-                                <td>{{ $non_current_asset['group_name'] }}</td>
-                                <td class="text-center"><strong>{{ $non_current_asset['index'] }}</strong></td>
-                                <td class="text-center">{{ rtrim(rtrim(number_format($non_current_asset['total_current_year'], 2), '0'), '.') }}</td>
-                                <td class="text-center">{{ rtrim(rtrim(number_format($non_current_asset['total_previous_year'], 2), '0'), '.') }}</td>
-                            </tr>
-                        @endforeach --}}
                         @php
                             $tnca_current_year = $non_current_assets['total_current_year'];
                             $tnca_previous_year = $non_current_assets['total_previous_year'];
@@ -169,30 +157,6 @@
                                 @endif
                             </tr>
                         @endforeach
-                        {{-- <tr>
-                            <td>Capital work in process</td>
-                            <td class="text-center"><strong>{{ $capital['index'] }}</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ rtrim(rtrim(number_format($capital['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-top: 1px solid #000;">{{ rtrim(rtrim(number_format($capital['total_previous_year'], 2), '0'), '.') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Trade and other receivables</td>
-                            <td class="text-center"><strong>{{ $tradeReceivable['index'] }}</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000;">{{ rtrim(rtrim(number_format($tradeReceivable['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000;">{{ rtrim(rtrim(number_format($tradeReceivable['total_previous_year'], 2), '0'), '.') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Advances, deposits and other receivables</td>
-                            <td class="text-center"><strong>{{ $advanceDepositPrepayment['index'] }}</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000;">{{ rtrim(rtrim(number_format($advanceDepositPrepayment['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000;">{{ rtrim(rtrim(number_format($advanceDepositPrepayment['total_previous_year'], 2), '0'), '.') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Cash and bank balances</td>
-                            <td class="text-center"><strong>{{ $cashEquivalent['index'] }}</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">{{ rtrim(rtrim(number_format($cashEquivalent['total_current_year'], 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">{{ rtrim(rtrim(number_format($cashEquivalent['total_previous_year'], 2), '0'), '.') }}</td>
-                        </tr> --}}
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
@@ -249,14 +213,16 @@
                             $tequity_current_year = 0;
                             $tequity_previous_year = 0;
                         @endphp
-                        <tr>
-                            <td>Authorized share capital</td>
-                            <td class="text-center"><strong>9.1</strong></td>
-                            <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</strong></td>
-                            @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                                <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</strong></td>
-                            @endif
-                        </tr>
+                        @if ($company->account_type === 'Company')
+                            <tr>
+                                <td>Authorized share capital</td>
+                                <td class="text-center"></td>
+                                <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (($company->company_meta['authorize_capital'] ?? 0) < 0) ? '('. number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') .')' : number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') }}</strong></td>
+                                @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
+                                    <td class="text-center" style="border-bottom: 2px double #000;"><strong>{{ (($company->company_meta['authorize_capital'] ?? 0) < 0) ? '('. number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') .')' : number_format(abs($company->company_meta['authorize_capital'] ?? 0), 0, '.', ',') }}</strong></td>
+                                @endif
+                            </tr>
+                        @endif
                         <tr>
                             <td></td>
                             <td></td>
@@ -336,30 +302,6 @@
                                 @endif
                             </tr>
                         @endforeach
-                        {{-- <tr>
-                            <td>Advance from customers</td>
-                            <td class="text-center"><strong>10</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-top: 1px solid #000;">{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-top: 1px solid #000;">{{ (0 < 0) ? '('. rtrim(rtrim(number_format(abs(0), 2), '0'), '.') .')' : rtrim(rtrim(number_format(abs(0), 2), '0'), '.') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Trade creditors and other payables</td>
-                            <td class="text-center"><strong>11</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                            <td class="text-center" style="border-right: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                        </tr>
-                        <tr>
-                            <td>Accrued and other liabilities</td>
-                            <td class="text-center"><strong>12</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                            <td class="text-center" style="border-right: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                        </tr>
-                        <tr>
-                            <td>Provision for taxation</td>
-                            <td class="text-center"><strong>13</strong></td>
-                            <td class="text-center" style="border-left: 1px solid #000; border-bottom: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                            <td class="text-center" style="border-right: 1px solid #000; border-bottom: 1px solid #000;">({{ rtrim(rtrim(number_format(0, 2), '0'), '.') }})</td>
-                        </tr> --}}
                         <tr>
                             <td></td>
                             <td class="text-center"></td>
