@@ -604,7 +604,7 @@ class StatementController extends Controller
             $scd_current_year = $drawings['closing_credit'];
         }
 
-        $paidup_capital_previous_year = ($scb_previous_year + $sctc_previous_year + $scci_previous_year->meta_value + $scd_previous_year->meta_value);
+        $paidup_capital_previous_year = ($scb_previous_year + $sctc_previous_year + ($scci_previous_year->meta_value ?? 0) + ($scd_previous_year->meta_value ?? 0));
         $paidup_capital_current_year = $paidup_capital_previous_year + $sctc_current_year + $scci_current_year + $scd_current_year;
 
         $paidup_capital = array(
