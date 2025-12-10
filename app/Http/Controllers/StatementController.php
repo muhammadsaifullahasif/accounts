@@ -277,6 +277,21 @@ class StatementController extends Controller
         </style>
         ';
 
+        // return view(
+        //     'components.export.statements.pdf.sopl',
+        //     compact(
+        //         'company',
+        //         'lastIndex',
+        //         'revenue',
+        //         'costOfSales',
+        //         'adminExpense',
+        //         'financialCharges',
+        //         'otherIncome',
+        //         'taxation',
+        //         'style'
+        //     )
+        // );
+
         $pdf = Pdf::loadView(
             'components.export.statements.pdf.sopl',
             compact(
@@ -647,15 +662,6 @@ class StatementController extends Controller
             'total_current_year' => $figures['non_current_assets']['current_year'],
             'total_previous_year' => $figures['non_current_assets']['previous_year'],
         );
-
-        // $non_current_assets = $figures['non_current_assets']->map(function ($item) {
-        //     return [
-        //         'index' => $item->index,
-        //         'group_name' => $item->group_name,
-        //         'total_current_year' => $item->total_current_year,
-        //         'total_previous_year' => $item->total_previous_year,
-        //     ];
-        // })->toArray();
 
         $current_assets = $figures['current_assets']->map(function ($item) {
             return [

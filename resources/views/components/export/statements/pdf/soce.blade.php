@@ -122,5 +122,22 @@
             </tbody>
         </table>
         <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
+        @if ($company->account_type == 'Proprietor')
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Proprietor</span>
+            </div>
+        @endif
+        @if ($company->account_type == 'AOP')
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Partner</span>
+                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Partner</span>
+            </div>
+        @endif
+        @if ($company->account_type == 'Company')
+            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">CEO</span>
+                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Director</span>
+            </div>
+        @endif
     </body>
 </html>

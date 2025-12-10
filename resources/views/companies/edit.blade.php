@@ -104,9 +104,9 @@
                     <label for="account_type">Type of Accounts:</label>
                     <select name="account_type" id="account_type" class="form-control @error('account_type') is-invalid @enderror">
                         <option value="">Type of Account</option>
-                        <option value="proprietor" @if(old('account_type', $company->account_type) === 'Proprietor') selected @endif>Proprietor</option>
-                        <option value="aop" @if(old('account_type', $company->account_type) === 'AOP') selected @endif>AOP</option>
-                        <option value="company" @if(old('account_type', $company->account_type) === 'Company') selected @endif>Company</option>
+                        <option value="Proprietor" @if(old('account_type', $company->account_type) === 'Proprietor') selected @endif>Proprietor</option>
+                        <option value="AOP" @if(old('account_type', $company->account_type) === 'AOP') selected @endif>AOP</option>
+                        <option value="Company" @if(old('account_type', $company->account_type) === 'Company') selected @endif>Company</option>
                     </select>
                 </div>
             </div>
