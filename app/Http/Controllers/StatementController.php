@@ -177,6 +177,67 @@ class StatementController extends Controller
         ));
     }
 
+    public function sopl_export_pdf(string $id)
+    {
+        $company = Company::find($id);
+
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            ->whereNull('parent_index')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $lastIndex = $lastNote->index;
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $style = '
+        <style>
+            h1 {
+                font-family: "Calibiri", sans-serif;
+                font-size: 14px;
+            }
+            p, ul, ol, ul li, ol li, a, table, table td, table th {
+                font-family: "Calibiri", sans-serif;
+                font-size: 11px;
+            }
+        </style>
+        ';
+
+        $pdf = Pdf::loadView('components.export.statements.pdf.sopl', compact(
+            'company',
+            'lastIndex',
+            'revenue',
+            'costOfSales',
+            'adminExpense',
+            'financialCharges',
+            'otherIncome',
+            'taxation',
+            'style'
+        ));
+
+        // return view('components.export.statements.pdf.sopl', compact(
+        //     'company',
+        //     'lastIndex',
+        //     'revenue',
+        //     'costOfSales',
+        //     'adminExpense',
+        //     'financialCharges',
+        //     'otherIncome',
+        //     'taxation',
+        //     'style'
+        // ));
+
+        return $pdf->download($company->name . ' Statement of Profit or Loss.pdf');
+    }
+
     public function soci(string $id)
     {
         $company = Company::find($id);
@@ -230,6 +291,85 @@ class StatementController extends Controller
             'profitLossAfterTaxation',
             'otherComprehensiveIncome',
         ));
+    }
+
+    public function soci_export_pdf(string $id)
+    {
+        $company = Company::find($id);
+
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            ->whereNull('parent_index')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $lastIndex = $lastNote->index;
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $profitLossAfterTaxationCurrentYear = (
+            $revenue['current_year'] + 
+            $costOfSales['current_year'] + 
+            $adminExpense['current_year'] + 
+            $financialCharges['current_year'] + 
+            $otherIncome['current_year']
+        ) - $taxation['current_year'];
+
+        $profitLossAfterTaxationPreviousYear = (
+            $revenue['previous_year'] + 
+            $costOfSales['previous_year'] + 
+            $adminExpense['previous_year'] + 
+            $financialCharges['previous_year'] + 
+            $otherIncome['previous_year']
+        ) - $taxation['previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        $otherComprehensiveIncome = [
+            'current_year' => $this->otherComprehensiveIncome_current_year,
+            'previous_year' => $this->otherComprehensiveIncome_previous_year
+        ];
+
+        $style = '
+        <style>
+            h1 {
+                font-family: "Calibiri", sans-serif;
+                font-size: 14px;
+            }
+            p, ul, ol, ul li, ol li, a, table, table td, table th {
+                font-family: "Calibiri", sans-serif;
+                font-size: 11px;
+            }
+        </style>
+        ';
+
+        $pdf = Pdf::loadView('components.export.statements.pdf.soci', compact(
+            'company',
+            'lastIndex',
+            'profitLossAfterTaxation',
+            'otherComprehensiveIncome',
+            'style'
+        ));
+
+        // return view('components.export.statements.pdf.soci', compact(
+        //     'company',
+        //     'lastIndex',
+        //     'profitLossAfterTaxation',
+        //     'otherComprehensiveIncome',
+        //     'style'
+        // ));
+
+        return $pdf->download($company->name . ' Statement of Comprehensive Income.pdf');
     }
 
     private function paidup_capital(string $id)
@@ -599,6 +739,175 @@ class StatementController extends Controller
         ));
     }
 
+    public function soce_export_pdf(string $id)
+    {
+        $company = Company::find($id);
+
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            ->whereNull('parent_index')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $lastIndex = $lastNote->index;
+
+        $opening_capital_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($opening_capital_previous_year->opening_debit > 0) {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_debit ?? 0;
+        } else {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_credit ?? 0;
+        }
+
+        $opening_capital_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($opening_capital_current_year->opening_debit > 0) {
+            $opening_capital_current_year = $opening_capital_current_year->movement_debit ?? 0;
+        } else {
+            $opening_capital_current_year = $opening_capital_current_year->movement_credit ?? 0;
+        }
+
+        $opening_capital = [
+            'previous_year' => $opening_capital_previous_year,
+            'current_year' => $opening_capital_current_year
+        ];
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $profitLossAfterTaxationCurrentYear = (
+            $revenue['current_year'] + 
+            $costOfSales['current_year'] + 
+            $adminExpense['current_year'] + 
+            $financialCharges['current_year'] + 
+            $otherIncome['current_year']
+        ) - $taxation['current_year'];
+
+        $profitLossAfterTaxationPreviousYear = (
+            $revenue['previous_year'] + 
+            $costOfSales['previous_year'] + 
+            $adminExpense['previous_year'] + 
+            $financialCharges['previous_year'] + 
+            $otherIncome['previous_year']
+        ) - $taxation['previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        $otherComprehensiveIncome = [
+            'current_year' => $this->otherComprehensiveIncome_current_year,
+            'previous_year' => $this->otherComprehensiveIncome_previous_year
+        ];
+
+        $totalComprehensiveProfitLoss = [
+            'current_year' => ($profitLossAfterTaxation['current_year'] + $otherComprehensiveIncome['current_year']),
+            'previous_year' => ($profitLossAfterTaxation['previous_year'] + $otherComprehensiveIncome['previous_year'])
+        ];
+
+        $scci_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_CAPITAL_INJECTION)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($scci_previous_year->opening_debit > 0) {
+            $scci_previous_year = -$scci_previous_year->opening_debit ?? 0;
+        } else {
+            $scci_previous_year = $scci_previous_year->opening_credit ?? 0;
+        }
+
+        $scci_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_CAPITAL_INJECTION)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($scci_current_year->opening_debit > 0) {
+            $scci_current_year = -$scci_current_year->movement_debit ?? 0;
+        } else {
+            $scci_current_year = $scci_current_year->movement_credit ?? 0;
+        }
+
+        $capital_injection = [
+            'previous_year' => $scci_previous_year,
+            'current_year' => $scci_current_year,
+        ];
+
+        $drawings_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_DRAWINGS)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($drawings_previous_year->opening_debit > 0) {
+            $drawings_previous_year = -$drawings_previous_year->opening_debit ?? 0;
+        } else {
+            $drawings_previous_year = $drawings_previous_year->opening_credit ?? 0;
+        }
+
+        $drawings_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_DRAWINGS)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($drawings_current_year->movement_debit > 0) {
+            $drawings_current_year = -$drawings_current_year->movement_debit ?? 0;
+        } else {
+            $drawings_current_year = $drawings_current_year->movement_credit ?? 0;
+        }
+
+        $drawings = [
+            'previous_year' => $drawings_previous_year,
+            'current_year' => $drawings_current_year,
+        ];
+
+        $style = '
+        <style>
+            h1 {
+                font-family: "Calibiri", sans-serif;
+                font-size: 14px;
+            }
+            p, ul, ol, ul li, ol li, a, table, table td, table th {
+                font-family: "Calibiri", sans-serif;
+                font-size: 11px;
+            }
+        </style>
+        ';
+
+        $pdf = Pdf::loadView('components.export.statements.pdf.soce', compact(
+            'company',
+            'lastIndex',
+            'opening_capital',
+            'totalComprehensiveProfitLoss',
+            'capital_injection',
+            'drawings',
+            'style'
+        ));
+
+        // return view('components.export.statements.pdf.soce', compact(
+        //     'company',
+        //     'lastIndex',
+        //     'opening_capital',
+        //     'totalComprehensiveProfitLoss',
+        //     'capital_injection',
+        //     'drawings',
+        //     'style'
+        // ));
+
+        return $pdf->download($company->name . ' Statement of Changes in Equity.pdf');
+    }
+
     public function sofp(string $id)
     {
         $company = Company::find($id);
@@ -682,8 +991,6 @@ class StatementController extends Controller
             $scd_current_year = $drawings['closing_credit'];
         }
 
-        // $paidup_capital_previous_year = ($scb_previous_year + $sctc_previous_year + ($scci_previous_year->meta_value ?? 0) + (-($scd_previous_year->meta_value ?? 0)));
-        // $paidup_capital_current_year = $paidup_capital_previous_year + $sctc_current_year + $scci_current_year + (-$scd_current_year);
         $paidup_capital_previous_year = $this->paidup_capital($id)['paidupCapitalPreviousYear'];
         $paidup_capital_current_year = $this->paidup_capital($id)['paidupCapitalCurrentYear'];
 
@@ -691,16 +998,6 @@ class StatementController extends Controller
             'current_year' => $paidup_capital_current_year,
             'previous_year' => $paidup_capital_previous_year,
         );
-        // $paidup_capital = array(
-        //     'current_year' => $scci_current_year,
-        //     'previous_year' => $paidup_capital_previous_year,
-        // );
-
-        // $sofp_apl = $this->sofp_apl($id);
-        // $apl = array(
-        //     'current_year' => $sofp_apl['current_year'],
-        //     'previous_year' => $sofp_apl['previous_year'],
-        // );
 
         $accumulated_profit_loss = $this->accumulated_profit_loss($id);
         $apl = [
@@ -722,6 +1019,149 @@ class StatementController extends Controller
                 'apl'
             )
         );
+    }
+
+    public function sofp_export_pdf(string $id)
+    {
+        $company = Company::find($id);
+
+        $figures = $this->index($id);
+
+        $non_current_assets = array(
+            'group_name' => $figures['non_current_assets']['group_name'],
+            'index' => $figures['non_current_assets']['index'],
+            'total_current_year' => $figures['non_current_assets']['current_year'],
+            'total_previous_year' => $figures['non_current_assets']['previous_year'],
+        );
+
+        $current_assets = $figures['current_assets']->map(function ($item) {
+            return [
+                'index' => $item->index,
+                'group_name' => $item->group_name,
+                'total_current_year' => $item->total_current_year,
+                'total_previous_year' => $item->total_previous_year,
+            ];
+        })->toArray();
+
+        $current_liabilities = $figures['current_liabilities']->map(function ($item) {
+            return [
+                'index' => $item->index,
+                'group_name' => $item->group_name,
+                'total_current_year' => $item->total_current_year,
+                'total_previous_year' => $item->total_previous_year,
+            ];
+        })->toArray();
+
+        $scci_previous_year = CompanyMeta::where('company_id', $id)
+            ->select('meta_value')
+            ->where('meta_key', 'soce_scci')
+            ->first();
+
+        $scd_previous_year = CompanyMeta::where('company_id', $id)
+            ->select('meta_value')
+            ->where('meta_key', 'soce_scd')
+            ->first();
+
+        $opening_capital = array(
+            'account_code' => $figures['opening_capital']->account_code,
+            'account_name' => $figures['opening_capital']->account_name,
+            'closing_debit' => $figures['opening_capital']->closing_debit,
+            'closing_credit' => $figures['opening_capital']->closing_credit,
+        );
+
+        $capital_injection = array(
+            'account_code' => $figures['capital_injection']->account_code,
+            'account_name' => $figures['capital_injection']->account_name,
+            'closing_debit' => $figures['capital_injection']->closing_debit,
+            'closing_credit' => $figures['capital_injection']->closing_credit,
+        );
+
+        $drawings = array(
+            'account_code' => $figures['drawings']->account_code,
+            'account_name' => $figures['drawings']->account_name,
+            'closing_debit' => $figures['drawings']->closing_debit,
+            'closing_credit' => $figures['drawings']->closing_credit,
+        );
+
+        $sctc_previous_year = 0;
+        $sctc_current_year = 0;
+
+        if ($opening_capital['closing_debit'] > $opening_capital['closing_credit']) {
+            $scb_previous_year = $opening_capital['closing_debit'] - $opening_capital['closing_credit'];
+        } else {
+            $scb_previous_year = $opening_capital['closing_credit'] - $opening_capital['closing_debit'];
+        }
+
+        if ($capital_injection['closing_debit'] > $capital_injection['closing_credit']) {
+            $scci_current_year = $capital_injection['closing_debit'];
+        } else {
+            $scci_current_year = $capital_injection['closing_credit'];
+        }
+
+        if ($drawings['closing_debit'] > $drawings['closing_credit']) {
+            $scd_current_year = $drawings['closing_debit'];
+        } else {
+            $scd_current_year = $drawings['closing_credit'];
+        }
+
+        $paidup_capital_previous_year = $this->paidup_capital($id)['paidupCapitalPreviousYear'];
+        $paidup_capital_current_year = $this->paidup_capital($id)['paidupCapitalCurrentYear'];
+
+        $paidup_capital = array(
+            'current_year' => $paidup_capital_current_year,
+            'previous_year' => $paidup_capital_previous_year,
+        );
+
+        $accumulated_profit_loss = $this->accumulated_profit_loss($id);
+        $apl = [
+            'current_year' => $accumulated_profit_loss['accumulatedProfitLossCurrentYear'],
+            'previous_year' => $accumulated_profit_loss['accumulatedProfitLossPreviousYear'],
+        ];
+
+        $lastIndex = $figures['lastIndex'];
+
+        $style = '
+        <style>
+            h1 {
+                font-family: "Calibiri", sans-serif;
+                font-size: 14px;
+            }
+            p, ul, ol, ul li, ol li, a, table, table td, table th {
+                font-family: "Calibiri", sans-serif;
+                font-size: 11px;
+            }
+        </style>
+        ';
+
+        $pdf = Pdf::loadView(
+            'components.export.statements.pdf.sofp', 
+            compact(
+                'company',
+                'lastIndex',
+                'non_current_assets',
+                'current_assets',
+                'current_liabilities',
+                'paidup_capital',
+                'apl',
+                'style'
+            )
+        );
+
+        // return view(
+        //     'components.export.statements.pdf.sofp', 
+        //     compact(
+        //         'company',
+        //         'lastIndex',
+        //         'non_current_assets',
+        //         'current_assets',
+        //         'current_liabilities',
+        //         'paidup_capital',
+        //         'apl',
+        //         'style'
+        //     )
+        // );
+
+        return $pdf->download($company->name . ' Statement of Financial Position.pdf');
     }
 
     /**
@@ -924,7 +1364,7 @@ class StatementController extends Controller
         ));
     }*/
 
-    public function sopl_export_pdf(string $id)
+    /*public function sopl_export_pdf(string $id)
     {
         $company = Company::find($id);
         $figures = $this->index($id);
@@ -969,7 +1409,7 @@ class StatementController extends Controller
         );
 
         return $pdf->download($company->name . ' Statement of Profit or Loss.pdf');
-    }
+    }*/
 
     /**
      * Helper: Negate current_year and previous_year values
@@ -1026,7 +1466,7 @@ class StatementController extends Controller
         );
     }*/
 
-    public function soci_export_pdf(string $id)
+    /*public function soci_export_pdf(string $id)
     {
         $company = Company::find($id);
         $figures = $this->index($id);
@@ -1083,7 +1523,7 @@ class StatementController extends Controller
         );
 
         return $pdf->download($company->name . ' Statement of Comprehensive Income.pdf');
-    }
+    }*/
 
     /*public function soce(string $id)
     {
@@ -1148,7 +1588,7 @@ class StatementController extends Controller
         ));
     }*/
 
-    public function soce_export_pdf(string $id)
+    /*public function soce_export_pdf(string $id)
     {
         $company = Company::find($id);
         $figures = $this->index($id);
@@ -1207,9 +1647,9 @@ class StatementController extends Controller
         );
 
         return $pdf->download($company->name . ' Statement of Changes in Equity.pdf');
-    }
+    }*/
 
-    public function sofp_export_pdf(string $id)
+    /*public function sofp_export_pdf(string $id)
     {
         $company = Company::find($id);
 
@@ -1337,7 +1777,7 @@ class StatementController extends Controller
         );
 
         return $pdf->download($company->name . ' Statement of Financial Position.pdf');
-    }
+    }*/
 
     public function socf(string $id)
     {

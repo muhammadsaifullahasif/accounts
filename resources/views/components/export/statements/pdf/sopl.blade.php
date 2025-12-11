@@ -18,22 +18,22 @@
         <h1 style="text-align: center;"><strong>STATEMENT OF PROFIT OR LOSS</strong></h1>
         <h1 style="text-align: center;"><strong>FOR THE YEAR ENDED {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></h1>
 
-        <table class="table table-borderless table-sm mb-3 w-100" style="width: 100%;">
+        <table class="table table-hover table-borderless table-sm mb-3" style="width: 100%;">
             <thead>
                 <tr>
-                    <th style="width: 75%;">&nbsp;</th>
-                    <th style="text-align: center; width: 5%;">Note</th>
-                    <th style="text-align: center; width: 10%;">{{ \Carbon\Carbon::parse($company->end_date)->format('Y') }}</th>
+                    <th></th>
+                    <th class="text-center" style="width: 5%;">Note</th>
+                    <th class="text-center" style="width: 10%;">{{ \Carbon\Carbon::parse($company->end_date)->format('Y') }}</th>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <th style="text-align: center; width: 10%;">{{ \Carbon\Carbon::parse($company->start_date)->format('Y') }}</th>
+                        <th class="text-center" style="width: 10%;">{{ \Carbon\Carbon::parse($company->start_date)->format('Y') }}</th>
                     @endif
                 </tr>
                 <tr>
-                    <td style="width: 75%;">&nbsp;</td>
                     <td></td>
-                    <td style="text-align: center; border-top: 2px solid #000;"><strong>RUPEES</strong></td>
+                    <td></td>
+                    <td class="text-center" style="border-top: 2px solid #000;"><strong>RUPEES</strong></td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-top: 2px solid #000;"><strong>RUPEES</strong></td>
+                        <td class="text-center" style="border-top: 2px solid #000;"><strong>RUPEES</strong></td>
                     @endif
                 </tr>
             </thead>
@@ -49,29 +49,69 @@
                 <tr>
                     <td>Revenue</td>
                     <td style="text-align: center;"><strong>{{ $revenue['index'] }}</strong></td>
-                    <td style="text-align: center;">{{ ($revenue['total_current_year'] < 0) ? '('. number_format(abs(round($revenue['total_current_year'])), 0, '.', ',') . ')' : number_format(round($revenue['total_current_year']), 0, '.', ',') }}</td>
+                    <td style="text-align: center;">
+                        @if ($revenue['current_year'] < 0)
+                            ({{ number_format(abs(round($revenue['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($revenue['current_year']), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">{{ ($revenue['total_previous_year'] < 0) ? '('. number_format(abs(round($revenue['total_previous_year'])), 0, '.', ',') . ')' : number_format(round($revenue['total_previous_year']), 0, '.', ',') }}</td>
+                        <td style="text-align: center;">
+                            @if ($revenue['current_year'] < 0)
+                                ({{ number_format(abs(round($revenue['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($revenue['previous_year']), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
                     <td>Cost of revenue</td>
                     <td style="text-align: center;"><strong>{{ $costOfSales['index'] }}</strong></td>
-                    <td style="text-align: center;">{{ ($costOfSales['total_current_year'] < 0) ? '('. number_format(abs(round($costOfSales['total_current_year'])), 0, '.', ',') . ')' : number_format(round($costOfSales['total_current_year']), 0, '.', ',') }}</td>
+                    <td style="text-align: center;">
+                        @if ($costOfSales['current_year'] < 0)
+                            ({{ number_format(abs(round($costOfSales['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($costOfSales['current_year']), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">{{ ($costOfSales['total_previous_year'] < 0) ? '('. number_format(abs(round($costOfSales['total_previous_year'])), 0, '.', ',') . ')' : number_format(round($costOfSales['total_previous_year']), 0, '.', ',') }}</td>
+                        <td style="text-align: center;">
+                            @if ($costOfSales['current_year'] < 0)
+                                ({{ number_format(abs(round($costOfSales['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($costOfSales['previous_year']), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
                     @php
-                        $gpl_current_year = ($revenue['total_current_year'] + $costOfSales['total_current_year']);
-                        $gpl_previous_year = ($revenue['total_previous_year'] + $costOfSales['total_previous_year']);
+                        $gpl_current_year = ($revenue['current_year'] + $costOfSales['current_year']);
+                        $gpl_previous_year = ($revenue['previous_year'] + $costOfSales['previous_year']);
                     @endphp
                     <td><strong>{{ ( $gpl_current_year >= 0 ) ? 'Gross Profit' : 'Gross Loss' }}</strong></td>
                     <td style="text-align: center;"></td>
-                    <td style="text-align: center; border-top: 2px solid #000;"><strong>{{ ($gpl_current_year < 0) ? '('. number_format(abs(round($gpl_current_year)), 0, '.', ',') .')' : number_format(abs($gpl_current_year), 0, '.', ',') }}</strong></td>
+                    <td style="text-align: center; border-top: 2px solid #000;">
+                        <strong>
+                            @if ($gpl_current_year < 0)
+                                ({{ number_format(abs(round($gpl_current_year)), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($gpl_current_year), 0, '.', ',') }}
+                            @endif
+                        </strong>
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-top: 2px solid #000;"><strong>{{ ($gpl_previous_year < 0) ? '('. number_format(abs(round($gpl_previous_year)), 0, '.', ',') .')' : number_format(abs($gpl_previous_year), 0, '.', ',') }}</strong></td>
+                        <td style="text-align: center; border-top: 2px solid #000;">
+                            <strong>
+                                @if ($gpl_previous_year < 0)
+                                    ({{ number_format(abs(round($gpl_previous_year)), 0, '.', ',') }})
+                                @else
+                                    {{ number_format(round($gpl_previous_year), 0, '.', ',') }}
+                                @endif
+                            </strong>
+                        </td>
                     @endif
                 </tr>
                 <tr>
@@ -85,25 +125,61 @@
                 <tr>
                     <td>Administrative expenses</td>
                     <td style="text-align: center;"><strong>{{ $adminExpense['index'] }}</strong></td>
-                    <td style="text-align: center;">{{ ($adminExpense['total_current_year'] <= 0) ? '('. number_format(abs(round($adminExpense['total_current_year'])), 0, '.', ',') .')' : number_format(abs($adminExpense['total_current_year']), 0, '.', ',') }}</td>
+                    <td style="text-align: center;">
+                        @if ($adminExpense['current_year'] < 0)
+                            ({{ number_format(abs(round($adminExpense['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($adminExpense['current_year']), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">{{ ($adminExpense['total_previous_year'] <= 0) ? '('. number_format(abs(round($adminExpense['total_previous_year'])), 0, '.', ',') .')' : number_format(abs($adminExpense['total_previous_year']), 0, '.', ',') }}</td>
+                        <td style="text-align: center;">
+                            @if ($adminExpense['previous_year'] < 0)
+                                ({{ number_format(abs(round($adminExpense['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($adminExpense['previous_year']), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
                     <td>Financial Charges</td>
                     <td style="text-align: center;"><strong>{{ $financialCharges['index'] }}</strong></td>
-                    <td style="text-align: center;">{{ ($financialCharges['total_current_year'] <= 0) ? '('. number_format(abs(round($financialCharges['total_current_year'])), 0, '.', ',') .')' : number_format(abs($financialCharges['total_current_year']), 0, '.', ',') }}</td>
+                    <td style="text-align: center;">
+                        @if ($financialCharges['current_year'] < 0)
+                            ({{ number_format(abs(round($financialCharges['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($financialCharges['current_year']), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">{{ ($financialCharges['total_previous_year'] <= 0) ? '('. number_format(abs(round($financialCharges['total_previous_year'])), 0, '.', ',') .')' : number_format(abs($financialCharges['total_previous_year']), 0, '.', ',') }}</td>
+                        <td style="text-align: center;">
+                            @if ($financialCharges['previous_year'] < 0)
+                                ({{ number_format(abs(round($financialCharges['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($financialCharges['previous_year']), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
                     <td>Other Income</td>
                     <td style="text-align: center;"><strong>{{ $otherIncome['index'] }}</strong></td>
-                    <td style="text-align: center;">{{ number_format(abs(round($otherIncome['total_current_year'])), 0, '.', ',') }}</td>
+                    <td style="text-align: center;">
+                        @if ($otherIncome['current_year'] < 0)
+                            ({{ number_format(abs(round($otherIncome['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($otherIncome['current_year']), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">{{ number_format(abs(round($otherIncome['total_previous_year'])), 0, '.', ',') }}</td>
+                        <td style="text-align: center;">
+                            @if ($otherIncome['previous_year'] < 0)
+                                ({{ number_format(abs(round($otherIncome['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($otherIncome['previous_year']), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
@@ -116,34 +192,72 @@
                 </tr>
                 <tr>
                     @php
-                        $pbt_current_year = ($revenue['total_current_year'] + $costOfSales['total_current_year']) + $adminExpense['total_current_year'] + $financialCharges['total_current_year'] + $otherIncome['total_current_year'];
-                        $pbt_previous_year = ($revenue['total_previous_year'] + $costOfSales['total_previous_year']) + $adminExpense['total_previous_year'] + $financialCharges['total_current_year'] + $otherIncome['total_previous_year'];
+                        // $pbt_current_year = ($revenue['total_current_year'] + $costOfSales['total_current_year']) + $adminExpense['total_current_year'] + $financialCharges['total_current_year'] + $otherIncome['total_current_year'];
+                        // $pbt_previous_year = ($revenue['total_previous_year'] + $costOfSales['total_previous_year']) + $adminExpense['total_previous_year'] + $financialCharges['total_current_year'] + $otherIncome['total_previous_year'];
+                        $plbt_current_year = $gpl_current_year + $adminExpense['current_year'] + $financialCharges['current_year'] + $otherIncome['current_year'];
+                        $plbt_previous_year = $gpl_previous_year + $adminExpense['previous_year'] + $financialCharges['previous_year'] + $otherIncome['previous_year'];
                     @endphp
-                    <td><strong>{{ ( $pbt_current_year >= 0 ) ? 'Profit before Taxation' : 'Loss before Taxation' }}</strong></td>
+                    <td><strong>{{ ( $plbt_current_year >= 0 ) ? 'Profit before Taxation' : 'Loss before Taxation' }}</strong></td>
                     <td style="text-align: center;"></td>
-                    <td style="text-align: center; border-top: 2px solid #000;">{{ ($pbt_current_year < 0) ? '('. number_format(abs(round($pbt_current_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_current_year)), 0, '.', ',') }}</td>
+                    <td style="text-align: center; border-top: 2px solid #000;">
+                        @if ($plbt_current_year < 0)
+                            ({{ number_format(abs(round($plbt_current_year)), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($plbt_current_year), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-top: 2px solid #000;">{{ ($pbt_previous_year < 0) ? '('. number_format(abs(round($pbt_previous_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_previous_year)), 0, '.', ',') }}</td>
+                        <td style="text-align: center; border-top: 2px solid #000;">
+                            @if ($plbt_previous_year < 0)
+                                ({{ number_format(abs(round($plbt_previous_year)), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($plbt_previous_year), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
                     @php
-                        $taxation_current_year = $taxation['total_current_year'] ?? 0;
-                        $taxation_previous_year = $taxation['total_previous_year'] ?? 0;
+                        $taxation_current_year = $taxation['current_year'] ?? 0;
+                        $taxation_previous_year = $taxation['previous_year'] ?? 0;
                     @endphp
                     <td>Taxation</td>
                     <td style="text-align: center;"></td>
-                    <td style="text-align: center;">{{ ($taxation_current_year < 0) ? '('. number_format(abs(round($taxation_current_year)), 0, '.', ',') .')' : number_format(abs(round($taxation_current_year)), 0, '.', ',') }}</td>
+                    <td style="text-align: center;">
+                        @if ($taxation_current_year < 0)
+                            ({{ number_format(abs(round($taxation_current_year)), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round($taxation_current_year), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">{{ ($taxation_previous_year < 0) ? '('. number_format(abs(round($taxation_previous_year)), 0, '.', ',') .')' : number_format(abs(round($taxation_previous_year)), 0, '.', ',') }}</td>
+                        <td style="text-align: center;">
+                            @if ($taxation_previous_year < 0)
+                                ({{ number_format(abs(round($taxation_previous_year)), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round($taxation_previous_year), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
                 <tr>
-                    <td><strong>{{ ( ($pbt_current_year + $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
+                    <td><strong>{{ ( ($plbt_current_year - $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
                     <td style="text-align: center;"></td>
-                    <td style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_current_year + $taxation_current_year) < 0) ? '('. number_format(abs(round($pbt_current_year - $taxation_current_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_current_year - $taxation_current_year)), 0, '.', ',') }}</td>
+                    <td style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                        @if (($plbt_current_year - $taxation_current_year) < 0)
+                            ({{ number_format(abs(round(($plbt_current_year - $taxation_current_year))), 0, '.', ',') }})
+                        @else
+                            {{ number_format(round(($plbt_current_year - $taxation_current_year)), 0, '.', ',') }}
+                        @endif
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (($pbt_previous_year + $taxation_previous_year) < 0) ? '('. number_format(abs(round($pbt_previous_year - $taxation_previous_year)), 0, '.', ',') .')' : number_format(abs(round($pbt_previous_year - $taxation_previous_year)), 0, '.', ',') }}</td>
+                        <td style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                            @if (($plbt_previous_year - $taxation_previous_year) < 0)
+                                ({{ number_format(abs(round(($plbt_previous_year - $taxation_previous_year))), 0, '.', ',') }})
+                            @else
+                                {{ number_format(round(($plbt_previous_year - $taxation_previous_year)), 0, '.', ',') }}
+                            @endif
+                        </td>
                     @endif
                 </tr>
             </tbody>

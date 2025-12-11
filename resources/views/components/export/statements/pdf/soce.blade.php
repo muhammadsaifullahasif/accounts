@@ -41,42 +41,224 @@
                 @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                     <tr>
                         <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
-                        <td style="text-align: center;" class="text-bold scb_previous_year" data-content="@if($opening_capital['closing_debit']) {{ round($opening_capital['closing_debit']) }} @else {{ round($opening_capital['closing_credit']) }} @endif">
-                            @if ($opening_capital['closing_debit'] != 0)
-                                {{ number_format(abs(round($opening_capital['closing_debit'])), 0, '.', ',') }}
+                        <td style="text-align: center; font-weight: bold;" class="scb_previous_year">
+                            {{ number_format(abs(round($opening_capital['previous_year'])), 0, '.', ',') }}
+                        </td>
+                        <td style="text-align: center; font-weight: bold;" class="aplb_previous_year">
+                            {{ round($aplb_previous_year->meta_value ?? 0) }}
+                        </td>
+                        <td style="text-align: center; font-weight: bold;" class="tb_previous_year">
+                            @if (($opening_capital['previous_year'] + ($aplb_previous_year->meta_value ?? 0)) < 0)
+                                ({{ number_format(abs(round(($opening_capital['previous_year'] + ($aplb_previous_year->meta_value ?? 0)))), 0, '.', ',') }})
                             @else
-                                {{ number_format(abs(round($opening_capital['closing_credit'])), 0, '.', ',') }}
+                                {{ number_format(abs(round(($opening_capital['previous_year'] + ($aplb_previous_year->meta_value ?? 0)))), 0, '.', ',') }}
                             @endif
                         </td>
-                        <td style="text-align: center;" class="text-bold aplb_previous_year editable" contenteditable="true" data-content="{{ round($aplb_previous_year->meta_value ?? 0) }}">{{ round($aplb_previous_year->meta_value ?? 0) }}</td>
-                        <td style="text-align: center;" class="text-bold tb_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
                     </tr>
                     <tr>
-                        <td>{{ ( $otherComprehensiveIncome['previous_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
-                        <td style="text-align: center;" class="sctc_previous_year" data-content="0">0</td>
-                        <td style="text-align: center;" class="apltc_previous_year" data-content="{{ $otherComprehensiveIncome['previous_year'] }}">{{ ($otherComprehensiveIncome['previous_year'] < 0) ? '('. number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}</td>
-                        <td style="text-align: center;" class="ttc_previous_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
+                        <td>{{ ( $totalComprehensiveProfitLoss['previous_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
+                        <td style="text-align: center;" class="sctc_previous_year">0</td>
+                        <td style="text-align: center;" class="apltc_previous_year">
+                            @if ($totalComprehensiveProfitLoss['previous_year'] < 0)
+                                ({{ number_format(abs(round($totalComprehensiveProfitLoss['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($totalComprehensiveProfitLoss['previous_year'])), 0, '.', ',') }}
+                            @endif
+                        </td>
+                        <td style="text-align: center;" class="ttc_previous_year">
+                            @if ($totalComprehensiveProfitLoss['previous_year'] < 0)
+                                ({{ number_format(abs(round($totalComprehensiveProfitLoss['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($totalComprehensiveProfitLoss['previous_year'])), 0, '.', ',') }}
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <td>Capital Injection</td>
-                        <td style="text-align: center;" class="scci_previous_year editable" contenteditable="true" data-content="{{ round($scci_previous_year->meta_value ?? 0) }}">{{ round($scci_previous_year->meta_value ?? 0) }}</td>
-                        <td style="text-align: center;" class="aplci_previous_year" data-content="0">0</td>
-                        <td style="text-align: center;" class="tci_previous_year" data-content="0">0</td>
+                        <td style="text-align: center;" class="scci_previous_year">
+                            @if ($capital_injection['previous_year'] < 0)
+                                ({{ number_format(abs(round($capital_injection['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($capital_injection['previous_year'])), 0, '.', ',') }}
+                            @endif
+                            {{-- {{ round($capital_injection['previous_year'] ?? 0) }} --}}
+                        </td>
+                        <td style="text-align: center;" class="aplci_previous_year">0</td>
+                        <td style="text-align: center;" class="tci_previous_year">
+                            @if ($capital_injection['previous_year'] < 0)
+                                ({{ number_format(abs(round($capital_injection['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($capital_injection['previous_year'])), 0, '.', ',') }}
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <td>Drawings</td>
-                        <td style="text-align: center;" class="scd_previous_year editable" contenteditable="true" data-content="{{ round($scd_previous_year->meta_value ?? 0) }}">{{ round($scd_previous_year->meta_value ?? 0) }}</td>
-                        <td style="text-align: center;" class="apld_previous_year" data-content="0">0</td>
-                        <td style="text-align: center;" class="td_previous_year" data-content="0">0</td>
+                        <td style="text-align: center;" class="scd_previous_year">
+                            @if ($drawings['previous_year'] < 0)
+                                ({{ number_format(abs(round($drawings['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($drawings['previous_year'])), 0, '.', ',') }}
+                            @endif
+                            {{-- {{ round($drawings['previous_year'] ?? 0) }} --}}
+                        </td>
+                        <td style="text-align: center;" class="apld_previous_year">0</td>
+                        <td style="text-align: center;" class="td_previous_year">
+                            @if ($drawings['previous_year'] < 0)
+                                ({{ number_format(abs(round($drawings['previous_year'])), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($drawings['previous_year'])), 0, '.', ',') }}
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
-                        <td style="text-align: center;" class="text-bold tsc_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
-                        <td style="text-align: center;" class="text-bold tapl_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
-                        <td style="text-align: center;" class="text-bold tt_previous_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
+                        <td class="tsc_previous_year" style="text-align: center; font-weight: bold; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                            @php
+                                $shareCapitalPreviousYear = $opening_capital['previous_year'] + $capital_injection['previous_year'] + $drawings['previous_year'];
+                            @endphp
+                            @if ($shareCapitalPreviousYear < 0)
+                                ({{ number_format(abs(round($shareCapitalPreviousYear)), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($shareCapitalPreviousYear)), 0, '.', ',') }}
+                            @endif
+                        </td>
+                        <td class="tapl_previous_year" style="text-align: center; font-weight: bold; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                            @php
+                                $accumulatedProfitLossPreviousYear = ($aplb_previous_year->meta_value ?? 0) + $totalComprehensiveProfitLoss['previous_year'];
+                            @endphp
+                            @if ($accumulatedProfitLossPreviousYear < 0)
+                                ({{ number_format(abs(round($accumulatedProfitLossPreviousYear)), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round($accumulatedProfitLossPreviousYear)), 0, '.', ',') }}
+                            @endif
+                        </td>
+                        <td class="tt_previous_year" style="text-align: center; font-weight: bold; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                            @if (($shareCapitalPreviousYear + $accumulatedProfitLossPreviousYear) < 0)
+                                ({{ number_format(abs(round(($shareCapitalPreviousYear + $accumulatedProfitLossPreviousYear))), 0, '.', ',') }})
+                            @else
+                                {{ number_format(abs(round(($shareCapitalPreviousYear + $accumulatedProfitLossPreviousYear))), 0, '.', ',') }}
+                            @endif
+                        </td>
                     </tr>
                 @endif
-                
+
+                <tr>
+                    <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
+                    <td style="text-align: center; font-weight: bold;" class="scb_current_year">
+                        @php
+                            $shareCapitalPreviousYear = $opening_capital['previous_year'] + $capital_injection['previous_year'] + $drawings['previous_year'];
+                        @endphp
+                        @if ($shareCapitalPreviousYear < 0)
+                            ({{ number_format(abs(round($shareCapitalPreviousYear)), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($shareCapitalPreviousYear)), 0, '.', ',') }}
+                        @endif
+                    </td>
+                    <td style="text-align: center; font-weight: bold;" class="aplb_current_year">
+                        @php
+                            $accumulatedProfitLossPreviousYear = ($aplb_previous_year->meta_value ?? 0) + $totalComprehensiveProfitLoss['previous_year'];
+                        @endphp
+                        @if ($accumulatedProfitLossPreviousYear < 0)
+                            ({{ number_format(abs(round($accumulatedProfitLossPreviousYear)), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($accumulatedProfitLossPreviousYear)), 0, '.', ',') }}
+                        @endif
+                    </td>
+                    <td style="text-align: center; font-weight: bold;" class="tb_current_year">
+                        @if (($shareCapitalPreviousYear + $accumulatedProfitLossPreviousYear) < 0)
+                            ({{ number_format(abs(round(($shareCapitalPreviousYear + $accumulatedProfitLossPreviousYear))), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round(($shareCapitalPreviousYear + $accumulatedProfitLossPreviousYear))), 0, '.', ',') }}
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>{{ ( $totalComprehensiveProfitLoss['current_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
+                    <td style="text-align: center;" class="sctc_current_year">0</td>
+                    <td style="text-align: center;" class="apltc_current_year">
+                        @if ($totalComprehensiveProfitLoss['current_year'] < 0)
+                            ({{ number_format(abs(round($totalComprehensiveProfitLoss['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($totalComprehensiveProfitLoss['current_year'])), 0, '.', ',') }}
+                        @endif
+                    </td>
+                    <td style="text-align: center;" class="ttc_current_year">
+                        @if ($totalComprehensiveProfitLoss['current_year'] < 0)
+                            ({{ number_format(abs(round($totalComprehensiveProfitLoss['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($totalComprehensiveProfitLoss['current_year'])), 0, '.', ',') }}
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>Capital Injection</td>
+                    <td style="text-align: center;" class="scci_current_year">
+                        @if ($capital_injection['current_year'] < 0)
+                            ({{ number_format(abs(round($capital_injection['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($capital_injection['current_year'])), 0, '.', ',') }}
+                        @endif
+                        {{-- {{ $capital_injection['current_year'] }} --}}
+                    </td>
+                    <td style="text-align: center;" class="aplci_current_year">0</td>
+                    <td style="text-align: center;" class="tci_current_year">
+                        @if ($capital_injection['current_year'] < 0)
+                            ({{ number_format(abs(round($capital_injection['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($capital_injection['current_year'])), 0, '.', ',') }}
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td>Drawings</td>
+                    <td style="text-align: center;" class="scd_current_year">
+                        @if ($drawings['current_year'] < 0)
+                            ({{ number_format(abs(round($drawings['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($drawings['current_year'])), 0, '.', ',') }}
+                        @endif
+                        {{-- {{ number_format(round(abs($drawings['current_year'])), 0, '.', ',') }} --}}
+                    </td>
+                    <td style="text-align: center;" class="apld_current_year">0</td>
+                    <td style="text-align: center;" class="td_current_year">
+                        @if ($drawings['current_year'] < 0)
+                            ({{ number_format(abs(round($drawings['current_year'])), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($drawings['current_year'])), 0, '.', ',') }}
+                        @endif
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
+                    <td class="tsc_current_year" style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                        @php
+                            $shareCapitalCurrentYear = $shareCapitalPreviousYear + $capital_injection['current_year'] + $drawings['current_year'];
+                        @endphp
+                        @if ($shareCapitalCurrentYear < 0)
+                            ({{ number_format(abs(round($shareCapitalCurrentYear)), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($shareCapitalCurrentYear)), 0, '.', ',') }}
+                        @endif
+                    </td>
+                    <td class="tapl_current_year" style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                        @php
+                            $accumulatedProfitLossCurrentYear = $accumulatedProfitLossPreviousYear + $totalComprehensiveProfitLoss['current_year'];
+                        @endphp
+                        @if ($accumulatedProfitLossCurrentYear < 0)
+                            ({{ number_format(abs(round($accumulatedProfitLossCurrentYear)), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round($accumulatedProfitLossCurrentYear)), 0, '.', ',') }}
+                        @endif
+                    </td>
+                    <td class="tt_current_year" style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                        @if (($shareCapitalCurrentYear + $accumulatedProfitLossCurrentYear) < 0)
+                            ({{ number_format(abs(round(($shareCapitalCurrentYear + $accumulatedProfitLossCurrentYear))), 0, '.', ',') }})
+                        @else
+                            {{ number_format(abs(round(($shareCapitalCurrentYear + $accumulatedProfitLossCurrentYear))), 0, '.', ',') }}
+                        @endif
+                    </td>
+                </tr>
             </tbody>
         </table>
         <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
