@@ -30,9 +30,9 @@ class StatementController extends Controller
     private const ACCOUNT_DRAWINGS = 'CAP-004';
 
     // Meta Key Constants
-    private const META_SOCE_APLB_PREVIOUS_YEAR = 'soce_aplb_previous_year';
-    private const META_SOCE_SCCI_PREVIOUS_YEAR = 'soce_scci_previous_year';
-    private const META_SOCE_SCD_PREVIOUS_YEAR = 'soce_scd_previous_year';
+    private const META_SOCE_APLB = 'soce_aplb';
+    private const META_SOCE_SCCI = 'soce_scci';
+    private const META_SOCE_SCD = 'soce_scd';
 
     private $taxation_current_year = 0;
 
@@ -41,6 +41,688 @@ class StatementController extends Controller
     private $otherComprehensiveIncome_current_year = 0;
 
     private $otherComprehensiveIncome_previous_year = 0;
+
+    private function gpl(string $id)
+    {
+        $revenue = Note::where('company_id', $id)
+            ->where('group_code', 'S-001')
+            ->whereNull('parent_index')
+            ->selectRaw('`index`, SUM(current_year) as total_current_year, SUM(previous_year) as total_previous_year')
+            ->groupBy('index')
+            ->first();
+
+        $revenue = [
+            'index' => $revenue->index,
+            'current_year' => $revenue->total_current_year,
+            'previous_year' => $revenue->total_previous_year,
+        ];
+
+        $costOfSales = Note::where('company_id', $id)
+            ->where('group_code', 'COS-001')
+            ->whereNull('parent_index')
+            ->selectRaw('`index`, SUM(current_year) as total_current_year, SUM(previous_year) as total_previous_year')
+            ->groupBy('index')
+            ->first();
+
+        $costOfSales = [
+            'index' => $costOfSales->index,
+            'current_year' => -$costOfSales->total_current_year,
+            'previous_year' => -$costOfSales->total_previous_year,
+        ];
+
+        return [
+            'revenue' => $revenue,
+            'costOfSales' => $costOfSales,
+        ];
+    }
+
+    private function profitLossBeforeTaxation(string $id)
+    {
+        $adminExpense = Note::where('company_id', $id)
+            ->where('group_code', 'EX-001')
+            ->whereNull('parent_index')
+            ->selectRaw('`index`, SUM(current_year) as total_current_year, SUM(previous_year) as total_previous_year')
+            ->groupBy('index')
+            ->first();
+
+        $adminExpense = [
+            'index' => $adminExpense->index,
+            'current_year' => -$adminExpense->total_current_year,
+            'previous_year' => -$adminExpense->total_previous_year,
+        ];
+
+        $financialCharges = Note::where('company_id', $id)
+            ->where('group_code', 'FC-001')
+            ->whereNull('parent_index')
+            ->selectRaw('`index`, SUM(current_year) as total_current_year, SUM(previous_year) as total_previous_year')
+            ->groupBy('index')
+            ->first();
+
+        $financialCharges = [
+            'index' => $financialCharges->index,
+            'current_year' => -$financialCharges->total_current_year,
+            'previous_year' => -$financialCharges->total_previous_year,
+        ];
+
+        $otherIncome = Note::where('company_id', $id)
+            ->where('group_code', 'OI-001')
+            ->whereNull('parent_index')
+            ->selectRaw('`index`, SUM(current_year) as total_current_year, SUM(previous_year) as total_previous_year')
+            ->groupBy('index')
+            ->first();
+
+        $otherIncome = [
+            'index' => $otherIncome->index,
+            'current_year' => $otherIncome->total_current_year,
+            'previous_year' => $otherIncome->total_previous_year
+        ];
+
+        return [
+            'adminExpense' => $adminExpense,
+            'financialCharges' => $financialCharges,
+            'otherIncome' => $otherIncome,
+        ];
+    }
+
+    private function taxation(string $id)
+    {
+        $taxation = Note::where('company_id', $id)
+            ->where('group_code', 'T-001')
+            ->whereNull('parent_index')
+            ->selectRaw('`index`, SUM(current_year) as total_current_year, SUM(previous_year) as total_previous_year')
+            ->groupBy('index')
+            ->first();
+
+        $taxation = [
+            'index' => $taxation->index,
+            'current_year' => $taxation->total_current_year,
+            'previous_year' => $taxation->total_previous_year
+        ];
+
+        return [
+            'taxation' => $taxation,
+        ];
+    }
+
+    public function sopl(string $id)
+    {
+        $company = Company::find($id);
+
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            ->whereNull('parent_index')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $lastIndex = $lastNote->index;
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        return view('statements.sopl', compact(
+            'company',
+            'lastIndex',
+            'revenue',
+            'costOfSales',
+            'adminExpense',
+            'financialCharges',
+            'otherIncome',
+            'taxation'
+        ));
+    }
+
+    public function soci(string $id)
+    {
+        $company = Company::find($id);
+
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            ->whereNull('parent_index')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $lastIndex = $lastNote->index;
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $profitLossAfterTaxationCurrentYear = (
+            $revenue['current_year'] + 
+            $costOfSales['current_year'] + 
+            $adminExpense['current_year'] + 
+            $financialCharges['current_year'] + 
+            $otherIncome['current_year']
+        ) - $taxation['current_year'];
+
+        $profitLossAfterTaxationPreviousYear = (
+            $revenue['previous_year'] + 
+            $costOfSales['previous_year'] + 
+            $adminExpense['previous_year'] + 
+            $financialCharges['previous_year'] + 
+            $otherIncome['previous_year']
+        ) - $taxation['previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        $otherComprehensiveIncome = [
+            'current_year' => $this->otherComprehensiveIncome_current_year,
+            'previous_year' => $this->otherComprehensiveIncome_previous_year
+        ];
+
+        return view('statements.soci', compact(
+            'company',
+            'lastIndex',
+            'profitLossAfterTaxation',
+            'otherComprehensiveIncome',
+        ));
+    }
+
+    private function paidup_capital(string $id)
+    {
+        $opening_capital_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($opening_capital_previous_year->opening_debit > 0) {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_debit ?? 0;
+        } else {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_credit ?? 0;
+        }
+
+        $opening_capital_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($opening_capital_current_year->opening_debit > 0) {
+            $opening_capital_current_year = $opening_capital_current_year->movement_debit ?? 0;
+        } else {
+            $opening_capital_current_year = $opening_capital_current_year->movement_credit ?? 0;
+        }
+
+        $opening_capital = [
+            'previous_year' => $opening_capital_previous_year,
+            'current_year' => $opening_capital_current_year
+        ];
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $profitLossAfterTaxationCurrentYear = (
+            $revenue['current_year'] + 
+            $costOfSales['current_year'] + 
+            $adminExpense['current_year'] + 
+            $financialCharges['current_year'] + 
+            $otherIncome['current_year']
+        ) - $taxation['current_year'];
+
+        $profitLossAfterTaxationPreviousYear = (
+            $revenue['previous_year'] + 
+            $costOfSales['previous_year'] + 
+            $adminExpense['previous_year'] + 
+            $financialCharges['previous_year'] + 
+            $otherIncome['previous_year']
+        ) - $taxation['previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        $otherComprehensiveIncome = [
+            'current_year' => $this->otherComprehensiveIncome_current_year,
+            'previous_year' => $this->otherComprehensiveIncome_previous_year
+        ];
+
+        $totalComprehensiveProfitLoss = [
+            'current_year' => ($profitLossAfterTaxation['current_year'] + $otherComprehensiveIncome['current_year']),
+            'previous_year' => ($profitLossAfterTaxation['previous_year'] + $otherComprehensiveIncome['previous_year'])
+        ];
+
+        $scci_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_CAPITAL_INJECTION)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($scci_previous_year->opening_debit > 0) {
+            $scci_previous_year = -$scci_previous_year->opening_debit ?? 0;
+        } else {
+            $scci_previous_year = $scci_previous_year->opening_credit ?? 0;
+        }
+
+        $scci_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_CAPITAL_INJECTION)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($scci_current_year->opening_debit > 0) {
+            $scci_current_year = -$scci_current_year->movement_debit ?? 0;
+        } else {
+            $scci_current_year = $scci_current_year->movement_credit ?? 0;
+        }
+
+        $capital_injection = [
+            'previous_year' => $scci_previous_year,
+            'current_year' => $scci_current_year,
+        ];
+
+        $drawings_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_DRAWINGS)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($drawings_previous_year->opening_debit > 0) {
+            $drawings_previous_year = -$drawings_previous_year->opening_debit ?? 0;
+        } else {
+            $drawings_previous_year = $drawings_previous_year->opening_credit ?? 0;
+        }
+
+        $drawings_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_DRAWINGS)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($drawings_current_year->movement_debit > 0) {
+            $drawings_current_year = -$drawings_current_year->movement_debit ?? 0;
+        } else {
+            $drawings_current_year = $drawings_current_year->movement_credit ?? 0;
+        }
+
+        $drawings = [
+            'previous_year' => $drawings_previous_year,
+            'current_year' => $drawings_current_year,
+        ];
+
+        $paidupCapitalPreviousYear = $opening_capital['previous_year'] + 
+            $capital_injection['previous_year'] + 
+            $drawings['previous_year'];
+
+        $paidupCapitalCurrentYear = $opening_capital['current_year'] + 
+            $capital_injection['current_year'] + 
+            $drawings['current_year'];
+
+        return [
+            'paidupCapitalPreviousYear' => $paidupCapitalPreviousYear,
+            'paidupCapitalCurrentYear' => $paidupCapitalCurrentYear,
+        ];
+    }
+
+    private function accumulated_profit_loss(string $id)
+    {
+        $aplb_previous_year = CompanyMeta::where('company_id', $id)
+            ->where('meta_key', self::META_SOCE_APLB)
+            ->value('meta_value');
+
+        $aplb_previous_year = $aplb_previous_year;
+
+        $opening_capital_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($opening_capital_previous_year->opening_debit > 0) {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_debit ?? 0;
+        } else {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_credit ?? 0;
+        }
+
+        $opening_capital_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($opening_capital_current_year->opening_debit > 0) {
+            $opening_capital_current_year = $opening_capital_current_year->movement_debit ?? 0;
+        } else {
+            $opening_capital_current_year = $opening_capital_current_year->movement_credit ?? 0;
+        }
+
+        $opening_capital = [
+            'previous_year' => $opening_capital_previous_year,
+            'current_year' => $opening_capital_current_year
+        ];
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $profitLossAfterTaxationCurrentYear = (
+            $revenue['current_year'] + 
+            $costOfSales['current_year'] + 
+            $adminExpense['current_year'] + 
+            $financialCharges['current_year'] + 
+            $otherIncome['current_year']
+        ) - $taxation['current_year'];
+
+        $profitLossAfterTaxationPreviousYear = (
+            $revenue['previous_year'] + 
+            $costOfSales['previous_year'] + 
+            $adminExpense['previous_year'] + 
+            $financialCharges['previous_year'] + 
+            $otherIncome['previous_year']
+        ) - $taxation['previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        $otherComprehensiveIncome = [
+            'current_year' => $this->otherComprehensiveIncome_current_year,
+            'previous_year' => $this->otherComprehensiveIncome_previous_year
+        ];
+
+        $totalComprehensiveProfitLoss = [
+            'current_year' => ($profitLossAfterTaxation['current_year'] + $otherComprehensiveIncome['current_year']),
+            'previous_year' => ($profitLossAfterTaxation['previous_year'] + $otherComprehensiveIncome['previous_year'])
+        ];
+
+        $accumulatedProfitLossPreviousYear = $aplb_previous_year + 
+            $totalComprehensiveProfitLoss['previous_year'];
+
+        $accumulatedProfitLossCurrentYear = $accumulatedProfitLossPreviousYear + 
+            $totalComprehensiveProfitLoss['current_year'];
+
+        return [
+            'accumulatedProfitLossPreviousYear' => $accumulatedProfitLossPreviousYear,
+            'accumulatedProfitLossCurrentYear' => $accumulatedProfitLossCurrentYear,
+        ];
+    }
+
+    public function soce(string $id)
+    {
+        $company = Company::find($id);
+
+        $lastNote = Note::select('index')
+            ->where('company_id', $id)
+            ->whereNull('parent_index')
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $lastIndex = $lastNote->index;
+
+        $opening_capital_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($opening_capital_previous_year->opening_debit > 0) {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_debit ?? 0;
+        } else {
+            $opening_capital_previous_year = $opening_capital_previous_year->opening_credit ?? 0;
+        }
+
+        $opening_capital_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_OPENING_CAPITAL)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($opening_capital_current_year->opening_debit > 0) {
+            $opening_capital_current_year = $opening_capital_current_year->movement_debit ?? 0;
+        } else {
+            $opening_capital_current_year = $opening_capital_current_year->movement_credit ?? 0;
+        }
+
+        $opening_capital = [
+            'previous_year' => $opening_capital_previous_year,
+            'current_year' => $opening_capital_current_year
+        ];
+
+        $revenue = $this->gpl($id)['revenue'];
+        $costOfSales = $this->gpl($id)['costOfSales'];
+
+        $adminExpense = $this->profitLossBeforeTaxation($id)['adminExpense'];
+        $financialCharges = $this->profitLossBeforeTaxation($id)['financialCharges'];
+        $otherIncome = $this->profitLossBeforeTaxation($id)['otherIncome'];
+
+        $taxation = $this->taxation($id)['taxation'];
+
+        $profitLossAfterTaxationCurrentYear = (
+            $revenue['current_year'] + 
+            $costOfSales['current_year'] + 
+            $adminExpense['current_year'] + 
+            $financialCharges['current_year'] + 
+            $otherIncome['current_year']
+        ) - $taxation['current_year'];
+
+        $profitLossAfterTaxationPreviousYear = (
+            $revenue['previous_year'] + 
+            $costOfSales['previous_year'] + 
+            $adminExpense['previous_year'] + 
+            $financialCharges['previous_year'] + 
+            $otherIncome['previous_year']
+        ) - $taxation['previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        $otherComprehensiveIncome = [
+            'current_year' => $this->otherComprehensiveIncome_current_year,
+            'previous_year' => $this->otherComprehensiveIncome_previous_year
+        ];
+
+        $totalComprehensiveProfitLoss = [
+            'current_year' => ($profitLossAfterTaxation['current_year'] + $otherComprehensiveIncome['current_year']),
+            'previous_year' => ($profitLossAfterTaxation['previous_year'] + $otherComprehensiveIncome['previous_year'])
+        ];
+
+        $scci_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_CAPITAL_INJECTION)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($scci_previous_year->opening_debit > 0) {
+            $scci_previous_year = -$scci_previous_year->opening_debit ?? 0;
+        } else {
+            $scci_previous_year = $scci_previous_year->opening_credit ?? 0;
+        }
+
+        $scci_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_CAPITAL_INJECTION)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($scci_current_year->opening_debit > 0) {
+            $scci_current_year = -$scci_current_year->movement_debit ?? 0;
+        } else {
+            $scci_current_year = $scci_current_year->movement_credit ?? 0;
+        }
+
+        $capital_injection = [
+            'previous_year' => $scci_previous_year,
+            'current_year' => $scci_current_year,
+        ];
+
+        $drawings_previous_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_DRAWINGS)
+            ->selectRaw('opening_debit, opening_credit')
+            ->first();
+
+        if ($drawings_previous_year->opening_debit > 0) {
+            $drawings_previous_year = -$drawings_previous_year->opening_debit ?? 0;
+        } else {
+            $drawings_previous_year = $drawings_previous_year->opening_credit ?? 0;
+        }
+
+        $drawings_current_year = TrailBalance::where('company_id', $id)
+            ->where('account_code', self::ACCOUNT_DRAWINGS)
+            ->selectRaw('movement_debit, movement_credit')
+            ->first();
+
+        if ($drawings_current_year->movement_debit > 0) {
+            $drawings_current_year = -$drawings_current_year->movement_debit ?? 0;
+        } else {
+            $drawings_current_year = $drawings_current_year->movement_credit ?? 0;
+        }
+
+        $drawings = [
+            'previous_year' => $drawings_previous_year,
+            'current_year' => $drawings_current_year,
+        ];
+
+        return view('statements.soce', compact(
+            'company',
+            'lastIndex',
+            'opening_capital',
+            'totalComprehensiveProfitLoss',
+            'capital_injection',
+            'drawings',
+        ));
+    }
+
+    public function sofp(string $id)
+    {
+        $company = Company::find($id);
+
+        $figures = $this->index($id);
+
+        $non_current_assets = array(
+            'group_name' => $figures['non_current_assets']['group_name'],
+            'index' => $figures['non_current_assets']['index'],
+            'total_current_year' => $figures['non_current_assets']['current_year'],
+            'total_previous_year' => $figures['non_current_assets']['previous_year'],
+        );
+
+        $current_assets = $figures['current_assets']->map(function ($item) {
+            return [
+                'index' => $item->index,
+                'group_name' => $item->group_name,
+                'total_current_year' => $item->total_current_year,
+                'total_previous_year' => $item->total_previous_year,
+            ];
+        })->toArray();
+
+        $current_liabilities = $figures['current_liabilities']->map(function ($item) {
+            return [
+                'index' => $item->index,
+                'group_name' => $item->group_name,
+                'total_current_year' => $item->total_current_year,
+                'total_previous_year' => $item->total_previous_year,
+            ];
+        })->toArray();
+
+        $scci_previous_year = CompanyMeta::where('company_id', $id)
+            ->select('meta_value')
+            ->where('meta_key', 'soce_scci')
+            ->first();
+
+        $scd_previous_year = CompanyMeta::where('company_id', $id)
+            ->select('meta_value')
+            ->where('meta_key', 'soce_scd')
+            ->first();
+
+        $opening_capital = array(
+            'account_code' => $figures['opening_capital']->account_code,
+            'account_name' => $figures['opening_capital']->account_name,
+            'closing_debit' => $figures['opening_capital']->closing_debit,
+            'closing_credit' => $figures['opening_capital']->closing_credit,
+        );
+
+        $capital_injection = array(
+            'account_code' => $figures['capital_injection']->account_code,
+            'account_name' => $figures['capital_injection']->account_name,
+            'closing_debit' => $figures['capital_injection']->closing_debit,
+            'closing_credit' => $figures['capital_injection']->closing_credit,
+        );
+
+        $drawings = array(
+            'account_code' => $figures['drawings']->account_code,
+            'account_name' => $figures['drawings']->account_name,
+            'closing_debit' => $figures['drawings']->closing_debit,
+            'closing_credit' => $figures['drawings']->closing_credit,
+        );
+
+        $sctc_previous_year = 0;
+        $sctc_current_year = 0;
+
+        if ($opening_capital['closing_debit'] > $opening_capital['closing_credit']) {
+            $scb_previous_year = $opening_capital['closing_debit'] - $opening_capital['closing_credit'];
+        } else {
+            $scb_previous_year = $opening_capital['closing_credit'] - $opening_capital['closing_debit'];
+        }
+
+        if ($capital_injection['closing_debit'] > $capital_injection['closing_credit']) {
+            $scci_current_year = $capital_injection['closing_debit'];
+        } else {
+            $scci_current_year = $capital_injection['closing_credit'];
+        }
+
+        if ($drawings['closing_debit'] > $drawings['closing_credit']) {
+            $scd_current_year = $drawings['closing_debit'];
+        } else {
+            $scd_current_year = $drawings['closing_credit'];
+        }
+
+        // $paidup_capital_previous_year = ($scb_previous_year + $sctc_previous_year + ($scci_previous_year->meta_value ?? 0) + (-($scd_previous_year->meta_value ?? 0)));
+        // $paidup_capital_current_year = $paidup_capital_previous_year + $sctc_current_year + $scci_current_year + (-$scd_current_year);
+        $paidup_capital_previous_year = $this->paidup_capital($id)['paidupCapitalPreviousYear'];
+        $paidup_capital_current_year = $this->paidup_capital($id)['paidupCapitalCurrentYear'];
+
+        $paidup_capital = array(
+            'current_year' => $paidup_capital_current_year,
+            'previous_year' => $paidup_capital_previous_year,
+        );
+        // $paidup_capital = array(
+        //     'current_year' => $scci_current_year,
+        //     'previous_year' => $paidup_capital_previous_year,
+        // );
+
+        // $sofp_apl = $this->sofp_apl($id);
+        // $apl = array(
+        //     'current_year' => $sofp_apl['current_year'],
+        //     'previous_year' => $sofp_apl['previous_year'],
+        // );
+
+        $accumulated_profit_loss = $this->accumulated_profit_loss($id);
+        $apl = [
+            'current_year' => $accumulated_profit_loss['accumulatedProfitLossCurrentYear'],
+            'previous_year' => $accumulated_profit_loss['accumulatedProfitLossPreviousYear'],
+        ];
+
+        $lastIndex = $figures['lastIndex'];
+
+        return view(
+            'statements.sofp', 
+            compact(
+                'company',
+                'lastIndex',
+                'non_current_assets',
+                'current_assets',
+                'current_liabilities',
+                'paidup_capital',
+                'apl'
+            )
+        );
+    }
 
     /**
      * Helper: Get note totals by group code
@@ -122,7 +804,6 @@ class StatementController extends Controller
     {
         $lastNote = Note::select('index')
             ->where('company_id', $id)
-            // ->where('group_code', self::GROUP_REVENUE)
             ->whereNull('parent_index')
             ->orderBy('id', 'desc')
             ->first();
@@ -158,11 +839,6 @@ class StatementController extends Controller
         $opening_capital = $this->getTrailBalance($id, self::ACCOUNT_OPENING_CAPITAL);
         $capital_injection = $this->getTrailBalance($id, self::ACCOUNT_CAPITAL_INJECTION);
         $drawings = $this->getTrailBalance($id, self::ACCOUNT_DRAWINGS);
-
-        // $taxation = [
-        //     'current_year' => $this->taxation_current_year,
-        //     'previous_year' => $this->taxation_previous_year
-        // ];
 
         return [
             'lastIndex' => $lastNote->index,
@@ -220,7 +896,7 @@ class StatementController extends Controller
         return $nonCurrentAssets;
     }
 
-    public function sopl(string $id)
+    /*public function sopl(string $id)
     {
         $company = Company::find($id);
         $figures = $this->index($id);
@@ -246,7 +922,7 @@ class StatementController extends Controller
             'otherIncome',
             'taxation'
         ));
-    }
+    }*/
 
     public function sopl_export_pdf(string $id)
     {
@@ -307,7 +983,7 @@ class StatementController extends Controller
         ];
     }
 
-    public function soci(string $id)
+    /*public function soci(string $id)
     {
         $company = Company::find($id);
         $figures = $this->index($id);
@@ -348,7 +1024,7 @@ class StatementController extends Controller
                 'otherComprehensiveIncome'
             )
         );
-    }
+    }*/
 
     public function soci_export_pdf(string $id)
     {
@@ -409,15 +1085,10 @@ class StatementController extends Controller
         return $pdf->download($company->name . ' Statement of Comprehensive Income.pdf');
     }
 
-    public function soce(string $id)
+    /*public function soce(string $id)
     {
         $company = Company::find($id);
         $figures = $this->index($id);
-
-        // Get company meta values
-        $aplb_previous_year = $this->getCompanyMeta($id, self::META_SOCE_APLB_PREVIOUS_YEAR);
-        $scci_previous_year = $this->getCompanyMeta($id, self::META_SOCE_SCCI_PREVIOUS_YEAR);
-        $scd_previous_year = $this->getCompanyMeta($id, self::META_SOCE_SCD_PREVIOUS_YEAR);
 
         // Calculate GPL using helper
         $gpl = $this->calculateGPL($figures['revenue'], $figures['costOfSales']);
@@ -434,9 +1105,37 @@ class StatementController extends Controller
         ];
 
         $lastIndex = $figures['lastIndex'];
-        $opening_capital = $figures['opening_capital'];
-        $capital_injection = $figures['capital_injection'];
-        $drawings = $figures['drawings'];
+
+        $revenue = $figures['revenue'];
+        $costOfSales = $figures['costOfSales'];
+        $adminExpense = $figures['adminExpense'];
+        $financialCharges = $figures['financialCharges'];
+        $otherIncome = $figures['otherIncome'];
+        $taxation = [
+            'current_year' => $this->taxation_current_year,
+            'previous_year' => $this->taxation_previous_year,
+        ];
+
+        $profitLossAfterTaxationCurrentYear = $revenue['total_current_year'] + 
+            $costOfSales['total_current_year'] + 
+            $adminExpense['total_current_year'] + 
+            $financialCharges['total_current_year'] + 
+            $otherIncome['total_current_year'];
+
+        $profitLossAfterTaxationPreviousYear = $revenue['total_previous_year'] + 
+            $costOfSales['total_previous_year'] + 
+            $adminExpense['total_previous_year'] + 
+            $financialCharges['total_previous_year'] + 
+            $otherIncome['total_previous_year'];
+
+        $profitLossAfterTaxation = [
+            'current_year' => $profitLossAfterTaxationCurrentYear,
+            'previous_year' => $profitLossAfterTaxationPreviousYear
+        ];
+
+        // return $profitLossAfterTaxation;
+
+        // return $opening_capital_previous_year;
 
         return view('statements.soce', compact(
             'company',
@@ -445,11 +1144,9 @@ class StatementController extends Controller
             'capital_injection',
             'drawings',
             'otherComprehensiveIncome',
-            'aplb_previous_year',
             'scci_previous_year',
-            'scd_previous_year'
         ));
-    }
+    }*/
 
     public function soce_export_pdf(string $id)
     {
@@ -457,9 +1154,9 @@ class StatementController extends Controller
         $figures = $this->index($id);
 
         // Get company meta values
-        $aplb_previous_year = $this->getCompanyMeta($id, self::META_SOCE_APLB_PREVIOUS_YEAR);
-        $scci_previous_year = $this->getCompanyMeta($id, self::META_SOCE_SCCI_PREVIOUS_YEAR);
-        $scd_previous_year = $this->getCompanyMeta($id, self::META_SOCE_SCD_PREVIOUS_YEAR);
+        $aplb_previous_year = $this->getCompanyMeta($id, self::META_SOCE_APLB);
+        $scci_previous_year = $this->getCompanyMeta($id, self::META_SOCE_SCCI);
+        $scd_previous_year = $this->getCompanyMeta($id, self::META_SOCE_SCD);
 
         // Calculate GPL using helper
         $gpl = $this->calculateGPL($figures['revenue'], $figures['costOfSales']);
@@ -510,129 +1207,6 @@ class StatementController extends Controller
         );
 
         return $pdf->download($company->name . ' Statement of Changes in Equity.pdf');
-    }
-
-    public function sofp(string $id)
-    {
-        $company = Company::find($id);
-
-        $figures = $this->index($id);
-
-        $non_current_assets = array(
-            'group_name' => $figures['non_current_assets']['group_name'],
-            'index' => $figures['non_current_assets']['index'],
-            'total_current_year' => $figures['non_current_assets']['current_year'],
-            'total_previous_year' => $figures['non_current_assets']['previous_year'],
-        );
-
-        // $non_current_assets = $figures['non_current_assets']->map(function ($item) {
-        //     return [
-        //         'index' => $item->index,
-        //         'group_name' => $item->group_name,
-        //         'total_current_year' => $item->total_current_year,
-        //         'total_previous_year' => $item->total_previous_year,
-        //     ];
-        // })->toArray();
-
-        $current_assets = $figures['current_assets']->map(function ($item) {
-            return [
-                'index' => $item->index,
-                'group_name' => $item->group_name,
-                'total_current_year' => $item->total_current_year,
-                'total_previous_year' => $item->total_previous_year,
-            ];
-        })->toArray();
-
-        $current_liabilities = $figures['current_liabilities']->map(function ($item) {
-            return [
-                'index' => $item->index,
-                'group_name' => $item->group_name,
-                'total_current_year' => $item->total_current_year,
-                'total_previous_year' => $item->total_previous_year,
-            ];
-        })->toArray();
-
-        $scci_previous_year = CompanyMeta::where('company_id', $id)
-            ->select('meta_value')
-            ->where('meta_key', 'soce_scci_previous_year')
-            ->first();
-
-        $scd_previous_year = CompanyMeta::where('company_id', $id)
-            ->select('meta_value')
-            ->where('meta_key', 'soce_scd_previous_year')
-            ->first();
-
-        $opening_capital = array(
-            'account_code' => $figures['opening_capital']->account_code,
-            'account_name' => $figures['opening_capital']->account_name,
-            'closing_debit' => $figures['opening_capital']->closing_debit,
-            'closing_credit' => $figures['opening_capital']->closing_credit,
-        );
-
-        $capital_injection = array(
-            'account_code' => $figures['capital_injection']->account_code,
-            'account_name' => $figures['capital_injection']->account_name,
-            'closing_debit' => $figures['capital_injection']->closing_debit,
-            'closing_credit' => $figures['capital_injection']->closing_credit,
-        );
-
-        $drawings = array(
-            'account_code' => $figures['drawings']->account_code,
-            'account_name' => $figures['drawings']->account_name,
-            'closing_debit' => $figures['drawings']->closing_debit,
-            'closing_credit' => $figures['drawings']->closing_credit,
-        );
-
-        $sctc_previous_year = 0;
-        $sctc_current_year = 0;
-
-        if ($opening_capital['closing_debit'] > $opening_capital['closing_credit']) {
-            $scb_previous_year = $opening_capital['closing_debit'] - $opening_capital['closing_credit'];
-        } else {
-            $scb_previous_year = $opening_capital['closing_credit'] - $opening_capital['closing_debit'];
-        }
-
-        if ($capital_injection['closing_debit'] > $capital_injection['closing_credit']) {
-            $scci_current_year = $capital_injection['closing_debit'];
-        } else {
-            $scci_current_year = $capital_injection['closing_credit'];
-        }
-
-        if ($drawings['closing_debit'] > $drawings['closing_credit']) {
-            $scd_current_year = $drawings['closing_debit'];
-        } else {
-            $scd_current_year = $drawings['closing_credit'];
-        }
-
-        $paidup_capital_previous_year = ($scb_previous_year + $sctc_previous_year + ($scci_previous_year->meta_value ?? 0) + ($scd_previous_year->meta_value ?? 0));
-        $paidup_capital_current_year = $paidup_capital_previous_year + $sctc_current_year + $scci_current_year + $scd_current_year;
-
-        $paidup_capital = array(
-            'current_year' => $paidup_capital_current_year,
-            'previous_year' => $paidup_capital_previous_year,
-        );
-
-        $sofp_apl = $this->sofp_apl($id);
-
-        $apl = array(
-            'current_year' => $sofp_apl['current_year'],
-            'previous_year' => $sofp_apl['previous_year'],
-        );
-
-        $lastIndex = $figures['lastIndex'];
-
-        return view(
-            'statements.sofp', 
-            compact(
-                'company',
-                'lastIndex',
-                'non_current_assets',
-                'current_assets',
-                'current_liabilities',
-                'paidup_capital',
-                'apl'
-            )
-        );
     }
 
     public function sofp_export_pdf(string $id)
@@ -783,9 +1357,9 @@ class StatementController extends Controller
 
             $company->company_meta()->upsert(
                 [
-                    ['meta_key' => self::META_SOCE_APLB_PREVIOUS_YEAR, 'meta_value' => $request->soce_aplb_previous_year],
-                    ['meta_key' => self::META_SOCE_SCCI_PREVIOUS_YEAR, 'meta_value' => $request->soce_scci_previous_year],
-                    ['meta_key' => self::META_SOCE_SCD_PREVIOUS_YEAR, 'meta_value' => $request->soce_scd_previous_year]
+                    ['meta_key' => self::META_SOCE_APLB, 'meta_value' => $request->soce_aplb],
+                    ['meta_key' => self::META_SOCE_SCCI, 'meta_value' => $request->soce_scci],
+                    ['meta_key' => self::META_SOCE_SCD, 'meta_value' => $request->soce_scd]
                 ],
                 ['company_id', 'meta_key'],
                 ['meta_value']
@@ -808,7 +1382,7 @@ class StatementController extends Controller
         $figures = $this->index($id);
 
         // Get company meta value
-        $aplb_previous_year = $this->getCompanyMeta($id, self::META_SOCE_APLB_PREVIOUS_YEAR);
+        $aplb_previous_year = $this->getCompanyMeta($id, self::META_SOCE_APLB);
 
         // Calculate GPL using helper
         $gpl = $this->calculateGPL($figures['revenue'], $figures['costOfSales']);
@@ -827,8 +1401,8 @@ class StatementController extends Controller
         $capital_injection = 0;
         $drawings = 0;
 
-        $previous_year = $aplb_previous_year + $otherComprehensiveIncome['previous_year'] + $capital_injection + $drawings;
-        $current_year = $previous_year + $otherComprehensiveIncome['current_year'] + $capital_injection + $drawings;
+        $previous_year = $aplb_previous_year + $otherComprehensiveIncome['previous_year'] + $capital_injection + (-$drawings);
+        $current_year = $previous_year + $otherComprehensiveIncome['current_year'] + $capital_injection + (-$drawings);
 
         return [
             'current_year' => $current_year,

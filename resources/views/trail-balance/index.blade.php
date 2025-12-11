@@ -294,8 +294,17 @@
                     <td class="text-center">
                         <input type="text" name="CA-001-movement-credit" id="CA-001-movement-credit" value="{{ collect( $trailBalances['CA-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['CA-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['CA-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netAdvanceDeposistsPrepayments = (collect( $trailBalances['CA-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['CA-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['CA-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['CA-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netAdvanceDeposistsPrepayments > 0) ? $netAdvanceDeposistsPrepayments : 0 }}
+                        {{-- {{ collect( $trailBalances['CA-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netAdvanceDeposistsPrepayments < 0) ? abs($netAdvanceDeposistsPrepayments) : 0 }}
+                        {{-- {{ collect( $trailBalances['CA-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="CA-002">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -408,8 +417,17 @@
                     <td class="text-center">
                         <input type="text" name="CA-002-movement-credit" id="CA-002-movement-credit" value="{{ collect( $trailBalances['CA-002'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['CA-002'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['CA-002'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netCashEquivalents = (collect( $trailBalances['CA-002'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['CA-002'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['CA-002'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['CA-002'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netCashEquivalents > 0) ? $netCashEquivalents : 0 }}
+                        {{-- {{ collect( $trailBalances['CA-002'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netCashEquivalents < 0) ? abs($netCashEquivalents) : 0 }}
+                        {{-- {{ collect( $trailBalances['CA-002'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="CA-003">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -495,8 +513,17 @@
                     <td class="text-center">
                         <input type="text" name="CA-003-movement-credit" id="CA-003-movement-credit" value="{{ collect( $trailBalances['CA-003'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['CA-003'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['CA-003'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netOtherAssets = (collect( $trailBalances['CA-003'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['CA-003'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['CA-003'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['CA-003'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netOtherAssets > 0) ? $netOtherAssets : 0 }}
+                        {{-- {{ collect( $trailBalances['CA-003'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netOtherAssets < 0) ? abs($netOtherAssets) : 0 }}
+                        {{-- {{ collect( $trailBalances['CA-003'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="EQ-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -632,8 +659,17 @@
                     <td class="text-center">
                         <input type="text" name="EQ-001-movement-credit" id="EQ-001-movement-credit" value="{{ collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netCapital = (collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netCapital > 0) ? $netCapital : 0 }}
+                        {{-- {{ collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netCapital < 0) ? abs($netCapital) : 0 }}
+                        {{-- {{ collect( $trailBalances['EQ-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="NCL-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -744,8 +780,17 @@
                     <td class="text-center">
                         <input type="text" name="NCL-001-movement-credit" id="NCL-001-movement-credit" value="{{ collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netNonCurrentLiabilities = (collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netNonCurrentLiabilities > 0) ? $netNonCurrentLiabilities : 0 }}
+                        {{-- {{ collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netNonCurrentLiabilities < 0) ? abs($netNonCurrentLiabilities) : 0 }}
+                        {{-- {{ collect( $trailBalances['NCL-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="CL-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -906,8 +951,17 @@
                     <td class="text-center">
                         <input type="text" name="CL-001-movement-credit" id="CL-001-movement-credit" value="{{ collect( $trailBalances['CL-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['CL-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['CL-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netCurrentLiabilities = (collect( $trailBalances['CL-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['CL-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['CL-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['CL-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netCurrentLiabilities > 0) ? $netCurrentLiabilities : 0 }}
+                        {{-- {{ collect( $trailBalances['CL-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netCurrentLiabilities < 0) ? abs($netCurrentLiabilities) : 0 }}
+                        {{-- {{ collect( $trailBalances['CL-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="CL-002">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -1018,8 +1072,17 @@
                     <td class="text-center">
                         <input type="text" name="CL-002-movement-credit" id="CL-002-movement-credit" value="{{ collect( $trailBalances['CL-002'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['CL-002'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['CL-002'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netOtherLiabilities = (collect( $trailBalances['CL-002'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['CL-002'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['CL-002'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['CL-002'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netOtherLiabilities > 0) ? $netOtherLiabilities : 0 }}
+                        {{-- {{ collect( $trailBalances['CL-002'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netOtherLiabilities < 0) ? abs($netOtherLiabilities) : 0 }}
+                        {{-- {{ collect( $trailBalances['CL-002'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="S-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -1082,8 +1145,17 @@
                     <td class="text-center">
                         <input type="text" name="S-001-movement-credit" id="S-001-movement-credit" value="{{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netSales = (collect( $trailBalances['S-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netSales > 0) ? $netSales : 0 }}
+                        {{-- {{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netSales < 0) ? abs($netSales) : 0 }}
+                        {{-- {{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="COS-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -1445,8 +1517,17 @@
                     <td class="text-center">
                         <input type="text" name="COS-001-movement-credit" id="COS-001-movement-credit" value="{{ getCOSGroupSum($trailBalances, 'movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ getCOSGroupSum($trailBalances, 'closing_debit') }}</td>
-                    <td class="text-center">{{ getCOSGroupSum($trailBalances, 'closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netCostOfSales = getCOSGroupSum($trailBalances, 'opening_debit') + getCOSGroupSum($trailBalances, 'movement_debit') - getCOSGroupSum($trailBalances, 'opening_credit') - getCOSGroupSum($trailBalances, 'movement_credit');
+                        @endphp
+                        {{ ($netCostOfSales > 0) ? $netCostOfSales : 0 }}
+                        {{-- {{ getCOSGroupSum($trailBalances, 'closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netCostOfSales < 0) ? abs($netCostOfSales) : 0 }}
+                        {{-- {{ getCOSGroupSum($trailBalances, 'closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="OI-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -1638,8 +1719,17 @@
                     <td class="text-center">
                         <input type="text" name="OI-001-movement-credit" id="OI-001-movement-credit" value="{{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netOtherIncome = (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netOtherIncome > 0) ? $netOtherIncome : 0 }}
+                        {{-- {{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netOtherIncome < 0) ? abs($netOtherIncome) : 0 }}
+                        {{-- {{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="EX-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -2221,8 +2311,17 @@
                     <td class="text-center">
                         <input type="text" name="EX-001-movement-credit" id="EX-001-movement-credit" value="{{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netAdminExpense = (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netAdminExpense > 0) ? $netAdminExpense : 0 }}
+                        {{-- {{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netAdminExpense < 0) ? abs($netAdminExpense) : 0 }}
+                        {{-- {{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
                 <tr data-group-code="FC-001" class="parent">
                     <td></td>
@@ -2247,8 +2346,17 @@
                     <td class="text-center">
                         <input type="text" name="FC-001-movement-credit" id="FC-001-movement-credit" value="{{ $trailBalances['FC-001']['FC-001']->movement_credit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
                     </td>
-                    <td class="text-center">{{ $trailBalances['FC-001']['FC-001']->closing_debit ?? 0 }}</td>
-                    <td class="text-center">{{ $trailBalances['FC-001']['FC-001']->closing_credit ?? 0 }}</td>
+                    <td class="text-center">
+                        @php
+                            $netFinancialCharges = ($trailBalances['FC-001']['FC-001']->opening_debit ?? 0) + ($trailBalances['FC-001']['FC-001']->movement_debit ?? 0) - ($trailBalances['FC-001']['FC-001']->opening_credit ?? 0) - ($trailBalances['FC-001']['FC-001']->movement_credit ?? 0);
+                        @endphp
+                        {{ ($netFinancialCharges > 0) ? $netFinancialCharges : 0 }}
+                        {{-- {{ $trailBalances['FC-001']['FC-001']->closing_debit ?? 0 }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netFinancialCharges < 0) ? abs($netFinancialCharges) : 0 }}
+                        {{-- {{ $trailBalances['FC-001']['FC-001']->closing_credit ?? 0 }} --}}
+                    </td>
                 </tr>
                 <tr class="sub-table-row" style="display: none;" data-group-id="T-001">
                     <td colspan="10" class="sub-table-cell p-0">
@@ -2310,8 +2418,17 @@
                     <td class="text-center">
                         <input type="text" name="T-001-movement-credit" id="T-001-movement-credit" value="{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit') }}" class="form-control form-control-sm bg-transparent border-0 text-center" readonly>
                     </td>
-                    <td class="text-center">{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_debit') }}</td>
-                    <td class="text-center">{{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_credit') }}</td>
+                    <td class="text-center">
+                        @php
+                            $netTaxation = (collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit'));
+                        @endphp
+                        {{ ($netTaxation > 0) ? $netTaxation : 0 }}
+                        {{-- {{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_debit') }} --}}
+                    </td>
+                    <td class="text-center">
+                        {{ ($netTaxation < 0) ? abs($netTaxation) : 0 }}
+                        {{-- {{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_credit') }} --}}
+                    </td>
                 </tr>
             </tbody>
             <tfoot>

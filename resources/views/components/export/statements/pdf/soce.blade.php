@@ -77,48 +77,6 @@
                     </tr>
                 @endif
                 
-                <tr>
-                    <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->start_date)->format('M d, Y') }}</strong></td>
-                    <td style="text-align: center;" class="text-bold scb_current_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
-                    <td style="text-align: center;" class="text-bold aplb_current_year" data-content="0">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
-                    <td style="text-align: center;" class="text-bold tb_current_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ ( $otherComprehensiveIncome['current_year'] >= 0 ) ? 'Total comprehensive income' : 'Total comprehensive loss' }}</td>
-                    <td style="text-align: center;" class="sctc_current_year" data-content="0">0</td>
-                    <td style="text-align: center;" class="apltc_current_year" data-content="{{ round($otherComprehensiveIncome['current_year']) }}">{{ ($otherComprehensiveIncome['current_year'] < 0) ? '('. number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') .')' : number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') }}</td>
-                    <td style="text-align: center;" class="ttc_current_year" data-content="0">{{ number_format(0, 0, '.', ',') }}</td>
-                </tr>
-                <tr>
-                    <td>Capital Injection</td>
-                    <td style="text-align: center;" class="scci_current_year" data-content="@if($capital_injection['closing_debit']) {{ round($capital_injection['closing_debit']) }} @else {{ round($capital_injection['closing_credit']) }} @endif">
-                        @if ($capital_injection['closing_debit'] != 0)
-                            {{ number_format(round(abs($capital_injection['closing_debit'])), 0, '.', ',') }}
-                        @else
-                            {{ number_format(round(abs($capital_injection['closing_credit'])), 0, '.', ',') }}
-                        @endif
-                    </td>
-                    <td style="text-align: center;" class="aplci_current_year" data-content="0">0</td>
-                    <td style="text-align: center;" class="tci_current_year" data-content="0">0</td>
-                </tr>
-                <tr>
-                    <td>Drawings</td>
-                    <td style="text-align: center;" class="scd_current_year" data-content="@if($drawings['closing_debit']) {{ round($drawings['closing_debit']) }} @else {{ round($drawings['closing_credit']) }} @endif">
-                        @if ($drawings['closing_debit'] != 0)
-                            ({{ number_format(round(abs($drawings['closing_debit'])), 0, '.', ',') }})
-                        @else
-                            ({{ number_format(round(abs($drawings['closing_credit'])), 0, '.', ',') }})
-                        @endif
-                    </td>
-                    <td style="text-align: center;" class="apld_current_year" data-content="0">0</td>
-                    <td style="text-align: center;" class="td_current_year" data-content="0">0</td>
-                </tr>
-                <tr>
-                    <td><strong>Balance as at {{ \Carbon\Carbon::parse($company->end_date)->format('M d, Y') }}</strong></td>
-                    <td style="text-align: center;" class="tsc_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
-                    <td style="text-align: center;" class="tapl_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ (0 < 0) ? '('. number_format(abs(0), 0, '.', ',') .')' : number_format(abs(0), 0, '.', ',') }}</td>
-                    <td style="text-align: center;" class="tt_current_year" data-content="0" style="border-top: 2px solid #000; border-bottom: 4px double #000;">{{ number_format(0, 0, '.', ',') }}</td>
-                </tr>
             </tbody>
         </table>
         <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>

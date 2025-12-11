@@ -378,9 +378,9 @@
                                                                 $total = \App\Models\Note::where('company_id', $company->id)->where('account_code', $accounts[0]->account_code)->where('index', $accounts[0]->parent_index)->first();
                                                             @endphp
                                                             <td class="text-right"><strong>Total:</strong></td>
-                                                            <td data-current-year="{{ $total->current_year }}" class="text-center">{{ $accounts->sum('current_year') }}</td>
+                                                            <td data-current-year="{{ $total->current_year ?? 0 }}" class="text-center">{{ $accounts->sum('current_year') }}</td>
                                                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                                                                <td data-previous-year="{{ $total->previous_year }}" class="text-center">{{ $accounts->sum('previous_year') }}</td>
+                                                                <td data-previous-year="{{ $total->previous_year ?? 0 }}" class="text-center">{{ $accounts->sum('previous_year') }}</td>
                                                             @endif
                                                             <td></td>
                                                         </tr>

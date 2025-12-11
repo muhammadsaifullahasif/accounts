@@ -219,9 +219,13 @@
                 <tr>
                     <td>Issued, subscribed and paid-up</td>
                     <td style="text-align: center;"><strong></strong></td>
-                    <td style="text-align: center; border-left: 1px solid #000; border-top: 1px solid #000; @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'No') border-right: 1px solid #000; @endif">{{ ($paidup_capital['current_year'] < 0) ? '('. number_format(abs(round($paidup_capital['current_year'])), 0, '.', ',') .')' : number_format(abs(round($paidup_capital['current_year'])), 0, '.', ',') }}</td>
+                    <td style="text-align: center; border-left: 1px solid #000; border-top: 1px solid #000; @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'No') border-right: 1px solid #000; @endif">
+                        {{ ($paidup_capital['current_year'] < 0) ? '('. number_format(abs(round($paidup_capital['current_year'])), 0, '.', ',') .')' : number_format(abs(round($paidup_capital['current_year'])), 0, '.', ',') }}
+                    </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-right: 1px solid #000; border-top: 1px solid #000;">{{ ($paidup_capital['previous_year'] < 0) ? '('. number_format(abs(round($paidup_capital['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($paidup_capital['previous_year'])), 0, '.', ',') }}</td>
+                        <td style="text-align: center; border-right: 1px solid #000; border-top: 1px solid #000;">
+                            {{ ($paidup_capital['previous_year'] < 0) ? '('. number_format(abs(round($paidup_capital['previous_year'])), 0, '.', ',') .')' : number_format(abs(round($paidup_capital['previous_year'])), 0, '.', ',') }}
+                        </td>
                     @endif
                 </tr>
                 <tr>
