@@ -1147,7 +1147,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netSales = (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netSales = (collect( $trailBalances['S-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netSales > 0) ? $netSales : 0 }}
                         {{-- {{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -1519,7 +1519,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netCostOfSales = getCOSGroupSum($trailBalances, 'movement_debit') - getCOSGroupSum($trailBalances, 'movement_credit');
+                            $netCostOfSales = getCOSGroupSum($trailBalances, 'opening_debit') + getCOSGroupSum($trailBalances, 'movement_debit') - getCOSGroupSum($trailBalances, 'opening_credit') - getCOSGroupSum($trailBalances, 'movement_credit');
                         @endphp
                         {{ ($netCostOfSales > 0) ? $netCostOfSales : 0 }}
                         {{-- {{ getCOSGroupSum($trailBalances, 'closing_debit') }} --}}
@@ -1721,7 +1721,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netOtherIncome = (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netOtherIncome = (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netOtherIncome > 0) ? $netOtherIncome : 0 }}
                         {{-- {{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -2313,7 +2313,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netAdminExpense = (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netAdminExpense = (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netAdminExpense > 0) ? $netAdminExpense : 0 }}
                         {{-- {{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -2348,7 +2348,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netFinancialCharges = ($trailBalances['FC-001']['FC-001']->movement_debit ?? 0) - ($trailBalances['FC-001']['FC-001']->movement_credit ?? 0);
+                            $netFinancialCharges = ($trailBalances['FC-001']['FC-001']->opening_debit ?? 0) + ($trailBalances['FC-001']['FC-001']->movement_debit ?? 0) - ($trailBalances['FC-001']['FC-001']->opening_credit ?? 0) - ($trailBalances['FC-001']['FC-001']->movement_credit ?? 0);
                         @endphp
                         {{ ($netFinancialCharges > 0) ? $netFinancialCharges : 0 }}
                         {{-- {{ $trailBalances['FC-001']['FC-001']->closing_debit ?? 0 }} --}}
@@ -2420,7 +2420,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netTaxation = (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netTaxation = (collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netTaxation > 0) ? $netTaxation : 0 }}
                         {{-- {{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -2742,6 +2742,7 @@
                 movementDebit = parseFloat(movementDebit) || 0;
                 movementCredit = parseFloat(movementCredit) || 0;
 
+                /*
                 // Income and expense groups use movement-only calculation
                 var incomeExpenseGroups = ['S-001', 'COS-001', 'OI-001', 'EX-001', 'FC-001', 'T-001'];
 
@@ -2759,7 +2760,7 @@
                         closingDebit = 0;
                         closingCredit = 0;
                     }
-                } else {
+                } else {*/
                     // For other groups: use opening + movement calculation
                     var netBalance = openingDebit + movementDebit - openingCredit - movementCredit;
 
@@ -2773,7 +2774,7 @@
                         closingDebit = 0;
                         closingCredit = 0;
                     }
-                }
+                // }
 
                 return {
                     closingDebit: closingDebit,

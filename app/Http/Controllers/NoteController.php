@@ -87,169 +87,216 @@ class NoteController extends Controller
             $noteSaved = false; // Add this flag at the start of each group iteration
 
             // Special handling for COS-001 group
-            if ($groupName == 'COS-001') {
-                // Track if we've processed the PR accounts
-                $prAccountsProcessed = false;
-                $pr001Data = null;
-                $pr002Data = null;
-                $pr003Data = null;
+            if ($groupName == 'COS-001' || $groupName == 'S-001' || $groupName == 'OI-001' || $groupName == 'EX-001' || $groupName == 'FC-001' || $groupName == 'T-001') {
+                if ($groupName == 'COS-001') {
+                    // Track if we've processed the PR accounts
+                    $prAccountsProcessed = false;
+                    $pr001Data = null;
+                    $pr002Data = null;
+                    $pr003Data = null;
 
-                foreach ($accounts as $account) {
-                    // Collect PR-001, PR-002, PR-003 data
-                    if ($account->account_code == 'PR-001') {
-                        $pr001Data = $account;
-                    } elseif ($account->account_code == 'PR-002') {
-                        $pr002Data = $account;
-                    } elseif ($account->account_code == 'PR-003') {
-                        $pr003Data = $account;
-                    }
-                }
-
-                // Process all accounts in COS-001
-                foreach ($accounts as $account) {
-                    // Skip PR-002 and PR-003 as they'll be combined with PR-001
-                    if (in_array($account->account_code, ['PR-002', 'PR-003'])) {
-                        continue;
+                    foreach ($accounts as $account) {
+                        // Collect PR-001, PR-002, PR-003 data
+                        if ($account->account_code == 'PR-001') {
+                            $pr001Data = $account;
+                        } elseif ($account->account_code == 'PR-002') {
+                            $pr002Data = $account;
+                        } elseif ($account->account_code == 'PR-003') {
+                            $pr003Data = $account;
+                        }
                     }
 
-                    // For PR-001, combine with PR-002 and subtract PR-003
-                    if ($account->account_code == 'PR-001' && $pr001Data) {
-                        $opening_debit = ($pr001Data->opening_debit ?? 0) + ($pr002Data->opening_debit ?? 0) - ($pr003Data->opening_debit ?? 0);
-                        $opening_credit = ($pr001Data->opening_credit ?? 0) + ($pr002Data->opening_credit ?? 0) - ($pr003Data->opening_credit ?? 0);
-                        $movement_debit = ($pr001Data->movement_debit ?? 0) + ($pr002Data->movement_debit ?? 0) - ($pr003Data->movement_debit ?? 0);
-                        $movement_credit = ($pr001Data->movement_credit ?? 0) + ($pr002Data->movement_credit ?? 0) - ($pr003Data->movement_credit ?? 0);
-                        $closing_debit = ($pr001Data->closing_debit ?? 0) + ($pr002Data->closing_debit ?? 0) - ($pr003Data->closing_debit ?? 0);
-                        $closing_credit = ($pr001Data->closing_credit ?? 0) + ($pr002Data->closing_credit ?? 0) - ($pr003Data->closing_credit ?? 0);
-
-                        // Determine current_year and previous_year from combined values
-                        $current_year = 0;
-                        $previous_year = 0;
-
-                        if ($closing_debit > 0) {
-                            $current_year = $closing_debit;
-                        }
-                        if ($closing_credit > 0) {
-                            $current_year = -$closing_credit;
-                        }
-                        if ($opening_debit > 0) {
-                            $previous_year = $opening_debit;
-                        }
-                        if ($opening_credit > 0) {
-                            $previous_year = -$opening_credit;
-                        }
-
-                        if ($current_year == 0 && $previous_year == 0) {
+                    // Process all accounts in COS-001
+                    foreach ($accounts as $account) {
+                        // Skip PR-002 and PR-003 as they'll be combined with PR-001
+                        if (in_array($account->account_code, ['PR-002', 'PR-003'])) {
                             continue;
                         }
 
-                        $note = new Note();
-                        $note->user_id = 1;
-                        $note->company_id = $id;
-                        $note->index = $index;
-                        $note->group_code = 'COS-001';
-                        $note->group_name = $account->group_name;
-                        $note->account_code = 'PR-001';
-                        $note->account_head = 'Stock Consumed';
-                        $note->current_year = round($current_year);
-                        $note->previous_year = round($previous_year);
-                        $note->modified_by = 1;
-                        $note->save();
-                        $noteSaved = true; // Mark that a note was saved
+                        // For PR-001, combine with PR-002 and subtract PR-003
+                        if ($account->account_code == 'PR-001' && $pr001Data) {
+                            $opening_debit = ($pr001Data->opening_debit ?? 0) + ($pr002Data->opening_debit ?? 0) - ($pr003Data->opening_debit ?? 0);
+                            $opening_credit = ($pr001Data->opening_credit ?? 0) + ($pr002Data->opening_credit ?? 0) - ($pr003Data->opening_credit ?? 0);
+                            $movement_debit = ($pr001Data->movement_debit ?? 0) + ($pr002Data->movement_debit ?? 0) - ($pr003Data->movement_debit ?? 0);
+                            $movement_credit = ($pr001Data->movement_credit ?? 0) + ($pr002Data->movement_credit ?? 0) - ($pr003Data->movement_credit ?? 0);
+                            $closing_debit = ($pr001Data->closing_debit ?? 0) + ($pr002Data->closing_debit ?? 0) - ($pr003Data->closing_debit ?? 0);
+                            $closing_credit = ($pr001Data->closing_credit ?? 0) + ($pr002Data->closing_credit ?? 0) - ($pr003Data->closing_credit ?? 0);
 
-                        // Calculate individual values for PR-001, PR-002, and PR-003
-                        // PR-001: Opening Stock
-                        $pr001_current = 0;
-                        $pr001_previous = 0;
-                        if ($pr001Data) {
-                            if ($pr001Data->closing_debit > 0) {
-                                $pr001_current = $pr001Data->closing_debit;
+                            // Determine current_year and previous_year from combined values
+                            $current_year = 0;
+                            $previous_year = 0;
+
+                            if ($closing_debit > 0) {
+                                $current_year = $closing_debit;
                             }
-                            if ($pr001Data->closing_credit > 0) {
-                                $pr001_current = -$pr001Data->closing_credit;
+                            if ($closing_credit > 0) {
+                                $current_year = -$closing_credit;
                             }
-                            if ($pr001Data->opening_debit > 0) {
-                                $pr001_previous = $pr001Data->opening_debit;
+                            if ($opening_debit > 0) {
+                                $previous_year = $opening_debit;
                             }
-                            if ($pr001Data->opening_credit > 0) {
-                                $pr001_previous = -$pr001Data->opening_credit;
+                            if ($opening_credit > 0) {
+                                $previous_year = -$opening_credit;
                             }
+
+                            if ($current_year == 0 && $previous_year == 0) {
+                                continue;
+                            }
+
+                            $note = new Note();
+                            $note->user_id = 1;
+                            $note->company_id = $id;
+                            $note->index = $index;
+                            $note->group_code = 'COS-001';
+                            $note->group_name = $account->group_name;
+                            $note->account_code = 'PR-001';
+                            $note->account_head = 'Stock Consumed';
+                            $note->current_year = round($current_year);
+                            $note->previous_year = round($previous_year);
+                            $note->modified_by = 1;
+                            $note->save();
+                            $noteSaved = true; // Mark that a note was saved
+
+                            // Calculate individual values for PR-001, PR-002, and PR-003
+                            // PR-001: Opening Stock
+                            $pr001_current = 0;
+                            $pr001_previous = 0;
+                            if ($pr001Data) {
+                                if ($pr001Data->closing_debit > 0) {
+                                    $pr001_current = $pr001Data->closing_debit;
+                                }
+                                if ($pr001Data->closing_credit > 0) {
+                                    $pr001_current = -$pr001Data->closing_credit;
+                                }
+                                if ($pr001Data->opening_debit > 0) {
+                                    $pr001_previous = $pr001Data->opening_debit;
+                                }
+                                if ($pr001Data->opening_credit > 0) {
+                                    $pr001_previous = -$pr001Data->opening_credit;
+                                }
+                            }
+
+                            // PR-002: Purchases
+                            $pr002_current = 0;
+                            $pr002_previous = 0;
+                            if ($pr002Data) {
+                                if ($pr002Data->closing_debit > 0) {
+                                    $pr002_current = $pr002Data->closing_debit;
+                                }
+                                if ($pr002Data->closing_credit > 0) {
+                                    $pr002_current = -$pr002Data->closing_credit;
+                                }
+                                if ($pr002Data->opening_debit > 0) {
+                                    $pr002_previous = $pr002Data->opening_debit;
+                                }
+                                if ($pr002Data->opening_credit > 0) {
+                                    $pr002_previous = -$pr002Data->opening_credit;
+                                }
+                            }
+
+                            // PR-003: Closing Stock (subtract this)
+                            $pr003_current = 0;
+                            $pr003_previous = 0;
+                            if ($pr003Data) {
+                                if ($pr003Data->closing_debit > 0) {
+                                    $pr003_current = -$pr003Data->closing_debit;
+                                }
+                                if ($pr003Data->closing_credit > 0) {
+                                    $pr003_current = $pr003Data->closing_credit;
+                                }
+                                if ($pr003Data->opening_debit > 0) {
+                                    $pr003_previous = -$pr003Data->opening_debit;
+                                }
+                                if ($pr003Data->opening_credit > 0) {
+                                    $pr003_previous = $pr003Data->opening_credit;
+                                }
+                            }
+
+                            // Create 3 sub-notes for COS-001 with parent_index = $index
+                            $subNotes = [
+                                ['account_code' => 'PR-001', 'account_head' => 'Opening Stock', 'current_year' => round($pr001_current), 'previous_year' => round($pr001_previous)],
+                                ['account_code' => 'PR-002', 'account_head' => 'Purchases', 'current_year' => round($pr002_current), 'previous_year' => round($pr002_previous)],
+                                ['account_code' => 'PR-003', 'account_head' => 'Closing Stock', 'current_year' => round($pr003_current), 'previous_year' => round($pr003_previous)],
+                            ];
+
+                            $subIndex = $index + 0.1;
+                            foreach ($subNotes as $subNoteData) {
+                                $subNote = new Note();
+                                $subNote->user_id = 1;
+                                $subNote->company_id = $id;
+                                $subNote->index = $subIndex;
+                                $subNote->group_code = 'COS-001';
+                                $subNote->group_name = $account->group_name;
+                                $subNote->account_code = $subNoteData['account_code'];
+                                $subNote->account_head = $subNoteData['account_head'];
+                                $subNote->current_year = $subNoteData['current_year'];
+                                $subNote->previous_year = $subNoteData['previous_year'];
+                                $subNote->parent_index = $index;
+                                $subNote->modified_by = 1;
+                                $subNote->save();
+                            }
+                        } else {
+                            // Process other COS-001 accounts normally
+                            $current_year = 0;
+                            $previous_year = 0;
+
+                            if ($account->closing_debit > 0) {
+                                $current_year = $account->closing_debit;
+                            }
+                            if ($account->closing_credit > 0) {
+                                $current_year = -$account->closing_credit;
+                            }
+                            if ($account->opening_debit > 0) {
+                                $previous_year = $account->opening_debit;
+                            }
+                            if ($account->opening_credit > 0) {
+                                $previous_year = -$account->opening_credit;
+                            }
+
+                            if ($current_year == 0 && $previous_year == 0) {
+                                continue;
+                            }
+
+                            $note = new Note();
+                            $note->user_id = 1;
+                            $note->company_id = $id;
+                            $note->index = $index;
+                            $note->group_code = $account->group_code;
+                            $note->group_name = $account->group_name;
+                            $note->account_code = $account->account_code;
+                            $note->account_head = $account->account_head;
+                            $note->current_year = round($current_year);
+                            $note->previous_year = round($previous_year);
+                            $note->modified_by = 1;
+                            $note->save();
+                            $noteSaved = true; // Mark that a note was saved
                         }
-
-                        // PR-002: Purchases
-                        $pr002_current = 0;
-                        $pr002_previous = 0;
-                        if ($pr002Data) {
-                            if ($pr002Data->closing_debit > 0) {
-                                $pr002_current = $pr002Data->closing_debit;
-                            }
-                            if ($pr002Data->closing_credit > 0) {
-                                $pr002_current = -$pr002Data->closing_credit;
-                            }
-                            if ($pr002Data->opening_debit > 0) {
-                                $pr002_previous = $pr002Data->opening_debit;
-                            }
-                            if ($pr002Data->opening_credit > 0) {
-                                $pr002_previous = -$pr002Data->opening_credit;
-                            }
-                        }
-
-                        // PR-003: Closing Stock (subtract this)
-                        $pr003_current = 0;
-                        $pr003_previous = 0;
-                        if ($pr003Data) {
-                            if ($pr003Data->closing_debit > 0) {
-                                $pr003_current = -$pr003Data->closing_debit;
-                            }
-                            if ($pr003Data->closing_credit > 0) {
-                                $pr003_current = $pr003Data->closing_credit;
-                            }
-                            if ($pr003Data->opening_debit > 0) {
-                                $pr003_previous = -$pr003Data->opening_debit;
-                            }
-                            if ($pr003Data->opening_credit > 0) {
-                                $pr003_previous = $pr003Data->opening_credit;
-                            }
-                        }
-
-                        // Create 3 sub-notes for COS-001 with parent_index = $index
-                        $subNotes = [
-                            ['account_code' => 'PR-001', 'account_head' => 'Opening Stock', 'current_year' => round($pr001_current), 'previous_year' => round($pr001_previous)],
-                            ['account_code' => 'PR-002', 'account_head' => 'Purchases', 'current_year' => round($pr002_current), 'previous_year' => round($pr002_previous)],
-                            ['account_code' => 'PR-003', 'account_head' => 'Closing Stock', 'current_year' => round($pr003_current), 'previous_year' => round($pr003_previous)],
-                        ];
-
-                        $subIndex = $index + 0.1;
-                        foreach ($subNotes as $subNoteData) {
-                            $subNote = new Note();
-                            $subNote->user_id = 1;
-                            $subNote->company_id = $id;
-                            $subNote->index = $subIndex;
-                            $subNote->group_code = 'COS-001';
-                            $subNote->group_name = $account->group_name;
-                            $subNote->account_code = $subNoteData['account_code'];
-                            $subNote->account_head = $subNoteData['account_head'];
-                            $subNote->current_year = $subNoteData['current_year'];
-                            $subNote->previous_year = $subNoteData['previous_year'];
-                            $subNote->parent_index = $index;
-                            $subNote->modified_by = 1;
-                            $subNote->save();
-                        }
-                    } else {
-                        // Process other COS-001 accounts normally
+                    }
+                } else {
+                    // Process all other groups normally
+                    foreach ($accounts as $account) {
                         $current_year = 0;
                         $previous_year = 0;
 
-                        if ($account->closing_debit > 0) {
-                            $current_year = $account->closing_debit;
+                        if ($account->movement_debit > 0) {
+                            if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
+                                $current_year = -$account->movement_debit;
+                            } else {
+                                $current_year = $account->movement_debit;
+                            }
                         }
-                        if ($account->closing_credit > 0) {
-                            $current_year = -$account->closing_credit;
+                        if ($account->movement_credit > 0) {
+                            $current_year = $account->movement_credit;
                         }
                         if ($account->opening_debit > 0) {
-                            $previous_year = $account->opening_debit;
+                            if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
+                                $previous_year = -$account->opening_debit;
+                            } else {
+                                $previous_year = $account->opening_debit;
+                            }
                         }
                         if ($account->opening_credit > 0) {
-                            $previous_year = -$account->opening_credit;
+                            $previous_year = $account->opening_credit;
                         }
 
                         if ($current_year == 0 && $previous_year == 0) {
