@@ -563,7 +563,7 @@
                                             <input type="hidden" name="groupCode" value="EQ-001">
                                             <input type="hidden" name="groupName" value="Capital">
                                         </td>
-                                        <td>Profit for the Year</td>
+                                        <td>Accumulated Profit/(losses)</td>
                                         <td class="text-center">CAP-002</td>
                                         <td class="text-center">
                                             <input type="text" name="CAP-002-opening-debit" id="CAP-002-opening-debit" value="{{ $trailBalances['EQ-001']['CAP-002']->opening_debit ?? 0 }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
@@ -1147,7 +1147,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netSales = (collect( $trailBalances['S-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netSales = (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['S-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netSales > 0) ? $netSales : 0 }}
                         {{-- {{ collect( $trailBalances['S-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -1519,7 +1519,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netCostOfSales = getCOSGroupSum($trailBalances, 'opening_debit') + getCOSGroupSum($trailBalances, 'movement_debit') - getCOSGroupSum($trailBalances, 'opening_credit') - getCOSGroupSum($trailBalances, 'movement_credit');
+                            $netCostOfSales = getCOSGroupSum($trailBalances, 'movement_debit') - getCOSGroupSum($trailBalances, 'movement_credit');
                         @endphp
                         {{ ($netCostOfSales > 0) ? $netCostOfSales : 0 }}
                         {{-- {{ getCOSGroupSum($trailBalances, 'closing_debit') }} --}}
@@ -1721,7 +1721,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netOtherIncome = (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netOtherIncome = (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['OI-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netOtherIncome > 0) ? $netOtherIncome : 0 }}
                         {{-- {{ collect( $trailBalances['OI-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -2313,7 +2313,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netAdminExpense = (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netAdminExpense = (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['EX-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netAdminExpense > 0) ? $netAdminExpense : 0 }}
                         {{-- {{ collect( $trailBalances['EX-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -2348,7 +2348,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netFinancialCharges = ($trailBalances['FC-001']['FC-001']->opening_debit ?? 0) + ($trailBalances['FC-001']['FC-001']->movement_debit ?? 0) - ($trailBalances['FC-001']['FC-001']->opening_credit ?? 0) - ($trailBalances['FC-001']['FC-001']->movement_credit ?? 0);
+                            $netFinancialCharges = ($trailBalances['FC-001']['FC-001']->movement_debit ?? 0) - ($trailBalances['FC-001']['FC-001']->movement_credit ?? 0);
                         @endphp
                         {{ ($netFinancialCharges > 0) ? $netFinancialCharges : 0 }}
                         {{-- {{ $trailBalances['FC-001']['FC-001']->closing_debit ?? 0 }} --}}
@@ -2420,7 +2420,7 @@
                     </td>
                     <td class="text-center">
                         @php
-                            $netTaxation = (collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_debit')) + (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('opening_credit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit'));
+                            $netTaxation = (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_debit')) - (collect( $trailBalances['T-001'] ?? collect(0) )->sum('movement_credit'));
                         @endphp
                         {{ ($netTaxation > 0) ? $netTaxation : 0 }}
                         {{-- {{ collect( $trailBalances['T-001'] ?? collect(0) )->sum('closing_debit') }} --}}
@@ -2681,10 +2681,6 @@
                 'CL-002': ['OL-001', 'OL-002', 'OL-003'],
             };
 
-            // var CostOfSales = {
-            //     'PR-001', 'PR-002', 'PR-003', 'OE-001', 'OE-002', 'OE-003', 'OE-004', 'OE-005', 'OE-006', 'OE-007', 'OE-008', 'OE-009'
-            // };
-
             // Divide parent values equally intochild rows
             $(document).on('keyup change', 'tr[data-group-code] input.editable', function() {
                 var $input = $(this);
@@ -2784,9 +2780,6 @@
                     closingCredit: closingCredit
                 };
             }
-
-            // Make the function globally accessible if needed
-            // window.calculateClosingBalance = calculateClosingBalance;
 
             // Apply calculation on input keyup/change events using editable class
             $(document).on('keyup change', 'input.editable', function() {
@@ -2935,21 +2928,10 @@
                 $('#' + groupId + '-movement-debit').val(sumMovementDebit.toFixed(0));
                 $('#' + groupId + '-movement-credit').val(sumMovementCredit.toFixed(0));
 
-                // Calculate closing values properly
-                var closingBalance = (sumOpeningDebit + sumMovementDebit) - (sumOpeningCredit + sumMovementCredit);
-                var calculatedClosingDebit = 0;
-                var calculatedClosingCredit = 0;
-
-                if (closingBalance > 0) {
-                    calculatedClosingDebit = closingBalance;
-                    calculatedClosingCredit = 0;
-                } else if (closingBalance < 0) {
-                    calculatedClosingDebit = 0;
-                    calculatedClosingCredit = Math.abs(closingBalance);
-                } else {
-                    calculatedClosingDebit = 0;
-                    calculatedClosingCredit = 0;
-                }
+                // Calculate closing values using the calculateClosingBalance function
+                var result = calculateClosingBalance(sumOpeningDebit, sumOpeningCredit, sumMovementDebit, sumMovementCredit, groupId);
+                var calculatedClosingDebit = result.closingDebit;
+                var calculatedClosingCredit = result.closingCredit;
 
                 // Update parent row closing columns (last 2 td cells)
                 var $parentCells = $parentRow.find('> td');
