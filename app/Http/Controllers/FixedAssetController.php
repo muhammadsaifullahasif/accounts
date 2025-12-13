@@ -7,6 +7,7 @@ use App\Models\TrailBalance;
 use Illuminate\Http\Request;
 use App\Models\FixedAssetsSchedual;
 use Illuminate\Support\Facades\Auth;
+use App\Models\FixedAssetsSchedualPreviousYear;
 
 class FixedAssetController extends Controller
 {
@@ -22,7 +23,9 @@ class FixedAssetController extends Controller
         }
 
         $fixedAssets = FixedAssetsSchedual::where('company_id', $company->id)->get();
-        return view('fixed-assets.index', compact('company', 'fixedAssets'));
+
+        $fixedAssetsPreviousYear = FixedAssetsSchedualPreviousYear::where('company_id', $company->id)->get();
+        return view('fixed-assets.index', compact('company', 'fixedAssets', 'fixedAssetsPreviousYear'));
     }
 
     /**
@@ -39,21 +42,37 @@ class FixedAssetController extends Controller
     public function store(Request $request, string $id)
     {
         $request->validate([
-            'entries' => 'required|array',
-            'entries.*.accountCode' => 'required',
-            'entries.*.accountHead' => 'required',
-            'entries.*opening' => 'required',
-            'entries.*.addition' => 'required',
-            'entries.*.deletion' => 'required',
-            'entries.*.closing' => 'required',
-            'entries.*.rate' => 'required',
-            'entries.*.depreciationAccountCode' => 'required',
-            'entries.*.depreciationAccountHead' => 'required',
-            'entries.*depreciationOpening' => 'required',
-            'entries.*.depreciationAddition' => 'required',
-            'entries.*.depreciationDeletion' => 'required',
-            'entries.*.depreciationClosing' => 'required',
-            'entries.*.wdv' => 'required'
+            'entries_current_year' => 'required|array',
+            'entries_current_year.*.accountCode' => 'required',
+            'entries_current_year.*.accountHead' => 'required',
+            'entries_current_year.*.opening' => 'required',
+            'entries_current_year.*.addition' => 'required',
+            'entries_current_year.*.deletion' => 'required',
+            'entries_current_year.*.closing' => 'required',
+            'entries_current_year.*.rate' => 'required',
+            'entries_current_year.*.depreciationAccountCode' => 'required',
+            'entries_current_year.*.depreciationAccountHead' => 'required',
+            'entries_current_year.*.depreciationOpening' => 'required',
+            'entries_current_year.*.depreciationAddition' => 'required',
+            'entries_current_year.*.depreciationDeletion' => 'required',
+            'entries_current_year.*.depreciationClosing' => 'required',
+            'entries_current_year.*.wdv' => 'required',
+
+            'entries_previous_year' => 'required|array',
+            'entries_previous_year.*.accountCode' => 'required',
+            'entries_previous_year.*.accountHead' => 'required',
+            'entries_previous_year.*.opening' => 'required',
+            'entries_previous_year.*.addition' => 'required',
+            'entries_previous_year.*.deletion' => 'required',
+            'entries_previous_year.*.closing' => 'required',
+            'entries_previous_year.*.rate' => 'required',
+            'entries_previous_year.*.depreciationAccountCode' => 'required',
+            'entries_previous_year.*.depreciationAccountHead' => 'required',
+            'entries_previous_year.*.depreciationOpening' => 'required',
+            'entries_previous_year.*.depreciationAddition' => 'required',
+            'entries_previous_year.*.depreciationDeletion' => 'required',
+            'entries_previous_year.*.depreciationClosing' => 'required',
+            'entries_previous_year.*.wdv' => 'required',
         ]);
 
         try {
@@ -64,7 +83,7 @@ class FixedAssetController extends Controller
             }
 
             // Get all account codes from the request
-            $requestAccountCodes = array_column($request->entries, 'accountCode');
+            $requestAccountCodes = array_column($request->entries_current_year, 'accountCode');
 
             // Get existing fixed assets for this company
             $existingFixedAssets = FixedAssetsSchedual::where('company_id', $company->id)->get();
@@ -78,7 +97,7 @@ class FixedAssetController extends Controller
 
             // Collect all account codes (asset + depreciation)
             $requestTBAccounts = [];
-            foreach ($request->entries as $entry) {
+            foreach ($request->entries_current_year as $entry) {
                 $requestTBAccounts[] = $entry['accountCode'];
                 $requestTBAccounts[] = $entry['depreciationAccountCode'];
             }
@@ -96,7 +115,7 @@ class FixedAssetController extends Controller
             }
 
             // Create or update entries
-            foreach ($request->entries as $entry) {
+            foreach ($request->entries_current_year as $entry) {
                 FixedAssetsSchedual::updateOrCreate(
                     [
                         'company_id' => $company->id,
@@ -181,6 +200,55 @@ class FixedAssetController extends Controller
                         'modified_by' => auth()->id()
                     ]
                 );
+            }
+
+            /**
+             * 
+             * Previous year code goes here
+             * 
+             */
+            if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes') {
+                // Get all account codes from the request
+                $requestAccountCodes = array_column($request->entries_previous_year, 'accountCode');
+
+                // Get existing fixed assets for this company
+                $existingFixedAssets = FixedAssetsSchedualPreviousYear::where('company_id', $company->id)->get();
+
+                // Delete records that exist in database but not in request
+                foreach ($existingFixedAssets as $existingAsset) {
+                    if (!in_array($existingAsset->account_code, $requestAccountCodes)) {
+                        $existingAsset->delete();
+                    }
+                }
+
+                // Create or update entries
+                foreach ($request->entries_previous_year as $entry) {
+                    FixedAssetsSchedualPreviousYear::updateOrCreate(
+                        [
+                            'company_id' => $company->id,
+                            'account_code' => $entry['accountCode'],
+                            'account_head' => $entry['accountHead'],
+                            'depreciation_account_code' => $entry['depreciationAccountCode'],
+                            'depreciation_account_head' => $entry['depreciationAccountHead']
+                        ],
+                        [
+                            'user_id' => auth()->id(),
+                            'opening' => $entry['opening'],
+                            'addition' => $entry['addition'],
+                            'addition_no_of_days' => $entry['additionNoOfDaysValue'],
+                            'deletion' => $entry['deletion'],
+                            'deletion_no_of_days' => $entry['deletionNoOfDaysValue'],
+                            'closing' => $entry['closing'],
+                            'rate' => $entry['rate'],
+                            'depreciation_opening' => $entry['depreciationOpening'],
+                            'depreciation_addition' => $entry['depreciationAddition'],
+                            'depreciation_deletion' => $entry['depreciationDeletion'],
+                            'depreciation_closing' => $entry['depreciationClosing'],
+                            'wdv' => $entry['wdv'],
+                            'modified_by' => auth()->id()
+                        ]
+                    );
+                }
             }
 
             // return response()->json([

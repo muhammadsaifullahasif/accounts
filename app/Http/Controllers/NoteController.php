@@ -123,21 +123,8 @@ class NoteController extends Controller
                             $closing_credit = ($pr001Data->closing_credit ?? 0) + ($pr002Data->closing_credit ?? 0) - ($pr003Data->closing_credit ?? 0);
 
                             // Determine current_year and previous_year from combined values
-                            $current_year = 0;
-                            $previous_year = 0;
-
-                            if ($closing_debit > 0) {
-                                $current_year = $closing_debit;
-                            }
-                            if ($closing_credit > 0) {
-                                $current_year = -$closing_credit;
-                            }
-                            if ($opening_debit > 0) {
-                                $previous_year = $opening_debit;
-                            }
-                            if ($opening_credit > 0) {
-                                $previous_year = -$opening_credit;
-                            }
+                            $current_year = $movement_debit - $movement_credit;
+                            $previous_year = $opening_debit - $opening_credit;
 
                             if ($current_year == 0 && $previous_year == 0) {
                                 continue;
@@ -159,58 +146,16 @@ class NoteController extends Controller
 
                             // Calculate individual values for PR-001, PR-002, and PR-003
                             // PR-001: Opening Stock
-                            $pr001_current = 0;
-                            $pr001_previous = 0;
-                            if ($pr001Data) {
-                                if ($pr001Data->closing_debit > 0) {
-                                    $pr001_current = $pr001Data->closing_debit;
-                                }
-                                if ($pr001Data->closing_credit > 0) {
-                                    $pr001_current = -$pr001Data->closing_credit;
-                                }
-                                if ($pr001Data->opening_debit > 0) {
-                                    $pr001_previous = $pr001Data->opening_debit;
-                                }
-                                if ($pr001Data->opening_credit > 0) {
-                                    $pr001_previous = -$pr001Data->opening_credit;
-                                }
-                            }
+                            $pr001_current = $pr001Data->movement_debit - $pr001Data->movement_credit;
+                            $pr001_previous = $pr001Data->opening_debit - $pr001Data->opening_credit;
 
                             // PR-002: Purchases
-                            $pr002_current = 0;
-                            $pr002_previous = 0;
-                            if ($pr002Data) {
-                                if ($pr002Data->closing_debit > 0) {
-                                    $pr002_current = $pr002Data->closing_debit;
-                                }
-                                if ($pr002Data->closing_credit > 0) {
-                                    $pr002_current = -$pr002Data->closing_credit;
-                                }
-                                if ($pr002Data->opening_debit > 0) {
-                                    $pr002_previous = $pr002Data->opening_debit;
-                                }
-                                if ($pr002Data->opening_credit > 0) {
-                                    $pr002_previous = -$pr002Data->opening_credit;
-                                }
-                            }
+                            $pr002_current = $pr002Data->movement_debit - $pr002Data->movement_credit;
+                            $pr002_previous = $pr002Data->opening_debit - $pr002Data->opening_debit;
 
                             // PR-003: Closing Stock (subtract this)
-                            $pr003_current = 0;
-                            $pr003_previous = 0;
-                            if ($pr003Data) {
-                                if ($pr003Data->closing_debit > 0) {
-                                    $pr003_current = -$pr003Data->closing_debit;
-                                }
-                                if ($pr003Data->closing_credit > 0) {
-                                    $pr003_current = $pr003Data->closing_credit;
-                                }
-                                if ($pr003Data->opening_debit > 0) {
-                                    $pr003_previous = -$pr003Data->opening_debit;
-                                }
-                                if ($pr003Data->opening_credit > 0) {
-                                    $pr003_previous = $pr003Data->opening_credit;
-                                }
-                            }
+                            $pr003_current = -($pr003Data->movement_debit - $pr003Data->movement_credit);
+                            $pr003_previous = -($pr003Data->opening_debit - $pr003Data->opening_credit);
 
                             // Create 3 sub-notes for COS-001 with parent_index = $index
                             $subNotes = [
@@ -237,21 +182,8 @@ class NoteController extends Controller
                             }
                         } else {
                             // Process other COS-001 accounts normally
-                            $current_year = 0;
-                            $previous_year = 0;
-
-                            if ($account->closing_debit > 0) {
-                                $current_year = $account->closing_debit;
-                            }
-                            if ($account->closing_credit > 0) {
-                                $current_year = -$account->closing_credit;
-                            }
-                            if ($account->opening_debit > 0) {
-                                $previous_year = $account->opening_debit;
-                            }
-                            if ($account->opening_credit > 0) {
-                                $previous_year = -$account->opening_credit;
-                            }
+                            $current_year = $account->movement_debit - $account->movement_credit;
+                            $previous_year = $account->opening_debit - $account->opening_credit;
 
                             if ($current_year == 0 && $previous_year == 0) {
                                 continue;
@@ -275,29 +207,29 @@ class NoteController extends Controller
                 } else {
                     // Process all other groups normally
                     foreach ($accounts as $account) {
-                        $current_year = 0;
-                        $previous_year = 0;
+                        $current_year = $account->movement_debit - $account->movement_credit;
+                        $previous_year = $account->opening_debit - $account->opening_credit;
 
-                        if ($account->movement_debit > 0) {
+                        // if ($account->movement_debit > 0) {
                             if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
-                                $current_year = -$account->movement_debit;
+                                $current_year = -$current_year;
                             } else {
-                                $current_year = $account->movement_debit;
+                                $current_year = $current_year;
                             }
-                        }
-                        if ($account->movement_credit > 0) {
-                            $current_year = $account->movement_credit;
-                        }
-                        if ($account->opening_debit > 0) {
+                        // }
+                        // if ($account->movement_credit > 0) {
+                        //     $current_year = $account->movement_credit;
+                        // }
+                        // if ($account->opening_debit > 0) {
                             if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
-                                $previous_year = -$account->opening_debit;
+                                $previous_year = -$previous_year;
                             } else {
-                                $previous_year = $account->opening_debit;
+                                $previous_year = $previous_year;
                             }
-                        }
-                        if ($account->opening_credit > 0) {
-                            $previous_year = $account->opening_credit;
-                        }
+                        // }
+                        // if ($account->opening_credit > 0) {
+                        //     $previous_year = $account->opening_credit;
+                        // }
 
                         if ($current_year == 0 && $previous_year == 0) {
                             continue;
@@ -321,29 +253,29 @@ class NoteController extends Controller
             } else {
                 // Process all other groups normally
                 foreach ($accounts as $account) {
-                    $current_year = 0;
-                    $previous_year = 0;
+                    $current_year = $account->closing_debit - $account->closing_credit;
+                    $previous_year = $account->opening_debit - $account->opening_credit;
 
-                    if ($account->closing_debit > 0) {
+                    // if ($account->closing_debit > 0) {
                         if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
-                            $current_year = -$account->closing_debit;
+                            $current_year = -$current_year;
                         } else {
-                            $current_year = $account->closing_debit;
+                            $current_year = $current_year;
                         }
-                    }
-                    if ($account->closing_credit > 0) {
-                        $current_year = $account->closing_credit;
-                    }
-                    if ($account->opening_debit > 0) {
+                    // }
+                    // if ($account->closing_credit > 0) {
+                    //     $current_year = $account->closing_credit;
+                    // }
+                    // if ($account->opening_debit > 0) {
                         if (in_array($account->group_code, $equity) || in_array($account->group_code, $liability) || in_array($account->group_code, $income)) {
-                            $previous_year = -$account->opening_debit;
+                            $previous_year = -$previous_year;
                         } else {
-                            $previous_year = $account->opening_debit;
+                            $previous_year = $previous_year;
                         }
-                    }
-                    if ($account->opening_credit > 0) {
-                        $previous_year = $account->opening_credit;
-                    }
+                    // }
+                    // if ($account->opening_credit > 0) {
+                    //     $previous_year = $account->opening_credit;
+                    // }
 
                     if ($current_year == 0 && $previous_year == 0) {
                         continue;

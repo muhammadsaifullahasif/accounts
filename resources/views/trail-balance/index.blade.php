@@ -803,7 +803,7 @@
                                             <input type="hidden" name="accountCode" value="TCP-001">
                                             <input type="hidden" name="accountHead" value="Trade Creditors">
                                             <input type="hidden" name="groupCode" value="CL-001">
-                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables -Current Liabilities">
+                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables">
                                         </td>
                                         <td style="width: 22.85%">Trade Creditors</td>
                                         <td style="width: 5%" class="text-center">TCP-001</td>
@@ -828,7 +828,7 @@
                                             <input type="hidden" name="accountCode" value="TCP-002">
                                             <input type="hidden" name="accountHead" value="Accrued Liabilities">
                                             <input type="hidden" name="groupCode" value="CL-001">
-                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables -Current Liabilities">
+                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables">
                                         </td>
                                         <td>Accrued Liabilities</td>
                                         <td class="text-center">TCP-002</td>
@@ -853,7 +853,7 @@
                                             <input type="hidden" name="accountCode" value="TCP-003">
                                             <input type="hidden" name="accountHead" value="Advances from Customers">
                                             <input type="hidden" name="groupCode" value="CL-001">
-                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables -Current Liabilities">
+                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables">
                                         </td>
                                         <td>Advances from Customers</td>
                                         <td class="text-center">TCP-003</td>
@@ -878,7 +878,7 @@
                                             <input type="hidden" name="accountCode" value="TCP-004">
                                             <input type="hidden" name="accountHead" value="Sales Tax Payable">
                                             <input type="hidden" name="groupCode" value="CL-001">
-                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables -Current Liabilities">
+                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables">
                                         </td>
                                         <td>Sales Tax Payable</td>
                                         <td class="text-center">TCP-004</td>
@@ -903,7 +903,7 @@
                                             <input type="hidden" name="accountCode" value="TCP-005">
                                             <input type="hidden" name="accountHead" value="Provision for Tax">
                                             <input type="hidden" name="groupCode" value="CL-001">
-                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables -Current Liabilities">
+                                            <input type="hidden" name="groupName" value="Trade Creditors and other Payables">
                                         </td>
                                         <td>Provision for Tax</td>
                                         <td class="text-center">TCP-005</td>
@@ -937,7 +937,7 @@
                         <strong>Trade Creditors / Payables</strong>
                         <input type="hidden" name="groupCode" value="CL-001">
                     </td>
-                    <td><strong>Trade Creditors and other Payables -Current Liabilities</strong></td>
+                    <td><strong>Trade Creditors and other Payables</strong></td>
                     <td class="text-center">CL-001</td>
                     <td class="text-center">
                         <input type="text" name="CL-001-opening-debit" id="CL-001-opening-debit" value="{{ collect( $trailBalances['CL-001'] ?? collect(0) )->sum('opening_debit') }}" class="form-control form-control-sm bg-transparent border-0 text-center editable">
@@ -2682,7 +2682,7 @@
             };
 
             // Divide parent values equally intochild rows
-            $(document).on('keyup change', 'tr[data-group-code] input.editable', function() {
+            $(document).on('blur', 'tr[data-group-code] input.editable', function() {
                 var $input = $(this);
 
                 // Save cursor position BEFORE any updates
@@ -2705,13 +2705,19 @@
 
                 // Get parent value and divide equally
                 var parentValue = parseFloat($input.val().replace(/,/g, '')) || 0;
-                var childValue = parentValue / childCount;
+                var baseChildValue = Math.floor(parentValue / childCount);
+                var remainder = parentValue - (baseChildValue * childCount);
 
                 // Update each child row
-                childCodes.forEach(function(childCode) {
+                childCodes.forEach(function(childCode, index) {
                     var $childInput = $('#' + childCode + '-' + fieldType);
                     if ($childInput.length) {
-                        $childInput.val(childValue.toFixed(0));
+                        // Add remainder to the last child
+                        var valueToSet = baseChildValue;
+                        if (index === childCount - 1) {
+                            valueToSet = baseChildValue + remainder;
+                        }
+                        $childInput.val(valueToSet);
                         // Trigger change to recalculate closing balance
                         $childInput.trigger('change');
                     }

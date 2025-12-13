@@ -29,9 +29,9 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="text-center" style="border-top: 2px solid #000;"><strong>RUPEES</strong></td>
+                    <td style="text-align: center; border-top: 2px solid #000;"><strong>RUPEES</strong></td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td class="text-center" style="border-top: 2px solid #000;"><strong>RUPEES</strong></td>
+                        <td style="text-align: center; border-top: 2px solid #000;"><strong>RUPEES</strong></td>
                     @endif
                 </tr>
             </thead>
@@ -45,31 +45,47 @@
                 </tr>
                 <tr>
                     <td>{{ ($profitLossAfterTaxation['current_year'] < 0) ? 'Loss after taxation' : 'Profit after taxation' }}</td>
-                    <td style="text-align: center;">
+                    <td style="text-align: right;">
                         @if ($profitLossAfterTaxation['current_year'] < 0)
                             ({{ number_format(abs(round($profitLossAfterTaxation['current_year'])), 0, '.', ',') }})
+                        @elseif ($profitLossAfterTaxation['current_year'] > 0)
+                            {{ number_format(abs(round($profitLossAfterTaxation['current_year'])), 0, '.', ',') }}
                         @else
-                            {{ number_format(round($profitLossAfterTaxation['current_year']), 0, '.', ',') }}
+                            -
                         @endif
                     </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">
+                        <td style="text-align: right;">
                             @if ($profitLossAfterTaxation['previous_year'] < 0)
                                 ({{ number_format(abs(round($profitLossAfterTaxation['previous_year'])), 0, '.', ',') }})
+                            @elseif ($profitLossAfterTaxation['previous_year'] > 0)
+                                {{ number_format(abs(round($profitLossAfterTaxation['previous_year'])), 0, '.', ',') }}
                             @else
-                                {{ number_format(round($profitLossAfterTaxation['previous_year']), 0, '.', ',') }}
+                                -
                             @endif
                         </td>
                     @endif
                 </tr>
                 <tr>
                     <td>Other comprehensive income</td>
-                    <td style="text-align: center;">
-                        {{ number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') }}
+                    <td style="text-align: right;">
+                        @if ($otherComprehensiveIncome['current_year'] < 0)
+                            ({{ number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') }})
+                        @elseif ($otherComprehensiveIncome['current_year'] > 0)
+                            {{ number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') }}
+                        @else
+                            -
+                        @endif
                     </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center;">
-                            {{ number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}
+                        <td style="text-align: right;">
+                            @if ($otherComprehensiveIncome['previous_year'] < 0)
+                                ({{ number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }})
+                            @elseif ($otherComprehensiveIncome['previous_year'] > 0)
+                                {{ number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') }}
+                            @else
+                                -
+                            @endif
                         </td>
                     @endif
                 </tr>
@@ -79,22 +95,26 @@
                         $gpl_previous_year = ($profitLossAfterTaxation['previous_year'] + ($otherComprehensiveIncome['previous_year']));
                     @endphp
                     <td><strong>{{ ( $gpl_current_year >= 0 ) ? 'Total comprehensive Income for the year' : 'Total comprehensive Loss for the year' }}</strong></td>
-                    <td style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                    <td style="text-align: right; border-top: 2px solid #000; border-bottom: 4px double #000;">
                         <strong>
                             @if ($gpl_current_year < 0)
                                 ({{ number_format(abs(round($gpl_current_year)), 0, '.', ',') }})
+                            @elseif ($gpl_current_year > 0)
+                                {{ number_format(abs(round($gpl_current_year)), 0, '.', ',') }}
                             @else
-                                {{ number_format(round($gpl_current_year), 0, '.', ',') }}
+                                -
                             @endif
                         </strong>
                     </td>
                     @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
-                        <td style="text-align: center; border-top: 2px solid #000; border-bottom: 4px double #000;">
+                        <td style="text-align: right; border-top: 2px solid #000; border-bottom: 4px double #000;">
                             <strong>
                                 @if ($gpl_previous_year < 0)
                                     ({{ number_format(abs(round($gpl_previous_year)), 0, '.', ',') }})
+                                @elseif ($gpl_previous_year > 0)
+                                    {{ number_format(abs(round($gpl_previous_year)), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($gpl_previous_year), 0, '.', ',') }}
+                                    -
                                 @endif
                             </strong>
                         </td>
@@ -102,20 +122,20 @@
                 </tr>
             </tbody>
         </table>
-        <p>The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
+        <p style="width: 100%; text-align: left;">The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
         @if ($company->account_type == 'Proprietor')
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+            <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
                 <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Proprietor</span>
             </div>
         @endif
         @if ($company->account_type == 'AOP')
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+            <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
                 <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Partner</span>
                 <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Partner</span>
             </div>
         @endif
         @if ($company->account_type == 'Company')
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+            <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
                 <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">CEO</span>
                 <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Director</span>
             </div>

@@ -73,16 +73,20 @@
                             <td class="text-center">
                                 @if ($revenue['current_year'] < 0)
                                     ({{ number_format(abs(round($revenue['current_year'])), 0, '.', ',') }})
+                                @elseif ($revenue['current_year'] > 0)
+                                    {{ number_format(abs(round($revenue['current_year'])), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($revenue['current_year']), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center">
                                     @if ($revenue['current_year'] < 0)
                                         ({{ number_format(abs(round($revenue['previous_year'])), 0, '.', ',') }})
+                                    @elseif ($revenue['current_year'] > 0)
+                                        {{ number_format(abs(round($revenue['previous_year'])), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($revenue['previous_year']), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
@@ -93,16 +97,20 @@
                             <td class="text-center">
                                 @if ($costOfSales['current_year'] < 0)
                                     ({{ number_format(abs(round($costOfSales['current_year'])), 0, '.', ',') }})
+                                @elseif ($costOfSales['current_year'] > 0)
+                                    {{ number_format(abs(round($costOfSales['current_year'])), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($costOfSales['current_year']), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center">
                                     @if ($costOfSales['current_year'] < 0)
                                         ({{ number_format(abs(round($costOfSales['previous_year'])), 0, '.', ',') }})
+                                    @elseif ($costOfSales['current_year'] > 0)
+                                        {{ number_format(abs(round($costOfSales['previous_year'])), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($costOfSales['previous_year']), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
@@ -118,8 +126,10 @@
                                 <strong>
                                     @if ($gpl_current_year < 0)
                                         ({{ number_format(abs(round($gpl_current_year)), 0, '.', ',') }})
+                                    @elseif ($gpl_current_year > 0)
+                                        {{ number_format(abs(round($gpl_current_year)), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($gpl_current_year), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </strong>
                             </td>
@@ -128,8 +138,10 @@
                                     <strong>
                                         @if ($gpl_previous_year < 0)
                                             ({{ number_format(abs(round($gpl_previous_year)), 0, '.', ',') }})
+                                        @elseif ($gpl_previous_year > 0)
+                                            {{ number_format(abs(round($gpl_previous_year)), 0, '.', ',') }}
                                         @else
-                                            {{ number_format(round($gpl_previous_year), 0, '.', ',') }}
+                                            -
                                         @endif
                                     </strong>
                                 </td>
@@ -149,16 +161,20 @@
                             <td class="text-center">
                                 @if ($adminExpense['current_year'] < 0)
                                     ({{ number_format(abs(round($adminExpense['current_year'])), 0, '.', ',') }})
+                                @elseif ($adminExpense['current_year'] > 0)
+                                    {{ number_format(abs(round($adminExpense['current_year'])), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($adminExpense['current_year']), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center">
                                     @if ($adminExpense['previous_year'] < 0)
                                         ({{ number_format(abs(round($adminExpense['previous_year'])), 0, '.', ',') }})
+                                    @elseif ($adminExpense['previous_year'] > 0)
+                                        {{ number_format(abs(round($adminExpense['previous_year'])), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($adminExpense['previous_year']), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
@@ -169,16 +185,20 @@
                             <td class="text-center">
                                 @if ($financialCharges['current_year'] < 0)
                                     ({{ number_format(abs(round($financialCharges['current_year'])), 0, '.', ',') }})
+                                @elseif ($financialCharges['current_year'] > 0)
+                                    {{ number_format(abs(round($financialCharges['current_year'])), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($financialCharges['current_year']), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center">
                                     @if ($financialCharges['previous_year'] < 0)
                                         ({{ number_format(abs(round($financialCharges['previous_year'])), 0, '.', ',') }})
+                                    @elseif ($financialCharges['previous_year'] > 0)
+                                        {{ number_format(abs(round($financialCharges['previous_year'])), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($financialCharges['previous_year']), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
@@ -189,16 +209,20 @@
                             <td class="text-center">
                                 @if ($otherIncome['current_year'] < 0)
                                     ({{ number_format(abs(round($otherIncome['current_year'])), 0, '.', ',') }})
+                                @elseif ($otherIncome['current_year'] > 0)
+                                    {{ number_format(abs(round($otherIncome['current_year'])), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($otherIncome['current_year']), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center">
                                     @if ($otherIncome['previous_year'] < 0)
                                         ({{ number_format(abs(round($otherIncome['previous_year'])), 0, '.', ',') }})
+                                    @elseif ($otherIncome['previous_year'] > 0)
+                                        {{ number_format(abs(round($otherIncome['previous_year'])), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($otherIncome['previous_year']), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
@@ -223,16 +247,20 @@
                             <td class="text-center" style="border-top: 2px solid #000;">
                                 @if ($plbt_current_year < 0)
                                     ({{ number_format(abs(round($plbt_current_year)), 0, '.', ',') }})
+                                @elseif ($plbt_current_year > 0)
+                                    {{ number_format(abs(round($plbt_current_year)), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($plbt_current_year), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center" style="border-top: 2px solid #000;">
                                     @if ($plbt_previous_year < 0)
                                         ({{ number_format(abs(round($plbt_previous_year)), 0, '.', ',') }})
+                                    @elseif ($plbt_previous_year > 0)
+                                        {{ number_format(abs(round($plbt_previous_year)), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($plbt_previous_year), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
@@ -247,36 +275,44 @@
                             <td class="text-center">
                                 @if ($taxation_current_year < 0)
                                     ({{ number_format(abs(round($taxation_current_year)), 0, '.', ',') }})
+                                @elseif ($taxation_current_year > 0)
+                                    {{ number_format(abs(round($taxation_current_year)), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round($taxation_current_year), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center">
                                     @if ($taxation_previous_year < 0)
                                         ({{ number_format(abs(round($taxation_previous_year)), 0, '.', ',') }})
+                                    @elseif ($taxation_previous_year > 0)
+                                        {{ number_format(abs(round($taxation_previous_year)), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round($taxation_previous_year), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
                         </tr>
                         <tr>
-                            <td><strong>{{ ( ($plbt_current_year - $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
+                            <td><strong>{{ ( ($plbt_current_year + $taxation_current_year) >= 0 ) ? 'Profit after Taxation' : 'Loss after Taxation' }}</strong></td>
                             <td class="text-center"></td>
                             <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">
-                                @if (($plbt_current_year - $taxation_current_year) < 0)
-                                    ({{ number_format(abs(round(($plbt_current_year - $taxation_current_year))), 0, '.', ',') }})
+                                @if (($plbt_current_year + $taxation_current_year) < 0)
+                                    ({{ number_format(abs(round(($plbt_current_year + $taxation_current_year))), 0, '.', ',') }})
+                                @elseif (($plbt_current_year + $taxation_current_year) > 0)
+                                    {{ number_format(abs(round(($plbt_current_year + $taxation_current_year))), 0, '.', ',') }}
                                 @else
-                                    {{ number_format(round(($plbt_current_year - $taxation_current_year)), 0, '.', ',') }}
+                                    -
                                 @endif
                             </td>
                             @if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes')
                                 <td class="text-center" style="border-top: 2px solid #000; border-bottom: 4px double #000;">
-                                    @if (($plbt_previous_year - $taxation_previous_year) < 0)
-                                        ({{ number_format(abs(round(($plbt_previous_year - $taxation_previous_year))), 0, '.', ',') }})
+                                    @if (($plbt_previous_year + $taxation_previous_year) < 0)
+                                        ({{ number_format(abs(round(($plbt_previous_year + $taxation_previous_year))), 0, '.', ',') }})
+                                    @elseif (($plbt_previous_year + $taxation_previous_year) > 0)
+                                        {{ number_format(abs(round(($plbt_previous_year + $taxation_previous_year))), 0, '.', ',') }}
                                     @else
-                                        {{ number_format(round(($plbt_previous_year - $taxation_previous_year)), 0, '.', ',') }}
+                                        -
                                     @endif
                                 </td>
                             @endif
