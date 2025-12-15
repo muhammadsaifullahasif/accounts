@@ -41,7 +41,7 @@ class FixedAssetController extends Controller
      */
     public function store(Request $request, string $id)
     {
-        $request->validate([
+        $validationRule = [
             'entries_current_year' => 'required|array',
             'entries_current_year.*.accountCode' => 'required',
             'entries_current_year.*.accountHead' => 'required',
@@ -57,23 +57,28 @@ class FixedAssetController extends Controller
             'entries_current_year.*.depreciationDeletion' => 'required',
             'entries_current_year.*.depreciationClosing' => 'required',
             'entries_current_year.*.wdv' => 'required',
-
-            'entries_previous_year' => 'required|array',
-            'entries_previous_year.*.accountCode' => 'required',
-            'entries_previous_year.*.accountHead' => 'required',
-            'entries_previous_year.*.opening' => 'required',
-            'entries_previous_year.*.addition' => 'required',
-            'entries_previous_year.*.deletion' => 'required',
-            'entries_previous_year.*.closing' => 'required',
-            'entries_previous_year.*.rate' => 'required',
-            'entries_previous_year.*.depreciationAccountCode' => 'required',
-            'entries_previous_year.*.depreciationAccountHead' => 'required',
-            'entries_previous_year.*.depreciationOpening' => 'required',
-            'entries_previous_year.*.depreciationAddition' => 'required',
-            'entries_previous_year.*.depreciationDeletion' => 'required',
-            'entries_previous_year.*.depreciationClosing' => 'required',
-            'entries_previous_year.*.wdv' => 'required',
-        ]);
+        ];
+        $company = Company::findOrFail($id);
+        if (($company->company_meta['comparative_accounts'] ?? 'Yes') == 'Yes') {
+            $validationRule = array_merge($validationRule, [
+                'entries_previous_year' => 'required|array',
+                'entries_previous_year.*.accountCode' => 'required',
+                'entries_previous_year.*.accountHead' => 'required',
+                'entries_previous_year.*.opening' => 'required',
+                'entries_previous_year.*.addition' => 'required',
+                'entries_previous_year.*.deletion' => 'required',
+                'entries_previous_year.*.closing' => 'required',
+                'entries_previous_year.*.rate' => 'required',
+                'entries_previous_year.*.depreciationAccountCode' => 'required',
+                'entries_previous_year.*.depreciationAccountHead' => 'required',
+                'entries_previous_year.*.depreciationOpening' => 'required',
+                'entries_previous_year.*.depreciationAddition' => 'required',
+                'entries_previous_year.*.depreciationDeletion' => 'required',
+                'entries_previous_year.*.depreciationClosing' => 'required',
+                'entries_previous_year.*.wdv' => 'required',
+            ]);
+        }
+        $request->validate($validationRule);
 
         try {
             if (Auth::user()->type != 'admin') {
