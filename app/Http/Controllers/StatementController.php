@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Pdf;
+use Carbon\Carbon;
 use App\Models\Note;
 use App\Models\Company;
 use App\Models\CompanyMeta;
 use App\Models\TrailBalance;
 use Illuminate\Http\Request;
-use Pdf;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class StatementController extends Controller
 {
@@ -271,7 +276,569 @@ class StatementController extends Controller
 
     public function sopl_export_excel(string $id)
     {
-        // To be implemented
+        // 1. Get the data
+        $company = $this->sopl_data($id)['company'];
+        $lastIndex = $this->sopl_data($id)['lastIndex'];
+
+        $revenue = $this->sopl_data($id)['revenue'];
+        $costOfSales = $this->sopl_data($id)['costOfSales'];
+
+        $adminExpense = $this->sopl_data($id)['adminExpense'];
+        $financialCharges = $this->sopl_data($id)['financialCharges'];
+        $otherIncome = $this->sopl_data($id)['otherIncome'];
+
+        $taxation = $this->sopl_data($id)['taxation'];
+
+        // 2. Create new Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('PL');
+
+        // 3. Set headers
+        $sheet->setCellValue('A1', $company->name);
+        $sheet->mergeCells('A1:H1');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->setCellValue('A2', 'STATEMENT OF PROFIT OR LOSS');
+        $sheet->mergeCells('A2:H2');
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->setCellValue('A3', 'FOR THE YEAR ENDED ' . Carbon::parse($company->end_date)->format('M d, Y'));
+        $sheet->mergeCells('A3:H3');
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->getRowDimension(4)->setRowHeight(5);
+
+        $sheet->setCellValue('F5', 'Note');
+        $sheet->getStyle('F5')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->setCellValue('G5', Carbon::parse($company->end_date)->format('Y'));
+        $sheet->getStyle('G5')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->setCellValue('H5', Carbon::parse($company->start_date)->format('Y'));
+        $sheet->getStyle('H5')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->setCellValue('G6', 'RUPEES');
+        $sheet->getStyle('G6')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        
+        $sheet->setCellValue('H6', 'RUPEES');
+        $sheet->getStyle('H6')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->getRowDimension(7)->setRowHeight(5);
+        
+        // 4. Add data rows
+        // Revenue
+        $sheet->setCellValue('A8', 'Revenue');
+        $sheet->mergeCells('A8:E8');
+
+        $sheet->setCellValue('F8', $revenue['index']);
+        $sheet->getStyle('F8')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($revenue['current_year'] < 0) {
+            $sheet->setCellValue('G8', '(' . number_format(abs(round($revenue['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G8', number_format(abs(round($revenue['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G8')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($revenue['previous_year'] < 0) {
+            $sheet->setCellValue('H8', '(' . number_format(abs(round($revenue['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H8', number_format(abs(round($revenue['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H8')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Cost Of Sales
+        $sheet->setCellValue('A9', 'Cost of Sales');
+        $sheet->mergeCells('A9:E9');
+
+        $sheet->setCellValue('F9', $costOfSales['index']);
+        $sheet->getStyle('F9')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($costOfSales['current_year'] < 0) {
+            $sheet->setCellValue('G9', '(' . number_format(abs(round($costOfSales['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G9', number_format(abs(round($costOfSales['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G9')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($costOfSales['previous_year'] < 0) {
+            $sheet->setCellValue('H9', '(' . number_format(abs(round($costOfSales['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H9', number_format(abs(round($costOfSales['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H9')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Gross Profit / Loss
+        $gpl_current_year = ($revenue['current_year'] + $costOfSales['current_year']);
+        $gpl_previous_year = ($revenue['previous_year'] + $costOfSales['previous_year']);
+        if ($gpl_current_year >= 0) {
+            $sheet->setCellValue('A10', 'Gross Profit');
+        } else {
+            $sheet->setCellValue('A10', 'Gross Loss');
+        }
+        $sheet->mergeCells('A10:E10');
+        $sheet->getStyle('A10')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ]
+        ]);
+
+        if ($gpl_current_year < 0) {
+            $sheet->setCellValue('G10', '(' . number_format(abs(round($gpl_current_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G10', number_format(abs(round($gpl_current_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('G10')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM,
+                ]
+            ]
+        ]);
+
+        if ($gpl_previous_year < 0) {
+            $sheet->setCellValue('H10', '(' . number_format(abs(round($gpl_previous_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H10', number_format(abs(round($gpl_previous_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('H10')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM,
+                ]
+            ]
+        ]);
+
+        $sheet->getRowDimension(11)->setRowHeight(5);
+
+        // Administrative Expense
+        $sheet->setCellValue('A12', 'Administrative expenses');
+        $sheet->mergeCells('A12:E12');
+
+        $sheet->setCellValue('F12', $adminExpense['index']);
+        $sheet->getStyle('F12')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($adminExpense['current_year'] < 0) {
+            $sheet->setCellValue('G12', '(' . number_format(abs(round($adminExpense['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G12', number_format(abs(round($adminExpense['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G12')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($adminExpense['previous_year'] < 0) {
+            $sheet->setCellValue('H12', '(' . number_format(abs(round($adminExpense['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H12', number_format(abs(round($adminExpense['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H12')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        
+        // Financial Charges
+        $sheet->setCellValue('A13', 'Financial Charges');
+        $sheet->mergeCells('A13:E13');
+
+        $sheet->setCellValue('F13', $financialCharges['index']);
+        $sheet->getStyle('F13')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($financialCharges['current_year'] < 0) {
+            $sheet->setCellValue('G13', '(' . number_format(abs(round($financialCharges['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G13', number_format(abs(round($financialCharges['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G13')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($financialCharges['previous_year'] < 0) {
+            $sheet->setCellValue('H13', '(' . number_format(abs(round($financialCharges['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H13', number_format(abs(round($financialCharges['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H13')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Other Income
+        $sheet->setCellValue('A14', 'Other Income');
+        $sheet->mergeCells('A14:E14');
+
+        $sheet->setCellValue('F14', $otherIncome['index']);
+        $sheet->getStyle('F14')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($otherIncome['current_year'] < 0) {
+            $sheet->setCellValue('G14', '(' . number_format(abs(round($otherIncome['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G14', number_format(abs(round($otherIncome['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G14')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($otherIncome['previous_year'] < 0) {
+            $sheet->setCellValue('H14', '(' . number_format(abs(round($otherIncome['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H14', number_format(abs(round($otherIncome['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H14')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Profit / Loss Before Taxation
+        $plbt_current_year = $gpl_current_year + $adminExpense['current_year'] + $financialCharges['current_year'] + $otherIncome['current_year'];
+        $plbt_previous_year = $gpl_previous_year + $adminExpense['previous_year'] + $financialCharges['previous_year'] + $otherIncome['previous_year'];
+        if ($plbt_current_year >= 0) {
+            $sheet->setCellValue('A15', 'Profit before Taxation');
+        } else {
+            $sheet->setCellValue('A15', 'Loss before Taxation');
+        }
+        $sheet->mergeCells('A15:E15');
+        $sheet->getStyle('A15')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ]
+        ]);
+
+        if ($plbt_current_year < 0) {
+            $sheet->setCellValue('G15', '(' . number_format(abs(round($plbt_current_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G15', number_format(abs(round($plbt_current_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('G15')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        if ($plbt_previous_year < 0) {
+            $sheet->setCellValue('H15', '(' . number_format(abs(round($plbt_previous_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H15', number_format(abs(round($plbt_previous_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('H15')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->getRowDimension(16)->setRowHeight(5);
+
+        // Taxation
+        $sheet->setCellValue('A17', 'Taxation');
+        $sheet->mergeCells('A17:E17');
+
+        if ($taxation['current_year'] < 0) {
+            $sheet->setCellValue('G17', '(' . number_format(abs(round($taxation['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G17', number_format(abs(round($taxation['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G17')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($taxation['previous_year'] < 0) {
+            $sheet->setCellValue('H17', '(' . number_format(abs(round($taxation['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H17', number_format(abs(round($taxation['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H17')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Profit / Loss After Taxation
+        $plat_current_year = $plbt_current_year + $taxation['current_year'];
+        $plat_previous_year = $plbt_previous_year + $taxation['previous_year'];
+        if ($plat_current_year >= 0) {
+            $sheet->setCellValue('A18', 'Profit after Taxation');
+        } else {
+            $sheet->setCellValue('A18', 'Loss after Taxation');
+        }
+        $sheet->mergeCells('A18:E18');
+        $sheet->getStyle('A18')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ]
+        ]);
+
+        if ($plat_current_year < 0) {
+            $sheet->setCellValue('G18', '(' . number_format(abs(round($plat_current_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G18', number_format(abs(round($plat_current_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('G18')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_DOUBLE,
+                ],
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        if ($plat_previous_year < 0) {
+            $sheet->setCellValue('H18', '(' . number_format(abs(round($plat_previous_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H18', number_format(abs(round($plat_previous_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('H18')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_DOUBLE,
+                ],
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->getRowDimension(19)->setRowHeight(5);
+
+        // Last Note Statement
+        $sheet->setCellValue('A20', 'The annexed notes from 1 to ' . $lastIndex . ' form an integral part of these financial statements.');
+        $sheet->mergeCells('A20:H20');
+
+        // 5. Apply styling (optional)
+
+        // 6. Download file
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'STATEMENT OF PROFIT OR LOSS ' . $company->name . ' ' . Carbon::parse($company->start_date)->format('d-M-Y') . '-' . Carbon::parse($company->end_date)->format('d-M-Y') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 
     private function soci_data(string $id)
@@ -383,7 +950,264 @@ class StatementController extends Controller
 
     public function soci_export_excel(string $id)
     {
-        // To be implemented
+        // Get the data
+        $company = $this->company($id);
+
+        $lastIndex = $this->lastIndex($id);
+
+        $profitLossAfterTaxation = $this->soci_data($id)['profitLossAfterTaxation'];
+        $otherComprehensiveIncome = $this->soci_data($id)['otherComprehensiveIncome'];
+
+        // 2. Create new Spreadsheet
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('SOCI');
+
+        // 3. Set headers
+        $sheet->setCellValue('A1', $company->name);
+        $sheet->mergeCells('A1:H1');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->setCellValue('A2', 'STATEMENT OF COMPREHENSIVE INCOME');
+        $sheet->mergeCells('A2:H2');
+        $sheet->getStyle('A2')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->setCellValue('A3', 'FOR THE YEAR ENDED ' . Carbon::parse($company->end_date)->format('M d, Y'));
+        $sheet->mergeCells('A3:H3');
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->getRowDimension(4)->setRowHeight(5);
+
+        $sheet->setCellValue('G5', Carbon::parse($company->end_date)->format('Y'));
+        $sheet->getStyle('G5')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->setCellValue('H5', Carbon::parse($company->start_date)->format('Y'));
+        $sheet->getStyle('H5')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->setCellValue('G6', 'RUPEES');
+        $sheet->getStyle('G6')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+        
+        $sheet->setCellValue('H6', 'RUPEES');
+        $sheet->getStyle('H6')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        $sheet->getRowDimension(7)->setRowHeight(5);
+        
+        // 4. Add data rows
+        // Profit / Loss after Taxation
+        if ($profitLossAfterTaxation['current_year'] >= 0) {
+            $sheet->setCellValue('A8', 'Profit after Taxation');
+        } else {
+            $sheet->setCellValue('A8', 'Loss after Taxation');
+        }
+        $sheet->mergeCells('A8:E8');
+
+        if ($profitLossAfterTaxation['current_year'] < 0) {
+            $sheet->setCellValue('G8', '(' . number_format(abs(round($profitLossAfterTaxation['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G8', number_format(abs(round($profitLossAfterTaxation['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G8')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($profitLossAfterTaxation['previous_year'] < 0) {
+            $sheet->setCellValue('H8', '(' . number_format(abs(round($profitLossAfterTaxation['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H8', number_format(abs(round($profitLossAfterTaxation['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H8')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Other comprehensive income
+        $sheet->setCellValue('A9', 'Other comprehensive income');
+        $sheet->mergeCells('A9:E9');
+
+        if ($otherComprehensiveIncome['current_year'] < 0) {
+            $sheet->setCellValue('G9', '(' . number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G9', number_format(abs(round($otherComprehensiveIncome['current_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('G9')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        if ($otherComprehensiveIncome['previous_year'] < 0) {
+            $sheet->setCellValue('H9', '(' . number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H9', number_format(abs(round($otherComprehensiveIncome['previous_year'])), 0, '.', ','));
+        }
+        $sheet->getStyle('H9')->applyFromArray([
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ]
+        ]);
+
+        // Total comprehensive Profit / Loss for the year
+        $gpl_current_year = ($profitLossAfterTaxation['current_year'] + ($otherComprehensiveIncome['current_year']));
+        $gpl_previous_year = ($profitLossAfterTaxation['previous_year'] + ($otherComprehensiveIncome['previous_year']));
+        if ($gpl_current_year >= 0) {
+            $sheet->setCellValue('A10', 'Total comprehensive Profit for the year');
+        } else {
+            $sheet->setCellValue('A10', 'Total comprehensive Loss for the year');
+        }
+        $sheet->mergeCells('A10:E10');
+        $sheet->getStyle('A10')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ]
+        ]);
+
+        if ($gpl_current_year < 0) {
+            $sheet->setCellValue('G10', '(' . number_format(abs(round($gpl_current_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('G10', number_format(abs(round($gpl_current_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('G10')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_DOUBLE,
+                ],
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        if ($gpl_previous_year < 0) {
+            $sheet->setCellValue('H10', '(' . number_format(abs(round($gpl_previous_year)), 0, '.', ',') . ')');
+        } else {
+            $sheet->setCellValue('H10', number_format(abs(round($gpl_previous_year)), 0, '.', ','));
+        }
+        $sheet->getStyle('H10')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'size' => 11,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_RIGHT,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'borders' => [
+                'bottom' => [
+                    'borderStyle' => Border::BORDER_DOUBLE,
+                ],
+                'top' => [
+                    'borderStyle' => Border::BORDER_MEDIUM
+                ]
+            ]
+        ]);
+
+        $sheet->getRowDimension(11)->setRowHeight(5);
+
+        // Last Note Statement
+        $sheet->setCellValue('A12', 'The annexed notes from 1 to ' . $lastIndex . ' form an integral part of these financial statements.');
+        $sheet->mergeCells('A12:H12');
+
+        // 5. Apply styling (optional)
+
+        // 6. Download file
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'STATEMENT OF COMPREHENSIVE INCOME ' . $company->name . ' ' . Carbon::parse($company->start_date)->format('d-M-Y') . '-' . Carbon::parse($company->end_date)->format('d-M-Y') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 
     private function paidup_capital(string $id)
