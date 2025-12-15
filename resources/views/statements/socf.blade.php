@@ -7,6 +7,7 @@
             <div class="row mb-2">
                 <div class="col-sm-6">
                     <h1 class="m-0 d-inline mr-2">Statement</h1>
+                    <a href="{{ route('statements.socf.export.pdf', $company->id) }}" class="btn btn-primary btn-sm mb-3">Export PDF</a>
                     {{-- <a href="{{ route('companies.create') }}" class="btn btn-outline-primary btn-sm mb-3">Add Company</a> --}}
                 </div><!-- /.col -->
                 <div class="col-sm-6">

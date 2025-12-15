@@ -40,14 +40,20 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/companies/{id}/statements/sopl', [StatementController::class, 'sopl'])->name('statements.sopl');
     Route::get('/companies/{id}/statements/sopl/export/pdf', [StatementController::class, 'sopl_export_pdf'])->name('statements.sopl.export.pdf');
+    Route::get('/companies/{id}/statements/sopl/export/excel', [StatementController::class, 'sopl_export_excel'])->name('statements.sopl.export.excel');
     Route::get('/companies/{id}/statements/soci', [StatementController::class, 'soci'])->name('statements.soci');
     Route::get('/companies/{id}/statements/soci/export/pdf', [StatementController::class, 'soci_export_pdf'])->name('statements.soci.export.pdf');
+    Route::get('/companies/{id}/statements/soci/export/excel', [StatementController::class, 'soci_export_excel'])->name('statements.soci.export.excel');
     Route::get('/companies/{id}/statements/soce', [StatementController::class, 'soce'])->name('statements.soce');
     Route::put('/companies/{id}/statements/soce', [StatementController::class, 'soce_update'])->name('statements.soce.update');
     Route::get('/companies/{id}/statements/soce/export/pdf', [StatementController::class, 'soce_export_pdf'])->name('statements.soce.export.pdf');
+    Route::get('/companies/{id}/statements/soce/export/excel', [StatementController::class, 'soce_export_excel'])->name('statements.soce.export.excel');
     Route::get('/companies/{id}/statements/sofp', [StatementController::class, 'sofp'])->name('statements.sofp');
     Route::get('/companies/{id}/statements/sofp/export/pdf', [StatementController::class, 'sofp_export_pdf'])->name('statements.sofp.export.pdf');
+    Route::get('/companies/{id}/statements/sofp/export/excel', [StatementController::class, 'sofp_export_excel'])->name('statements.sofp.export.excel');
     Route::get('/companies/{id}/statements/socf', [StatementController::class, 'socf'])->name('statements.socf');
+    Route::get('/companies/{id}/statements/socf/export/pdf', [StatementController::class, 'socf_export_pdf'])->name('statements.socf.export.pdf');
+    Route::get('/companies/{id}/statements/socf/export/excel', [StatementController::class, 'socf_export_excel'])->name('statements.socf.export.excel');
     
     Route::get('/companies/{id}/company-audit-reports/export/pdf', [CompanyAuditReportController::class, 'export_pdf'])->name('company-audit-reports.export.pdf');
     Route::resource('/companies/{id}/company-audit-reports', CompanyAuditReportController::class);

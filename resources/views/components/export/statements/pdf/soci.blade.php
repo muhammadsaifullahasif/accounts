@@ -123,22 +123,24 @@
             </tbody>
         </table>
         <p style="width: 100%; text-align: left;">The annexed notes from 1 to {{ $lastIndex }} form an integral part of these financial statements.</p>
-        @if ($company->account_type == 'Proprietor')
-            <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
-                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Proprietor</span>
-            </div>
-        @endif
-        @if ($company->account_type == 'AOP')
-            <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
-                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Partner</span>
-                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Partner</span>
-            </div>
-        @endif
-        @if ($company->account_type == 'Company')
-            <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
-                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">CEO</span>
-                <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Director</span>
-            </div>
-        @endif
+        <div>
+            @if ($company->account_type == 'Proprietor')
+                <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+                    <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Proprietor</span>
+                </div>
+            @endif
+            @if ($company->account_type == 'AOP')
+                <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+                    <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Partner</span>
+                    <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Partner</span>
+                </div>
+            @endif
+            @if ($company->account_type == 'Company')
+                <div style="position: fixed; bottom: -60px; left: 0; right: 0; width: 100%; height: 100px; display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 100px;">
+                    <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: left;">Chief Execuitive Officer</span>
+                    <span style="border-top: 2px solid #000; flex: 0 0 10%; width: 10%; float: right;">Director</span>
+                </div>
+            @endif
+        </div>
     </body>
 </html>
