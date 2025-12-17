@@ -3917,9 +3917,6 @@ class StatementController extends Controller
                 'right' => [
                     'borderStyle' => Border::BORDER_THIN
                 ],
-                'bottom' => [
-                    'borderStyle' => Border::BORDER_THIN
-                ],
                 'left' => [
                     'borderStyle' => Border::BORDER_THIN
                 ]
@@ -3947,6 +3944,9 @@ class StatementController extends Controller
                 'vertical' => Alignment::VERTICAL_CENTER,
             ],
             'borders' => [
+                'right' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                ],
                 'bottom' => [
                     'borderStyle' => Border::BORDER_THIN
                 ],
@@ -3972,9 +3972,6 @@ class StatementController extends Controller
                 'vertical' => Alignment::VERTICAL_CENTER,
             ],
             'borders' => [
-                'top' => [
-                    'borderStyle' => Border::BORDER_THIN,
-                ],
                 'left' => [
                     'borderStyle' => Border::BORDER_THIN
                 ],
@@ -4238,13 +4235,13 @@ class StatementController extends Controller
         ]);
 
         if ($tcl_previous_year < 0) {
-            $sheet->setCellValue('H' . $row, '(' . number_format(abs(round($tcl_previous_year)), 0, '.', ',') . ')');
+            $sheet->setCellValue('I' . $row, '(' . number_format(abs(round($tcl_previous_year)), 0, '.', ',') . ')');
         } else if ($tcl_previous_year > 0) {
-            $sheet->setCellValue('H' . $row, number_format(abs(round($tcl_previous_year)), 0, '.', ','));
+            $sheet->setCellValue('I' . $row, number_format(abs(round($tcl_previous_year)), 0, '.', ','));
         } else {
-            $sheet->setCellValue('H' . $row, '-');
+            $sheet->setCellValue('I' . $row, '-');
         }
-        $sheet->getStyle('H' . $row)->applyFromArray([
+        $sheet->getStyle('I' . $row)->applyFromArray([
             'font' => [
                 'bold' => true,
                 'size' => 11,
